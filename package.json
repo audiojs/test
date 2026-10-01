@@ -27,6 +27,7 @@
     "scripts/bench-worker.js",
     "site/app.js",
     "site/style.css",
+    "site/speed.css",
     "index.d.ts",
     "index.js"
   ],

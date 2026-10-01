@@ -18,30 +18,30 @@ function title(test) {
  const authored = test.title && test.title !== test.id && test.title !== test.id?.replaceAll('.', ' · ') ? test.title : ''
  const signal = ({ sine: finite(f.frequency) ? `a ${number(f.frequency)} Hz tone` : 'a sine wave', silence: 'silence', impulse: 'an impulse', dc: 'a constant level', 'sample-id': 'a sample pattern', array: 'a sample sequence', segments: 'changing signal levels', 'tone-noise': 'a tone with steady noise', clicks: 'isolated clicks' })[f.signal] || (finite(f.frequency) ? `a ${number(f.frequency)} Hz tone` : 'audio')
  const clip = [finite(f.frames) && `${sampleCount(f.frames)}${f.channels > 1 ? ' per channel' : ''}`, channels(f.channels)].filter(Boolean).join(', ')
- const withClip = text => `${capital(text)}${clip ? ' · ' + clip : ''}`
+ const withClip = text => `${capital(text)}${clip ? ', ' + clip : ''}`
  if (w.op === 'codec-roundtrip') return withClip(`${String(w.format || 'audio').toUpperCase()} saving and reopening${w.split ? ', split at the first and last byte' : ''}`)
  if (w.op === 'resample-chunks') return `Resample ${number(f.sampleRate)} to ${number(w.to)} Hz in uneven chunks`
  if (w.op) return withClip(({ 'copy-reverse': 'Reverse a copy and check the original', 'clip-reverse': 'Reverse a selected clip and check the original', 'clone-reverse': 'Reverse a clone and check the original', undo: 'Edit, then undo', 'undo-redo': 'Edit, undo and redo', stream: 'Compare streamed and returned audio' })[w.op] || words(w.op))
  if (s.op === 'processor') {
   const settings = Object.entries(s.params || {}).map(([key, value]) => `${words(key)} ${typeof value === 'number' ? number(value) : String(value)}`).join(', ')
-  return withClip(`${signal}${settings ? ' · ' + settings : ' · default settings'}`)
+  return withClip(`${signal}${settings ? ', ' + settings : ', default settings'}`)
  }
  if (['response', 'resample', 'resample-snr'].includes(o.type)) return `${capital(signal)}${finite(f.sampleRate) ? ' at ' + number(f.sampleRate) + ' Hz sample rate' : ''}${finite(s.to) ? ' → ' + number(s.to) + ' Hz' : ''}`
  if (s.op === 'measure' || s.op === 'analyze') {
   if (s.name === 'loudness' && f.signal === 'segments') return `${number(f.frames / f.sampleRate)} seconds of quiet and loud sections`
-  if (s.name === 'true-peak') return `${capital(signal)} · ${number((f.phase || 0) * 180 / Math.PI)}° phase, ${percent(f.amplitude)} of full scale`
+  if (s.name === 'true-peak') return `${capital(signal)}, ${number((f.phase || 0) * 180 / Math.PI)}° phase, ${percent(f.amplitude)} of full scale`
   if (s.name === 'onsets') return `${number(f.events?.length)} clicks, checked within ${number(o.tolerance * 1000)} ms`
   if (s.name === 'tempo') return finite(o.min) && finite(o.max) ? `${number((o.min + o.max) / 2)} BPM click track` : 'Tempo of a click track'
   return withClip(signal)
  }
  if (s.op === 'normalize-loudness') return `${number(s.target)} LUFS target with a ${number(s.ceiling)} dB peak ceiling`
- if (s.op === 'compressor') return `${number(s.ratio)}:1 compression · ${number(s.attack * 1000)} ms attack, ${number(s.release * 1000)} ms release`
- if (s.op === 'limiter') return `${number(s.ceiling)} dB ceiling · ${number(s.lookahead * 1000)} ms lookahead`
- if (s.op === 'gate') return `${number(s.threshold)} dB gate threshold · ${number(s.hold * 1000)} ms hold`
+ if (s.op === 'compressor') return `${number(s.ratio)}:1 compression, ${number(s.attack * 1000)} ms attack, ${number(s.release * 1000)} ms release`
+ if (s.op === 'limiter') return `${number(s.ceiling)} dB ceiling, ${number(s.lookahead * 1000)} ms lookahead`
+ if (s.op === 'gate') return `${number(s.threshold)} dB gate threshold, ${number(s.hold * 1000)} ms hold`
  if (s.op === 'denoise') return `${capital(signal)}${finite(f.frequency) ? ' at ' + number(f.frequency) + ' Hz' : ''}`
  if (s.op === 'dither') return `Add ${number(s.bits)}-bit dither to ${signal}`
  if (s.op === 'convolve') return withClip(`${sampleCount(s.impulse?.length)} in the impulse response${s.tail ? ', keeping the full tail' : ''}`)
- if (s.op === 'delay') return `${number(s.delayFrames / f.sampleRate * 1000)} ms delay · ${percent(s.feedback)} feedback`
+ if (s.op === 'delay') return `${number(s.delayFrames / f.sampleRate * 1000)} ms delay, ${percent(s.feedback)} feedback`
  if (s.op === 'pitch') return `Shift ${signal} by ${number(s.semitones)} semitones`
  if (s.op === 'stretch') return `Stretch ${signal} to ${number(s.factor)}× its duration`
  if (s.op === 'speed') return `Play ${signal} at ${number(s.factor)}× speed`

@@ -37,7 +37,7 @@ node bin/audio-test.js run --adapter ./my-adapter.js --tier quality
 ## Results
 
 <!-- results:start -->
-201 features · 493 behavior tests · 604 basic checks · 362 packages
+201 features, 493 behavior tests, 604 basic checks, 362 packages
 
 Measured 2026-10-01T03:03:48.839Z. Spec SHA-256: `6973c15a6feb63251872e797c221a61a20e603ecaf025b5f692ad7358dfe92f8`.
 

@@ -12,7 +12,7 @@ const fixture = id => {
 const copy = (id, metrics, status = 'fail') => caseCopy(fixture(id), { status, metrics })
 
 test('case titles explain clip size, position, settings and authored intent without internal IDs', () => {
- assert.match(copy('edit.reverse.1f.1ch').title, /Reverse · 1 sample, mono/)
+ assert.match(copy('edit.reverse.1f.1ch').title, /Reverse, 1 sample, mono/)
  assert.match(copy('edit.insert.17.2.start').title, /at the start.*17 samples per channel, stereo/)
  assert.match(copy('edit.insert.17.2.middle').title, /after 8 samples/)
  assert.match(copy('edit.insert.17.2.end').title, /at the end/)

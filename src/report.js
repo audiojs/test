@@ -2,6 +2,8 @@ import { mkdir, readFile, writeFile, cp, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { loadSpec } from './spec.js'
 import { caseCopy } from './report-copy.js'
+import { caseVisual } from './report-visual.js'
+import { renderMetrics } from './report-graphics.js'
 
 export const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])
 const cell = v => String(v ?? '').replaceAll('|','\\|').replaceAll('\n',' ')
@@ -48,14 +50,14 @@ const categoryOrder = ['Codecs','Editing','Level','Channels','Filters','Dynamics
 const shortVersion = r => {
  const version=String(r.version||'').match(/\d+\.\d+(?:\.\d+)?/)?.[0]
  const local=!r.metadata?.origin?.includes('/node_modules/')&&(r.metadata?.source?.dirty||r.metadata?.origin?.startsWith('file:'))
- return `${version||'Version unavailable'}${local?' · local build':''}`
+ return `${version||'Version unavailable'}${local?', local build':''}`
 }
 
 export async function generateReport(results, options={}) {
  const root=options.root||process.cwd(),spec=await loadSpec(),runs=results.runs.filter(r=>r.adapter!=='reference')
  let registry=null;try{registry=JSON.parse(await readFile(join(root,'results/registry.json'),'utf8'))}catch(e){if(e.code!=='ENOENT')throw e}
  const active=spec.cases.filter(c=>c.status==='active'),integrity=active.filter(c=>c.level==='integrity').length
- const summary=`${spec.features.features.length} features · ${active.length-integrity} behavior tests · ${integrity} basic checks · ${spec.ecosystem.packages.length} packages`
+ const summary=`${spec.features.features.length} features, ${active.length-integrity} behavior tests, ${integrity} basic checks, ${spec.ecosystem.packages.length} packages`
  const md=['| Contender | Version | Conformance pass / run | Integrity pass / run | Fail | Error | Unmapped |','|---|---|---:|---:|---:|---:|---:|',...runs.map(r=>{
    const c=r.cases.filter(c=>c.level!=='integrity'&&c.status!=='skip'),i=r.cases.filter(c=>c.level==='integrity'&&c.status!=='skip')
    return `| ${cell(r.adapter)} | ${cell(r.version)} | ${c.filter(c=>c.status==='pass').length} / ${c.length} | ${i.filter(c=>c.status==='pass').length} / ${i.length} | ${r.summary.fail} | ${r.summary.error} | ${r.summary.skip} |`
@@ -67,7 +69,7 @@ export async function generateReport(results, options={}) {
  readme=replace(readme,'features',[`| Family | Features | Behavior tests | Basic checks |${hasPlans?' Planned tests |':''}`,`|---|---:|---:|---:|${hasPlans?'---:|':''}`,...categories.map(category=>{const fs=spec.features.features.filter(f=>f.category===category),cs=spec.cases.filter(c=>fs.some(f=>f.id===c.feature));return `| ${cell(categoryName(category))} | ${fs.length} | ${cs.filter(c=>c.status==='active'&&c.level!=='integrity').length} | ${cs.filter(c=>c.status==='active'&&c.level==='integrity').length} |${hasPlans?` ${cs.filter(c=>c.status==='planned').length} |`:''}`})].join('\n'))
  const findings=['# Contract discrepancies','',`Run: ${results.generatedAt}. No engine fixes are made by this repository.`,``,`Replay a case with its recorded contender version and source hash. WAV files are float32; differences below export quantization are not necessarily DSP bugs.`,``,...runs.flatMap(r=>r.cases.filter(c=>['fail','error'].includes(c.status)).map(c=>`## ${r.adapter}: ${c.id}\n\nStatus: ${c.status}.${c.level==='integrity'?' Integrity only.':''}\n\n\`node bin/audio-test.js run --adapter ${r.adapter} --tier ${spec.cases.find(test=>test.id===c.id)?.tier||results.tier||'research'} --case ${c.id}\`\n\n${c.artifact?`[Reproduction and metrics](${c.artifact})`:''}\n\n\`\`\`json\n${JSON.stringify(c.metrics||{error:c.error},null,2)}\n\`\`\`\n`))].join('\n')
  let bench=null;try{bench=JSON.parse(await readFile(join(root,'results/benchmarks.json'),'utf8'))}catch(e){if(e.code!=='ENOENT')throw e}
- const name = id => spec.contenders.contenders.find(c=>c.id===id)?.name||id
+ const name = id => (spec.contenders.contenders.find(c=>c.id===id)?.name||id).replaceAll(' · ', ', ')
  const inputWav=artifact=>artifact.replace(/case\.json$/,'input.wav')
  const wavFiles=new Set((await Promise.all([...new Set(runs.flatMap(run=>run.cases.filter(result=>result.artifact?.endsWith('case.json')).map(result=>inputWav(result.artifact))))].map(async path=>{
    try{return (await stat(join(root,'results',path))).isFile()?path:null}catch(error){if(error.code==='ENOENT')return null;throw error}
@@ -84,11 +86,16 @@ export async function generateReport(results, options={}) {
    return `<tr class="group-row" data-group="${esc(category)}"><th colspan="${runs.length+1}" scope="rowgroup"><span class="group-label">${esc(categoryName(category))}</span></th></tr>`+fs.map(f=>{
      const cs=featureCases(f).filter(c=>c.status==='active')
      const reported=runs.map(r=>r.cases.filter(c=>c.feature===f.id))
-     const values=reported.map(cases=>featureResult(cases,cs.length,basic))
+     const values=reported.map(cases=>{
+       const [pass,fail,error]=counts(cases)
+       return {...featureResult(cases,cs.length,basic),counts:[pass,fail,error,Math.max(cs.length,cases.length)-pass-fail-error]}
+     })
      const statuses=[...new Set([...values.map(v=>v.state),...reported.flat().filter(c=>['fail','error'].includes(c.status)).map(c=>c.status)])]
-     return `<tr class="feature-row" data-feature="${esc(f.id)}" data-scope="${basic?'integrity':'behavior'}" data-status="${statuses.join(' ')}"><th scope="row"><a href="#${esc(f.id)}">${esc(featureName(f))}</a></th>${values.map((v,i)=>`<td class="${v.state}" data-tool="${esc(runs[i].adapter)}"><a class="result" data-popover="feature" data-description="${esc(v.description)}" href="#${esc(f.id)}" aria-label="${esc(`${name(runs[i].adapter)}, ${featureName(f)}: ${v.description}`)}">${v.label}</a></td>`).join('')}</tr>`
+     return `<tr class="feature-row" data-feature="${esc(f.id)}" data-scope="${basic?'integrity':'behavior'}" data-status="${statuses.join(' ')}"><th scope="row"><a href="#${esc(f.id)}">${esc(featureName(f))}</a></th>${values.map((v,i)=>`<td class="${v.state}" data-tool="${esc(runs[i].adapter)}"><a class="result" data-popover="feature" data-counts="${v.counts.join(',')}" data-description="${esc(v.description)}" href="#${esc(f.id)}" aria-label="${esc(`${name(runs[i].adapter)}, ${featureName(f)}: ${v.description}`)}">${v.label}</a></td>`).join('')}</tr>`
    }).join('')
  }).join(''):''
+ // Inert markup keeps closed results out of the rendered DOM. Values are HTML-escaped before templating.
+ const visualTemplate = html => `<script type="text/html" class="visual-template">${html}</script>`
  const caseEvidence = test => {
    const skipped=[],outputs=[]
    const defaultReasons=new Set(['','adapter has no equivalent mapping','No equivalent adapter mapping'])
@@ -98,9 +105,9 @@ export async function generateReport(results, options={}) {
      if(result.status==='skip'&&defaultReasons.has(result.reason||'')&&!result.error&&!result.metrics&&!result.artifact){
        skipped.push(name(run.adapter));continue
      }
-     const copy=caseCopy(test,result)
+     const copy=caseCopy(test,result),visual=caseVisual(test,result)
      const raw={...(result.metrics==null?{}:{metrics:result.metrics}),...(result.reason?{reason:result.reason}:{}),...(result.error?{error:result.error}:{})}
-     outputs.push(`<div class="case-output ${esc(result.status)}" data-tool="${esc(run.adapter)}" data-status="${esc(result.status)}"><p class="case-tool"><strong>${esc(name(run.adapter))}: ${esc(result.status==='skip'?'not tested':result.status)}</strong></p><p class="case-explanation">${esc(copy.summary)}</p>${result.artifact?`<p class="case-artifacts"><a href="${esc(result.artifact)}">Reproduction files</a>${wavFiles.has(inputWav(result.artifact))?` · <a href="${esc(inputWav(result.artifact))}">Input WAV</a>`:''}</p>`:''}<details class="technical-details"><summary>Technical details</summary><p><code>${esc(test.id)}</code></p>${Object.keys(raw).length?`<pre>${esc(JSON.stringify(raw,null,2))}</pre>`:''}</details></div>`)
+     outputs.push(`<div class="case-output ${esc(result.status)}" data-tool="${esc(run.adapter)}" data-status="${esc(result.status)}"><p class="case-tool"><strong>${esc(name(run.adapter))}: ${esc(result.status==='skip'?'not tested':result.status)}</strong></p>${visualTemplate(`<div class="case-chips">${visual.chips.map(chip=>`<span class="pill">${esc(chip)}</span>`).join('')}</div>${visual.metrics.length?renderMetrics(visual.metrics):`<div class="case-state ${esc(result.status)}">${esc(visual.statusLabel)}</div>`}`)}<noscript><p>${esc(copy.summary)}</p></noscript>${result.artifact?`<p class="case-artifacts"><a href="${esc(result.artifact)}">Reproduction files</a>${wavFiles.has(inputWav(result.artifact))?` <a href="${esc(inputWav(result.artifact))}">Input WAV</a>`:''}</p>`:''}<details class="technical-details"><summary>Technical details</summary><p class="case-explanation">${esc(copy.summary)}</p><p><code>${esc(test.id)}</code></p>${Object.keys(raw).length?`<pre>${esc(JSON.stringify(raw,null,2))}</pre>`:''}</details></div>`)
    }
    if(skipped.length)outputs.push(`<p class="not-tested">Not tested: ${skipped.map(esc).join(', ')}.</p>`)
    return outputs.join('')
@@ -109,7 +116,7 @@ export async function generateReport(results, options={}) {
    const cs=featureCases(f),method=cs.find(c=>c.steps?.length)?.steps[0]?.op
    const files={reverse:'reverse','reverse-range':'reverse',trim:'crop',remove:'remove',pad:'pad',repeat:'repeat',gain:'gain','gain-db':'gain',fade:'fade',mix:'mix',insert:'insert',crossfade:'crossfade',normalize:'normalize',lowpass:'filter',highpass:'filter',bandpass:'filter',notch:'filter',allpass:'filter',eq:'filter',resample:'resample',stretch:'stretch',pitch:'pitch',speed:'speed'}
    const source=f.url||(files[method]?`https://github.com/audiojs/audio/blob/main/fn/${files[method]}.js`:'https://github.com/audiojs/audio')
-   return `<details id="${esc(f.id)}" class="contract"><summary>${esc(featureName(f))} <small>${cs.length} tests</small></summary><p>${esc(f.contract)}</p><p class="case-tools"><a href="#features">Back to comparison</a> · <a href="${esc(source)}">audio API</a> · <a href="${repo}src/catalog.js">Case definitions</a> · <a href="${repo}src/oracles.js">Expected results</a></p><p><code>${esc(f.id)}</code> · ${esc(f.class)}</p>${cs.map(c=>{const title=esc(caseCopy(c).title);return `<details id="case-${esc(c.id)}" class="case-result" data-title="${title}"><summary>${title} <small>${c.status==='planned'?'Planned':esc(c.oracle.type)}</small></summary>${caseEvidence(c)}<details class="technical-details"><summary>Test definition</summary><pre>${esc(JSON.stringify(c,null,2))}</pre><pre>node bin/audio-test.js run --adapter audio --tier ${esc(c.tier||'research')} --case ${esc(c.id)}</pre></details></details>`}).join('')}</details>`
+   return `<details id="${esc(f.id)}" class="contract"><summary>${esc(featureName(f))} <small>${cs.length} tests</small></summary><p>${esc(f.contract)}</p><p class="case-tools"><a href="#features">Back to comparison</a>, <a href="${esc(source)}">audio API</a>, <a href="${repo}src/catalog.js">Case definitions</a>, <a href="${repo}src/oracles.js">Expected results</a></p><p><code>${esc(f.id)}</code>, ${esc(f.class)}</p>${cs.map(c=>{const title=esc(caseVisual(c).label);return `<details id="case-${esc(c.id)}" class="case-result" data-title="${title}"><summary>${title} <small>${c.status==='planned'?'Planned':esc(c.oracle.type)}</small></summary>${caseEvidence(c)}<details class="technical-details"><summary>Test definition</summary><pre>${esc(JSON.stringify(c,null,2))}</pre><pre>node bin/audio-test.js run --adapter audio --tier ${esc(c.tier||'research')} --case ${esc(c.id)}</pre></details></details>`}).join('')}</details>`
  }
  const methodLink = method => {
    const id=['processor','analysis','edit','filter','rate'].map(prefix=>`${prefix}.${method.name}`).find(id=>spec.features.features.some(f=>f.id===id))
@@ -119,7 +126,7 @@ export async function generateReport(results, options={}) {
    const methods=spec.ecosystem.methods.filter(m=>m.module.replace(/\/audio$/,'')===p.name)
    return `<li class="package-entry"><details><summary>${esc(p.name)} <small>${esc(p.description)}</small></summary><p><a href="${esc(p.url)}">${esc(p.name)}</a> ${esc(p.version)}</p>${methods.length?`<p>Methods: ${methods.map(methodLink).join(', ')}</p>`:''}<p>Planned tests: ${p.proposedTests.map(esc).join('; ')}</p></details></li>`
  }).join('')
- const inventories=spec.competitorInventory.contenders.map(c=>`<details><summary>${esc(name(c.id))} <small>${c.features.length} ${c.curated?'listed operations':'features'}</small></summary><p><a href="${esc(c.source)}">API / manual</a>${c.curated?'':' · '+esc(c.version||'Version in run details')}</p>${c.blocker?`<p>${esc(c.blocker)}</p>`:''}<ul>${c.features.map(f=>`<li><strong>${esc(f.name)}</strong>${f.proposedTests.length?' — '+f.proposedTests.map(esc).join('; '):''}</li>`).join('')}</ul></details>`).join('')
+ const inventories=spec.competitorInventory.contenders.map(c=>`<details><summary>${esc(name(c.id))} <small>${c.features.length} ${c.curated?'listed operations':'features'}</small></summary><p><a href="${esc(c.source)}">API / manual</a>${c.curated?'':', '+esc(c.version||'Version in run details')}</p>${c.blocker?`<p>${esc(c.blocker)}</p>`:''}<ul>${c.features.map(f=>`<li><strong>${esc(f.name)}</strong>${f.proposedTests.length?' — '+f.proposedTests.map(esc).join('; '):''}</li>`).join('')}</ul></details>`).join('')
  const benchResults=bench?.results||[]
  const benchIds=[...new Set(benchResults.map(b=>b.adapter))]
  const benchOrder=[...runs.map(r=>r.adapter).filter(id=>benchIds.includes(id)),...benchIds.filter(id=>!runs.some(r=>r.adapter===id))]
@@ -136,11 +143,11 @@ export async function generateReport(results, options={}) {
  }))
  const mixedEnvironments=new Set([...benchEnvironments.values()].map(e=>e.fingerprint)).size>1
  if(mixedEnvironments)for(const run of benchRuns)run.environmentLabel=benchEnvironments.get(run.adapter).label
- const environmentDetails=adapter=>{const environment=benchEnvironments.get(adapter);return mixedEnvironments?[environment.label,environment.host.platform,environment.host.arch,environment.host.cpu].filter(Boolean).join(' · '):''}
+ const environmentDetails=adapter=>{const environment=benchEnvironments.get(adapter);return mixedEnvironments?[environment.label,environment.host.platform,environment.host.arch,environment.host.cpu].filter(Boolean).join(', '):''}
  const benchCases=[...new Set(benchResults.map(b=>b.case))].map(id=>{
    const definition=bench.fixtures?.find(f=>f.id===id)||{},clip=definition.fixture||{}
    const profile=definition.profile||'recorded'
-   const profileTitle=definition.profileTitle||(clip.frames&&clip.sampleRate?`${clip.frames/clip.sampleRate} s · ${clip.channels===1?'mono':clip.channels===2?'stereo':`${clip.channels} channels`}`:'Recorded clip')
+   const profileTitle=definition.profileTitle?.replaceAll(' · ', ', ')||(clip.frames&&clip.sampleRate?`${clip.frames/clip.sampleRate} s, ${clip.channels===1?'mono':clip.channels===2?'stereo':`${clip.channels} channels`}`:'Recorded clip')
    const title=definition.title||({reverse:'Reverse',gain:'Adjust volume','gain-db':'Adjust volume',lowpass:'Low-pass filter',resample:'Resample'})[definition.steps?.[0]?.op]||id
    return {id,title,profile,profileTitle,group:definition.group||'Operations'}
  })
@@ -172,19 +179,30 @@ export async function generateReport(results, options={}) {
    const ratio=Number.isFinite(comparison.ratio)?Number(comparison.ratio.toPrecision(3)).toLocaleString('en-US',{maximumFractionDigits:3}):'over 10³⁰⁸'
    return `Takes ${ratio}× as long as the fastest result (${name(comparison.fastest[0].adapter)}). Compared with ${context}.`
  }
+ const samplePlot=b=>{
+   const recorded=Array.isArray(b.samplesMs)?b.samplesMs:[],samples=recorded.flatMap((ms,index)=>Number.isFinite(ms)&&ms>=0?[{ms,index}]:[])
+   if(!samples.length)return '<div class="speed-no-samples">No recorded calls</div>'
+   const maximum=Math.max(...samples.map(sample=>sample.ms)),x=index=>recorded.length>1?12+index/(recorded.length-1)*296:160,y=ms=>maximum>0?64-ms/maximum*48:64
+   const count=samples.length===recorded.length?`${samples.length} measured call${samples.length===1?'':'s'}`:`${samples.length} of ${recorded.length} calls plotted`
+   return `<figure class="speed-samples"><figcaption><span>${count}</span><span>${esc(milliseconds(maximum))} ms max</span></figcaption><svg viewBox="0 0 320 76" role="img" aria-label="${esc(`${count}, in recording order. Vertical scale: 0 to ${maximum} milliseconds.`)}"><path class="speed-sample-axis" d="M12 64H308"/>${samples.map(({ms,index})=>`<path class="speed-sample-stem" d="M${x(index)} 64V${y(ms)}"/><circle data-call="${index+1}" data-ms="${ms}" cx="${x(index)}" cy="${y(ms)}" r="3.5"><title>Call ${index+1}: ${esc(ms)} ms</title></circle>`).join('')}</svg><div class="speed-sample-labels"><span>0 ms</span><span>Call ${recorded.length}</span></div></figure>`
+ }
+ const peerPlot=b=>{
+   const environment=benchEnvironments.get(b.adapter),peers=cohorts.get(JSON.stringify([b.case,environment.key]))||[]
+   if(peers.length<2)return ''
+   const sorted=[...peers].sort((a,b)=>a.medianMs-b.medianMs),other=sorted.find(peer=>peer!==b)
+   const shown=[b,other].sort((a,b)=>a.medianMs-b.medianMs),maximum=Math.max(...shown.map(peer=>peer.medianMs))
+   return `<figure class="speed-peers"><figcaption><span>Same clip and host</span><span>${esc(environment.label)}</span></figcaption>${shown.map(peer=>`<div class="speed-peer${peer===b?' selected':''}" data-tool="${esc(peer.adapter)}" data-ms="${peer.medianMs}" data-speed-cohort="${environment.id}" style="--speed-width:${peer.medianMs/maximum*100}%"><div class="speed-peer-label"><span>${esc(name(peer.adapter))}${peer===b?'<small>Selected</small>':''}</span><strong>${esc(milliseconds(peer.medianMs))} <small>ms</small></strong></div><div class="speed-peer-track"><span></span></div></div>`).join('')}</figure>`
+ }
  const benchDetails=b=>{
-   const valid=timed(b),comparison=comparisonText(b),fixture=bench.fixtures?.find(test=>test.id===b.case)
+   const valid=timed(b),comparison=comparisons.get(b),context=comparisonText(b),fixture=bench.fixtures?.find(test=>test.id===b.case)
    const variability=Number.isFinite(b.p95Ms)&&b.p95Ms>=b.medianMs
-   let explanation
-   if(valid)explanation=`Typically <strong>${esc(milliseconds(b.medianMs))} ms</strong> per call (median).${variability?` 95% of measured calls finished within <strong>${esc(milliseconds(b.p95Ms))} ms</strong>.`:''}`
-   else if(b.status==='skip')explanation=esc(b.reason&&!['No equivalent adapter mapping','adapter has no equivalent mapping'].includes(b.reason)?b.reason:'This operation has not been connected to this tool.')
-   else if(b.status==='error')explanation=esc(caseCopy(fixture||{},b).summary)
-   else if(b.status==='pass')explanation='No positive timing was recorded.'
-   else explanation=esc(fixture?caseCopy(fixture,{status:'fail',metrics:b.validation}).summary:'The output did not pass the accuracy check.')+' Timing is excluded.'
-   const scope=valid&&['ffmpeg','sox','rubberband','soundtouch'].includes(b.adapter)?`<p>Includes starting ${esc(name(b.adapter))} and reading/writing audio files.</p>`:''
-   const details=[`${name(b.adapter)} · ${shortVersion(b)}`,b.metadata?.mode,environmentDetails(b.adapter),valid&&`Median: ${b.medianMs} ms`,valid&&variability&&`95th percentile: ${b.p95Ms} ms`,valid&&Number.isFinite(b.driverMaxRssMiB)&&`Driver peak memory: ${b.driverMaxRssMiB} MiB`].filter(Boolean)
+   const ratio=comparison?.ratio,badge=!comparison?'Unranked':comparison.count<2?'Only result':!comparison.ranked?'Tied':ratio===1?comparison.fastest.length>1?'Joint fastest':'Fastest':ratio<1.01?'<1% longer':`${Number.isFinite(ratio)?ratio>=1e6?ratio.toExponential(1):Number(ratio.toPrecision(3)).toLocaleString('en-US',{maximumFractionDigits:3}):'>10³⁰⁸'}× as long`
+   const visual=caseVisual(fixture||{},{status:b.status,metrics:b.validation,error:b.error,reason:b.reason})
+   const stats=valid?`<dl class="speed-stats"><div data-stat="median" data-ms="${b.medianMs}"><dt>Median</dt><dd>${esc(milliseconds(b.medianMs))} <small>ms</small></dd></div><div data-stat="p95"${variability?` data-ms="${b.p95Ms}"`:''}><dt title="95th percentile">95% within</dt><dd>${variability?`${esc(milliseconds(b.p95Ms))} <small>ms</small>`:'—'}</dd></div></dl><div class="speed-comparison" title="${esc(context)}"${comparison?.ranked?` data-speed-ratio="${ratio}" style="--speed-hue:${comparison.hue.toFixed(3)}"`:''}><strong>${esc(badge)}</strong>${comparison?.count>1?`<span>${comparison.count} tools</span>`:''}</div>`:`<div class="speed-state ${esc(b.status)}"><strong>${esc(b.status==='pass'?'No timing':visual.statusLabel)}</strong>${b.status==='fail'?'<span>Timing excluded</span>':''}</div>${visual.metrics.length?visualTemplate(renderMetrics(visual.metrics)):''}`
+   const scope=valid&&['ffmpeg','sox','rubberband','soundtouch'].includes(b.adapter)?'<div class="speed-scope"><span>Includes</span><span class="pill">Process launch</span><span class="pill">Audio file I/O</span></div>':''
+   const details=[['Tool',name(b.adapter)],['Version',shortVersion(b)],['Execution',b.metadata?.mode],['Environment',environmentDetails(b.adapter)],['Median',valid?`${b.medianMs} ms`:null],['95th percentile',valid&&variability?`${b.p95Ms} ms`:null],['Driver peak memory',valid&&Number.isFinite(b.driverMaxRssMiB)?`${b.driverMaxRssMiB} MiB`:null]].filter(([,value])=>value)
    const {metadata,host,...technical}=b
-   return `<div class="bench-output"><p class="bench-explanation">${explanation}</p>${comparison?`<p class="speed-comparison">${esc(comparison)}</p>`:''}${scope}<details class="technical-details"><summary>Technical details</summary><p>${details.map(esc).join('<br>')}</p><pre>${esc(JSON.stringify(technical,null,2))}</pre><p><a href="benchmarks.json">All samples and measurements</a></p></details></div>`
+   return `<div class="bench-output">${stats}${visualTemplate(`${b.status==='pass'?samplePlot(b):''}${valid?peerPlot(b):''}`)}${scope}<details class="technical-details"><summary>Technical details</summary>${context?`<p>${esc(context)}</p>`:''}${b.status==='fail'?`<p>${esc(caseCopy(fixture||{},{status:'fail',metrics:b.validation}).summary)}</p>`:''}<dl class="speed-meta">${details.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl><pre>${esc(JSON.stringify(technical,null,2))}</pre><p><a href="benchmarks.json">All samples and measurements</a></p></details></div>`
  }
  const benchCell=(b,adapter)=>{
    const data=`data-tool="${esc(adapter)}"`
@@ -197,12 +215,12 @@ export async function generateReport(results, options={}) {
  }
  const benchEvidence=[...benchRecords].map(([b,id])=>{
    const c=benchCases.find(c=>c.id===b.case)
-   return `<details id="${id}" class="bench-result"><summary>${esc(name(b.adapter))} · ${esc(c.title)} · ${esc(c.profileTitle)}</summary>${benchDetails(b)}</details>`
+   return `<details id="${id}" class="bench-result"><summary>${esc(name(b.adapter))}, ${esc(c.title)}, ${esc(c.profileTitle)}</summary>${benchDetails(b)}</details>`
  }).join('')
  const overheadHtml=(bench?.overhead||[]).map(run=>{
    const measured=(run.results||[]).filter(result=>result.status==='pass'&&Number.isFinite(result.medianMs)&&(result.id==='version-command'||result.id.startsWith('adapter-identity-')))
    if(!measured.length)return ''
-   return `<details class="overhead"><summary>${esc(name(run.adapter))} call overhead</summary><p>Each call starts a process and exchanges WAV files. An unchanged clip measures that round trip.</p><ul>${measured.map(result=>`<li>${esc(result.title)}${result.profileTitle?` · ${esc(result.profileTitle)}`:''}: <strong>${esc(milliseconds(result.medianMs))} ms</strong></li>`).join('')}</ul><p>Separate measurements; nothing is subtracted from the operation timings. <a href="benchmarks.json">Samples and environment</a></p></details>`
+   return `<details class="overhead"><summary>${esc(name(run.adapter))} call overhead</summary><p>Each call starts a process and exchanges WAV files. An unchanged clip measures that round trip.</p><ul>${measured.map(result=>`<li>${esc(result.title)}${result.profileTitle?`, ${esc(result.profileTitle.replaceAll(' · ', ', '))}`:''}: <strong>${esc(milliseconds(result.medianMs))} ms</strong></li>`).join('')}</ul><p>Separate measurements; nothing is subtracted from the operation timings. <a href="benchmarks.json">Samples and environment</a></p></details>`
  }).join('')
  const rankable=[...comparisons.values()].some(c=>c.ranked)
  const benchHtml=benchCases.length?`<p class="note">Median milliseconds for the whole adapter call; lower is faster.</p><p class="note speed-scale">Green → yellow → red: fastest, 4× as long, 16× or more. Colors compare the same clip, host and run.</p>${mixedEnvironments?'<p class="note environment-note">Runs use different environments; compare timings within one environment.</p>':''}<div class="table-wrap"><table class="matrix speed-matrix" aria-label="Speed comparison" data-rankable="${rankable}" style="--tool-count:${benchRuns.length}">${tableHead('Operation / clip',benchRuns)}<tbody>${benchGroups.map(group=>{
@@ -218,27 +236,27 @@ export async function generateReport(results, options={}) {
  const dateLabel=Number.isNaN(date.valueOf())?results.generatedAt:date.toLocaleDateString('en',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'})
  const featureCount=runs.length?measured.filter(f=>!isBasic(f)).length:0,basicCount=runs.length?measured.length-featureCount:0
  const html=`<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Audio tools, compared — @audio/test</title><link rel="stylesheet" href="style.css"></head>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Audio tools, compared — @audio/test</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="speed.css"></head>
 <body><a class="skip-link" href="#features">Skip to comparison</a><main>
 <header><div class="masthead"><a class="brand" href="#features">@audio/test</a><nav aria-label="Report links"><a href="results.json">Results JSON</a><a href="https://github.com/audiojs/test">GitHub</a></nav></div><div class="intro"><h1>Audio tools, compared.</h1><p class="run-date">${esc(dateLabel)}</p></div></header>
 <nav class="contents" aria-label="On this page"><a href="#features">Features</a><a href="#speed">Speed</a><a href="#basic-checks">Basic checks</a></nav>
 <section id="features" class="comparison" tabindex="-1" aria-labelledby="features-title"><h2 id="features-title">Features <small>${featureCount}</small></h2><div id="feature-panel"><p class="legend"><span class="pass-key">✓ Passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not compared</span></p><p class="note">— means no comparable result, usually because the adapter has no equivalent mapping. It does not mean a missing feature.</p>${runs.length?`<div class="table-wrap"><table class="matrix" aria-label="Feature comparison" style="--tool-count:${runs.length}">${tableHead()}<tbody id="feature-rows">${featureRows(false)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
 <section id="speed" class="comparison" tabindex="-1" aria-labelledby="speed-title"><h2 id="speed-title">Speed <small>${benchCases.length}</small></h2><div id="speed-panel">${benchHtml}</div></section>
 <section id="basic-checks" class="comparison" tabindex="-1" aria-labelledby="basic-title"><h2 id="basic-title">Basic checks <small>${basicCount}</small></h2><div id="basic-panel"><p id="basic-note" class="note">Checks for valid output and unchanged input. Effect quality is not tested.</p><p class="legend"><span class="basic-key">○ Basic checks passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not compared</span></p>${runs.length?`<div class="table-wrap"><table class="matrix basic-matrix" aria-label="Basic checks comparison" style="--tool-count:${runs.length}">${tableHead()}<tbody id="basic-rows">${featureRows(true)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
-<details id="failures" class="archive"><summary>Results to investigate <small>${problems.length}</small></summary><p>A difference can come from precision, the test, the adapter, or the tool.</p><ul>${problems.map(({run:r,result:c})=>`<li class="${esc(c.status)}"><a href="#case-${esc(c.id)}">${esc(name(r.adapter))} · ${esc(c.id)}</a> — ${esc(c.status)}${c.artifact?` · <a href="${esc(c.artifact)}">Reproduce</a>`:''}</li>`).join('')||'<li>No differences in completed tests.</li>'}</ul></details>
+<details id="failures" class="archive"><summary>Results to investigate <small>${problems.length}</small></summary><p>A difference can come from precision, the test, the adapter, or the tool.</p><ul>${problems.map(({run:r,result:c})=>`<li class="${esc(c.status)}"><a href="#case-${esc(c.id)}">${esc(name(r.adapter))}, ${esc(c.id)}</a> — ${esc(c.status)}${c.artifact?`, <a href="${esc(c.artifact)}">Reproduce</a>`:''}</li>`).join('')||'<li>No differences in completed tests.</li>'}</ul></details>
 <details id="evidence" class="archive"><summary>Test details <small>${active.length} tests</small></summary>${measured.map(contract).join('')}</details>
 ${benchEvidence?`<details id="speed-evidence" class="archive"><summary>Speed details</summary>${benchEvidence}</details>`:''}
 <details id="planned" class="archive"${planned.length?'':' hidden'}><summary>Planned tests <small>${planned.length} features</small></summary>${planned.map(contract).join('')}</details>
 <details id="ecosystem" class="archive"><summary>Audio packages <small>${spec.ecosystem.packages.length}</small></summary><p>Local packages and proposed tests. Some packages may be unpublished. <a href="ecosystem.json">Download inventory</a></p><ul id="package-rows">${pkgRows}</ul></details>
 <details id="upstream" class="archive"><summary>Other tools’ feature lists</summary><p>From upstream APIs and manuals; these are test ideas, not measured support. <a href="competitors.json">Download inventory</a></p>${inventories}</details>
-<details id="methodology" class="archive"><summary>About this run</summary><p>Measured ${esc(results.generatedAt)}. Tests compare output with mathematical expectations or stated tolerances.</p><p>Not measured: ${spec.contenders.contenders.filter(c=>!runs.some(r=>r.adapter===c.id)).map(c=>`<a href="${esc(c.evidence||c.url)}">${esc(c.name)}</a>`).join(', ')||'none'}.</p>${registry?'<p><a href="registry.json">Separate npm-release results</a></p>':''}<dl class="run-info">${runs.map(r=>{const c=r.cases.filter(c=>c.level!=='integrity'),i=r.cases.filter(c=>c.level==='integrity');return `<dt>${esc(name(r.adapter))} · ${esc(shortVersion(r))}</dt><dd>Behavior: ${c.filter(c=>c.status==='pass').length} passed / ${c.filter(c=>c.status!=='skip').length} run. Basic checks: ${i.filter(c=>c.status==='pass').length} passed / ${i.filter(c=>c.status!=='skip').length} run. ${r.summary.skip} not tested.<details><summary>Version and environment</summary><pre>${esc(JSON.stringify({version:r.version,platform:r.platform,runtime:r.runtime,metadata:r.metadata,host:r.host},null,2))}</pre></details></dd>`}).join('')}</dl><p>Spec SHA-256: <code>${esc(results.specSha256)}</code></p><details id="benchmark-method"><summary>Speed and memory measurements</summary>${bench?`<p>${esc(bench.scope)}. ${esc(bench.generatedAt)}. ${esc(bench.repeats)} repetitions.</p>`:''}<p>Driver memory excludes native, Python and browser child processes, so it cannot compare total memory use. Bundle size, install size, hardware playback and real-time safety are not measured.</p>${bench?'<a href="benchmarks.json">All timings, memory measurements and host details</a>':''}</details></details>
+<details id="methodology" class="archive"><summary>About this run</summary><p>Measured ${esc(results.generatedAt)}. Tests compare output with mathematical expectations or stated tolerances.</p><p>Not measured: ${spec.contenders.contenders.filter(c=>!runs.some(r=>r.adapter===c.id)).map(c=>`<a href="${esc(c.evidence||c.url)}">${esc(c.name)}</a>`).join(', ')||'none'}.</p>${registry?'<p><a href="registry.json">Separate npm-release results</a></p>':''}<dl class="run-info">${runs.map(r=>{const c=r.cases.filter(c=>c.level!=='integrity'),i=r.cases.filter(c=>c.level==='integrity');return `<dt>${esc(name(r.adapter))}, ${esc(shortVersion(r))}</dt><dd>Behavior: ${c.filter(c=>c.status==='pass').length} passed / ${c.filter(c=>c.status!=='skip').length} run. Basic checks: ${i.filter(c=>c.status==='pass').length} passed / ${i.filter(c=>c.status!=='skip').length} run. ${r.summary.skip} not tested.<details><summary>Version and environment</summary><pre>${esc(JSON.stringify({version:r.version,platform:r.platform,runtime:r.runtime,metadata:r.metadata,host:r.host},null,2))}</pre></details></dd>`}).join('')}</dl><p>Spec SHA-256: <code>${esc(results.specSha256)}</code></p><details id="benchmark-method"><summary>Speed and memory measurements</summary>${bench?`<p>${esc(bench.scope)}. ${esc(bench.generatedAt)}. ${esc(bench.repeats)} repetitions.</p>`:''}<p>Driver memory excludes native, Python and browser child processes, so it cannot compare total memory use. Bundle size, install size, hardware playback and real-time safety are not measured.</p>${bench?'<a href="benchmarks.json">All timings, memory measurements and host details</a>':''}</details></details>
 <footer><a href="spec.json">Test specification</a><a href="${repo}docs/COVERAGE.md">Test coverage</a><a href="${repo}docs/MODEL.md">Methodology</a><a href="${repo}docs/SOURCES.md">Sources & standards</a></footer>
-</main><div id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-title"><div class="popover-header"><h3 id="cell-popover-title"></h3><button class="popover-close" type="button" aria-label="Close details">×</button></div><div class="popover-body"></div></div><script src="app.js"></script></body></html>`
+</main><div id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-tool cell-popover-title"><div class="popover-header"><div class="popover-heading"><div id="cell-popover-tool" class="popover-tool"></div><h3 id="cell-popover-title"></h3></div><button class="popover-close" type="button" aria-label="Close details">×</button></div><div class="popover-body"></div></div><script src="app.js"></script></body></html>`
  await mkdir(join(root,'site'),{recursive:true});await mkdir(join(root,'results'),{recursive:true})
  await Promise.all([writeFile(join(root,'README.md'),readme),writeFile(join(root,'site/index.html'),html),writeFile(join(root,'results/FINDINGS.md'),findings),writeFile(join(root,'site/results.json'),JSON.stringify(results,null,2)+'\n'),writeFile(join(root,'site/spec.json'),JSON.stringify(spec.cases,null,2)+'\n'),writeFile(join(root,'site/ecosystem.json'),JSON.stringify(spec.ecosystem,null,2)+'\n')])
  await writeFile(join(root,'site/competitors.json'),JSON.stringify(spec.competitorInventory,null,2)+'\n')
  if(registry)await writeFile(join(root,'site/registry.json'),JSON.stringify(registry,null,2)+'\n')
- for(const name of ['style.css','app.js'])await cp(new URL(`../site/${name}`,import.meta.url),join(root,'site',name)).catch(e=>{if(e.code!=='ERR_FS_CP_EINVAL')throw e})
+ for(const name of ['style.css','speed.css','app.js'])await cp(new URL(`../site/${name}`,import.meta.url),join(root,'site',name)).catch(e=>{if(e.code!=='ERR_FS_CP_EINVAL')throw e})
  await cp(join(root,'results/artifacts'),join(root,'site/artifacts'),{recursive:true}).catch(e=>{if(e.code!=='ENOENT')throw e})
  if(bench)await writeFile(join(root,'site/benchmarks.json'),JSON.stringify(bench,null,2)+'\n')
  return {readme:join(root,'README.md'),site:join(root,'site/index.html')}

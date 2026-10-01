@@ -74,7 +74,7 @@ test('the matrix preserves partial results and keeps plans in their own details'
   assert(row('edit.fade').includes(`◐ 2/${fade.length}`))
   assert.doesNotMatch(row('edit.fade'), /class="[^"]*\bpass\b/)
   assert.match(row('edit.fade'), /data-popover="feature"[^>]*href="#edit\.fade"/)
-  assert.match(html, /id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-title"/)
+  assert.match(html, /id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-tool cell-popover-title"/)
   assert.equal((html.match(/id="cell-popover"/g)||[]).length,1)
   assert.match(html, /class="case-output pass" data-tool="audio" data-status="pass"/)
   assert.match(html, /class="case-result" data-title="/)
@@ -128,7 +128,7 @@ test('npm file origins and workspace builds remain distinct in both comparisons'
    const workspace = headers.find(header => header.includes('workspace-audio'))
    assert.match(registry, /2\.9\.0/)
    assert.doesNotMatch(registry, /local build/)
-   assert.match(workspace, /2\.9\.0 · local build/)
+   assert.match(workspace, /2\.9\.0, local build/)
   }
   await writeFile(join(dir, 'results/benchmarks.json'), JSON.stringify({ generatedAt: input.generatedAt, results: [] }))
   await generateReport(input, { root: dir })
@@ -179,10 +179,10 @@ test('speed results keep their own contenders and versions', async () => {
   assert.match(records, /Benchmark worker/)
   assert.match(speed, />&lt;0\.01<\/a>/, 'positive sub-resolution times must not display as zero')
   assert.match(speed, /less than 0\.01 milliseconds/)
-  assert.match(records, /95th percentile: 0\.0004 ms/)
-  assert.match(records, /Median: 0\.0003 ms/)
-  assert.match(records, /Typically <strong>&lt;0\.01 ms<\/strong> per call \(median\)/)
-  assert.match(records, /95% of measured calls finished within <strong>&lt;0\.01 ms<\/strong>/)
+  assert.match(records, /<dt>95th percentile<\/dt><dd>0\.0004 ms/)
+  assert.match(records, /<dt>Median<\/dt><dd>0\.0003 ms/)
+  assert.match(records, /data-stat="median" data-ms="0\.0003"><dt>Median<\/dt><dd>&lt;0\.01 <small>ms/)
+  assert.match(records, /data-stat="p95" data-ms="0\.0004"><dt title="95th percentile">95% within<\/dt><dd>&lt;0\.01 <small>ms/)
   assert.match(records, /<details class="technical-details"><summary>Technical details<\/summary>/)
   const skipped=html.match(/<details id="bench-0" class="bench-result">([\s\S]*?)<\/details>/)?.[1]
   assert.match(skipped, /No &lt;reverse&gt; &amp; mapping/, 'skipped speed reasons remain readable without JavaScript')
@@ -193,14 +193,14 @@ test('speed results keep their own contenders and versions', async () => {
   for(const [,id] of speed.matchAll(/data-popover="speed" href="#(bench-\d+)"/g))assert(html.includes(`id="${id}" class="bench-result"`),'each measured cell retains its static evidence target')
   assert.match(speed, /data-ms="0\.0003"/, 'fastest highlighting uses the unrounded measurement')
   assert.match(speed, /class="environment">Linux container/)
-  assert.match(records, /linux · arm64 · Container CPU/)
+  assert.match(records, /linux, arm64, Container CPU/)
   assert.doesNotMatch(speed, /class="speed-ranked"/, 'singleton environments have no relative ranking')
   assert.match(html, /data-rankable="false"/)
   assert.match(html, /compare timings within one environment/)
   const overhead = html.match(/<details class="overhead">([\s\S]*?)<\/details>/)?.[1]
   assert(overhead, 'separate process and I/O costs are explained')
   assert.match(overhead, /Launch and print version: <strong>16\.12 ms/)
-  assert.match(overhead, /Full adapter round trip · 1 s · stereo: <strong>20\.12 ms/)
+  assert.match(overhead, /Full adapter round trip, 1 s, stereo: <strong>20\.12 ms/)
   assert.match(overhead, /nothing is subtracted from the operation timings/)
   assert.doesNotMatch(overhead, /Failed diagnostic|999|Read input/)
   const exported = JSON.parse(await readFile(join(dir, 'site/benchmarks.json'), 'utf8'))
@@ -259,7 +259,7 @@ test('speed comparison preserves every operation, profile and tool without fixed
    const row = rows.find(row => row.includes(`data-case="${fixture.id}"`))
    assert(row.includes(fixture.title), 'operation title comes from the measured fixture')
    assert(row.includes(`data-profile="${fixture.profile}"`))
-   assert(row.includes(fixture.profileTitle), 'clip duration and channels appear beside every operation')
+   assert(row.includes(fixture.profileTitle.replaceAll(' · ', ', ')), 'clip duration and channels appear beside every operation')
    assert.equal([...row.matchAll(/<td\b/g)].length, adapters.length)
   }
   assert.equal([...speed.matchAll(/<th scope="col"/g)].length, adapters.length + 1)
@@ -268,9 +268,9 @@ test('speed comparison preserves every operation, profile and tool without fixed
   assert(html.indexOf('id="speed"') < html.indexOf('id="basic-checks"'))
   assert.match(html, /--tool-count:14/)
   assert.match(html, /maxAbsError/)
-  assert.match(html, /0\.1 s · mono/)
-  assert.match(html, /1 s · stereo/)
-  assert.match(html, /10 s · stereo/)
+  assert.match(html, /0\.1 s, mono/)
+  assert.match(html, /1 s, stereo/)
+  assert.match(html, /10 s, stereo/)
   assert.doesNotMatch(html, /10 seconds of stereo audio/)
  } finally {
   await rm(dir, { recursive: true, force: true })
@@ -325,11 +325,16 @@ test('speed colors compare measured ratios only within the same clip, host and s
   const record=adapter=>html.split(`<details id="bench-${results.findIndex(r=>r.adapter===adapter)}" class="bench-result">`)[1].split('</details>')[0]
   assert.match(record('near'),/Less than 1% longer/,'near ties cannot round to an apparent exact tie')
   assert.match(record('ffmpeg'),/Takes 2× as long as the fastest result \(audio\)/)
-  assert.match(record('ffmpeg'),/Includes starting FFmpeg and reading\/writing audio files/)
+  assert.match(record('ffmpeg'),/class="speed-scope"><span>Includes<\/span><span class="pill">Process launch<\/span><span class="pill">Audio file I\/O/)
   assert.match(record('ffmpeg'),/<details class="technical-details"><summary>Technical details<\/summary>/)
   const visible=record('ffmpeg').split('<details class="technical-details">')[0]
-  assert.match(visible,/Typically <strong>2\.00 ms<\/strong>/)
-  assert.match(visible,/95% of measured calls finished within <strong>2\.40 ms<\/strong>/)
+  assert.match(visible,/data-stat="median" data-ms="2"><dt>Median<\/dt><dd>2\.00 <small>ms/)
+  assert.match(visible,/data-stat="p95" data-ms="2\.4"><dt title="95th percentile">95% within<\/dt><dd>2\.40 <small>ms/)
+  assert.match(visible,/class="speed-comparison"[^>]*data-speed-ratio="2" style="--speed-hue:90.000"><strong>2× as long<\/strong><span>6 tools/)
+  assert.doesNotMatch(visible,/<p\b| · /,'default speed details use figures and labels, not prose')
+  const peers=[...visible.matchAll(/class="speed-peer[^\"]*" data-tool="([^\"]+)" data-ms="([^\"]+)" data-speed-cohort="([^\"]+)" style="--speed-width:([^%]+)%"/g)]
+  assert.deepEqual(peers.map(([,adapter,ms,,width])=>[adapter,Number(ms),Number(width)]),[['audio',1,50],['ffmpeg',2,100]],'bars compare the selected result with the fastest result')
+  assert(peers.every(([, , , cohort])=>cohort===attr('ffmpeg','data-speed-cohort')),'bars never cross recording environments')
   assert.doesNotMatch(visible,/subprocess|samplesMs|medianMs|<pre>/,'raw data and execution mode stay folded')
   assert.match(record('ffmpeg'),/subprocess with float WAV I\/O/)
   assert.doesNotMatch(record('ffmpeg'),/unneededTree|not repeated/,'dependency trees are retained only in the full download')
@@ -337,6 +342,45 @@ test('speed colors compare measured ratios only within the same clip, host and s
   assert.match(record('failed'),/&quot;inputUnchanged&quot;: false/)
   assert.match(record('errored'),/worker &lt;failed&gt;\\nNative error details/,'raw multiline errors remain escaped and intact')
   assert.match(record('unknown-one'),/Host or run details are missing/)
+ }finally{await rm(dir,{recursive:true,force:true})}
+})
+
+test('speed graphics preserve recorded samples, zeroes and missing measurements', async () => {
+ const dir=await mkdtemp(join(tmpdir(),'audio-test-speed-graphics-'))
+ try{
+  const generatedAt='2026-10-01T01:00:00Z',host={platform:'darwin',arch:'arm64',cpu:'Test CPU'}
+  const values=[
+   {case:'empty',medianMs:1,p95Ms:2,samplesMs:[]},
+   {case:'single',medianMs:5,p95Ms:5,samplesMs:[5]},
+   {case:'zero',medianMs:0,p95Ms:0,samplesMs:[0,0]},
+   {case:'gaps',medianMs:5,p95Ms:7,samplesMs:[0,null,-1,NaN,5,Infinity,7]},
+   {case:'large',medianMs:Number.MAX_VALUE/2,p95Ms:Number.MAX_VALUE,samplesMs:[0,Number.MAX_VALUE/2,Number.MAX_VALUE]},
+   {case:'missing-p95',medianMs:1,samplesMs:[1]},
+   {case:'invalid-p95',medianMs:2,p95Ms:1,samplesMs:[2]},
+   {case:'invalid-samples',medianMs:1,p95Ms:1,samplesMs:[null,-1,Infinity]}
+  ]
+  const results=values.map(value=>({adapter:'audio',status:'pass',version:'1.0.0',...value}))
+  await writeFile(join(dir,'README.md'),'<!-- results:start --><!-- results:end -->\n<!-- features:start --><!-- features:end -->')
+  await mkdir(join(dir,'results'))
+  await writeFile(join(dir,'results/benchmarks.json'),JSON.stringify({generatedAt,host,results}))
+  const out=await generateReport({generatedAt,runs:[],specSha256:'test'},{root:dir}),html=await readFile(out.site,'utf8')
+  const record=id=>html.split(`<details id="bench-${values.findIndex(value=>value.case===id)}" class="bench-result">`)[1].split('<details class="technical-details">')[0]
+  const dots=id=>[...record(id).matchAll(/<circle data-call="(\d+)" data-ms="([^"]+)" cx="([^"]+)" cy="([^"]+)"/g)].map(([,call,ms,x,y])=>({call:Number(call),ms:Number(ms),x:Number(x),y:Number(y)}))
+  assert.match(record('empty'),/No recorded calls/)
+  assert.match(record('invalid-samples'),/No recorded calls/)
+  assert.doesNotMatch(record('empty'),/<svg/,'a median alone does not invent sample observations')
+  assert.deepEqual(dots('single'),[{call:1,ms:5,x:160,y:16}],'a single measured call is drawn once at its true scale')
+  assert.deepEqual(dots('zero').map(({call,ms,y})=>({call,ms,y})),[{call:1,ms:0,y:64},{call:2,ms:0,y:64}])
+  assert.match(record('zero'),/class="speed-state pass"><strong>No timing/,'zero median is not ranked or presented as a successful speed score')
+  assert.deepEqual(dots('gaps').map(({call,ms})=>({call,ms})),[{call:1,ms:0},{call:5,ms:5},{call:7,ms:7}],'invalid samples neither become zero nor renumber later calls')
+  assert.match(record('gaps'),/3 of 7 calls plotted/)
+  assert.deepEqual(dots('large').map(({y})=>y),[64,40,16],'extreme finite samples do not overflow chart arithmetic')
+  for(const id of ['single','zero','gaps','large'])for(const point of dots(id)){
+   assert(Number.isFinite(point.x)&&point.x>=12&&point.x<=308)
+   assert(Number.isFinite(point.y)&&point.y>=16&&point.y<=64)
+  }
+  for(const id of ['missing-p95','invalid-p95'])assert.match(record(id),/data-stat="p95"><dt title="95th percentile">95% within<\/dt><dd>—<\/dd>/,'unknown p95 is never synthesized from median or samples')
+  for(const {case:id} of values)assert.doesNotMatch(record(id),/speed-peer\b|<p\b| · /,'single-tool graphics have no invented competitors or prose')
  }finally{await rm(dir,{recursive:true,force:true})}
 })
 

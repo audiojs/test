@@ -1,3 +1,15 @@
+function inflate(container) {
+ for(const source of container.querySelectorAll('script.visual-template')){
+  const template=document.createElement('template')
+  template.innerHTML=source.textContent
+  source.replaceWith(template.content)
+ }
+ return container
+}
+document.addEventListener('toggle',e=>{
+ if(e.target.matches('.case-result[open], .bench-result[open]'))inflate(e.target)
+},true)
+
 function reveal() {
  let id
  try{id=decodeURIComponent(location.hash.slice(1))}catch{return}
@@ -32,29 +44,43 @@ if(popover&&typeof popover.showPopover==='function'){
   const column=[...table.tHead.querySelectorAll('[data-tool]')].find(th=>th.dataset.tool===cell.dataset.tool)
   const label=row.querySelector('th').cloneNode(true),clip=label.querySelector('small')
   const clipText=clip?.textContent;clip?.remove()
-  heading.textContent=`${column.querySelector('a').textContent} · ${label.textContent.trim()}`
+  heading.textContent=label.textContent.trim()
+  popover.querySelector('.popover-tool').textContent=column.querySelector('a').textContent
   body.replaceChildren()
-  if(clipText)body.append(element('p',clipText,'popover-description'))
-  if(trigger.dataset.description)body.append(element('p',trigger.dataset.description,'popover-description'))
   const source=document.getElementById(trigger.hash.slice(1))
   if(trigger.dataset.popover==='speed'){
+   if(clipText)body.append(element('div',clipText,'speed-clip'))
    const output=source?.querySelector('.bench-output')
    if(output){
-    const evidence=output.cloneNode(true)
+    const evidence=inflate(output.cloneNode(true))
     for(const detail of evidence.querySelectorAll('details'))detail.open=false
     body.append(evidence)
-   }
+   }else body.append(element('div','No timing recorded','case-state'))
    return
   }
+  const totals=(trigger.dataset.counts||'0,0,0,0').split(',').map(Number)
+  const overview=element('div','','result-summary'),bar=element('div','','result-bar'),stats=element('div','','result-counts')
+  bar.setAttribute('aria-hidden','true')
+  const states=['pass','fail','error','skip'],names=['Passed','Failed','Errors','Not run'],icons=['✓','!','!','—']
+  totals.forEach((count,i)=>{
+   if(i===2&&!count)return
+   const stat=element('div','',states[i]);stat.dataset.status=states[i];stat.dataset.count=count
+   stat.append(element('strong',String(count)),element('span',`${icons[i]} ${names[i]}`));stats.append(stat)
+   if(count){const segment=element('span','',states[i]);segment.style.flexGrow=count;bar.append(segment)}
+  })
+  overview.append(stats,bar);body.append(overview)
+  if(row.dataset.scope==='integrity')body.append(element('div','Basic checks: valid output, input intact','scope-label'))
   const contract=source?.querySelector(':scope > p')
   const cases=[...source?.querySelectorAll('.case-result')||[]].map(test=>({test,output:[...test.querySelectorAll('.case-output')].find(out=>out.dataset.tool===cell.dataset.tool)})).filter(item=>item.output)
   const failed=status=>status==='fail'||status==='error'
   cases.sort((a,b)=>Number(failed(b.output.dataset.status))-Number(failed(a.output.dataset.status)))
-  for(const {test,output} of cases){
-   const status=output.dataset.status,detail=document.createElement('details'),summary=element('summary',test.dataset.title||'Recorded test')
-   detail.className='popover-case';detail.open=failed(status)
-   summary.append(element('small',({pass:'Passed',fail:'Failed',error:'Error',skip:'Not compared'})[status]||status))
-   const evidence=output.cloneNode(true)
+  for(const [index,{test,output}] of cases.entries()){
+   const status=output.dataset.status,detail=document.createElement('details'),summary=element('summary','')
+   detail.className='popover-case';detail.name='popover-cases';detail.open=index===0
+   summary.append(element('span',test.dataset.title||'Recorded test','case-label'),element('span',({pass:'✓ Pass',fail:'! Fail',error:'! Error',skip:'— Not run'})[status]||status,`case-status ${status}`))
+   const evidence=inflate(output.cloneNode(true))
+   const context=[...evidence.querySelectorAll('.case-chips .pill')].slice(0,2).map(chip=>chip.textContent).join(', ')
+   if(context)summary.querySelector('.case-label').append(element('small',context,'case-size'))
    evidence.querySelector('.case-tool')?.remove()
    for(const raw of evidence.querySelectorAll('details'))raw.open=false
    const definition=test.querySelector(':scope > .technical-details > pre')
@@ -63,7 +89,7 @@ if(popover&&typeof popover.showPopover==='function'){
    detail.append(evidence)
    body.append(detail)
   }
-  if(!cases.length&&!trigger.dataset.description)body.append(element('p','No results recorded.'))
+  if(!cases.length)body.append(element('div','No comparable results','case-state'))
   if(contract){
    const definition=document.createElement('details')
    definition.className='technical-details'
