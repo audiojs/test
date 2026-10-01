@@ -1,0 +1,10 @@
+node_modules/
+.venv/
+ci-results/
+results/screenshots/
+__pycache__/
+results/**/artifacts/**/*.wav
+site/artifacts/**/*.wav
+results/*.local.json
+site/*.local.html
+.DS_Store

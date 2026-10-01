@@ -1,0 +1,56 @@
+{
+  "adapter": "sox",
+  "version": "SoX 14.4.2_6 (Homebrew package)",
+  "metadata": {
+    "version": "SoX 14.4.2_6 (Homebrew package)",
+    "build": "sox:      SoX v\n",
+    "executable": "/opt/homebrew/Cellar/sox/14.4.2_6/bin/sox",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "packageVersion": "14.4.2_6",
+    "versionSource": "resolved Homebrew installation path; binary omits version",
+    "mode": "subprocess with float WAV I/O",
+    "measurementPrecision": "Statistics use the CLI text precision; derived energy inherits rounded RMS error."
+  },
+  "test": {
+    "id": "edit.reverse.sample-exact",
+    "feature": "edit.reverse",
+    "title": "Reverse is sample-exact",
+    "status": "active",
+    "tier": "smoke",
+    "fixture": {
+      "signal": "sample-id",
+      "frames": 65,
+      "channels": 1,
+      "sampleRate": 48000
+    },
+    "steps": [
+      {
+        "op": "reverse"
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0
+    }
+  },
+  "result": {
+    "id": "edit.reverse.sample-exact",
+    "feature": "edit.reverse",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 9.213958000000275,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        0
+      ],
+      "maxAbsError": 2.9802322387695312e-8,
+      "rmsError": 2.1554248651253552e-8,
+      "pass": false,
+      "reason": "samples",
+      "inputUnchanged": true
+    }
+  }
+}

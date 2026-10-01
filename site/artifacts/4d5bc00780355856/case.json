@@ -1,0 +1,76 @@
+{
+  "adapter": "sox",
+  "version": "sox:      SoX v",
+  "metadata": {
+    "build": "sox:      SoX v\n",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "mode": "subprocess with float WAV I/O"
+  },
+  "test": {
+    "id": "dynamics.limiter.ceiling-latency",
+    "feature": "dynamics.limiter",
+    "title": "Limiter ceiling and timeline alignment (5 ms lookahead)",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 48000,
+      "signal": "segments",
+      "segments": [
+        {
+          "signal": "silence",
+          "frames": 4800
+        },
+        {
+          "signal": "impulse",
+          "amplitude": 0.1,
+          "at": 0,
+          "frames": 4800
+        },
+        {
+          "signal": "dc",
+          "value": 0.8,
+          "frames": 28800
+        },
+        {
+          "signal": "silence",
+          "frames": 9600
+        }
+      ]
+    },
+    "steps": [
+      {
+        "op": "limiter",
+        "ceiling": -6,
+        "lookahead": 0.005,
+        "release": 0.05
+      }
+    ],
+    "oracle": {
+      "type": "limiter",
+      "ceiling": -6,
+      "atol": 0.00001,
+      "probeThreshold": 0.05,
+      "latencyTolerance": 1
+    },
+    "limitations": [
+      "Measured latency is effective output alignment, not a claim about internal algorithm latency metadata."
+    ]
+  },
+  "result": {
+    "id": "dynamics.limiter.ceiling-latency",
+    "feature": "dynamics.limiter",
+    "oracle": "limiter",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 9.317125000001397,
+    "metrics": {
+      "pass": false,
+      "peak": 0.5538975596427917,
+      "ceiling": 0.5011872336272722,
+      "latencyFrames": 0,
+      "inputUnchanged": true
+    }
+  }
+}

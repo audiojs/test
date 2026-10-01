@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "facets": [
+    { "id": "availability", "title": "Feature availability", "status": "active", "measure": "native, composed, partial, absent or unknown", "rule": "Evidence-backed capability claim; never a correctness verdict." },
+    { "id": "conformance", "title": "Conformance", "status": "active", "measure": "exact output, invariant or standard vector", "rule": "Gate only against the case oracle." },
+    { "id": "quality", "title": "Signal quality", "status": "partial", "measure": "response, passband, alias rejection, pitch and duration", "rule": "Not a perceptual-quality or standards-certification claim." },
+    { "id": "performance", "title": "Performance", "status": "active", "measure": "warm wall time with repeated runs and fresh driver processes", "rule": "Includes adapter I/O. No rankings between unequal integration modes." },
+    { "id": "memory", "title": "Memory", "status": "planned", "measure": "peak RSS, managed heap and retained resources", "rule": "Measure process trees and native allocations where possible." },
+    { "id": "size", "title": "Install and delivery size", "status": "planned", "measure": "package, dependency closure, binary and browser transfer bytes", "rule": "Report compressed and installed size separately." },
+    { "id": "platform", "title": "Platform reach", "status": "active", "measure": "OS, architecture, runtime and browser matrix", "rule": "Record the exact environment on every run." },
+    { "id": "streaming", "title": "Streaming behavior", "status": "planned", "measure": "time to first frame, bounded memory and chunk invariance", "rule": "Do not equate batch throughput with streaming fitness." },
+    { "id": "determinism", "title": "Determinism", "status": "planned", "measure": "repeat and cross-block output variance", "rule": "Seed stochastic processors and report unavoidable variance." }
+  ]
+}

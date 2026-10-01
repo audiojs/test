@@ -1,0 +1,64 @@
+{
+  "adapter": "webaudio-webkit",
+  "version": "webkit 26.6",
+  "metadata": {
+    "engine": "webkit",
+    "mode": "OfflineAudioContext in a persistent browser; base64 float32 PCM crosses Playwright",
+    "source": "https://www.w3.org/TR/webaudio-1.0/"
+  },
+  "test": {
+    "id": "rate.resample.snr-bandwidth",
+    "feature": "rate.resample",
+    "title": "Resampling a 997 Hz tone: ≥70 dB waveform SNR",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "frames": 48000,
+      "signal": "sine",
+      "frequency": 997,
+      "amplitude": 0.25,
+      "phase": 0
+    },
+    "steps": [
+      {
+        "op": "resample",
+        "to": 32000
+      }
+    ],
+    "oracle": {
+      "type": "resample-snr",
+      "to": 32000,
+      "minSnr": 70
+    },
+    "limitations": [
+      "SNR is measured on the interior of one passband tone. Separate catalog cases test passband and alias rejection."
+    ]
+  },
+  "result": {
+    "id": "rate.resample.snr-bandwidth",
+    "feature": "rate.resample",
+    "oracle": "resample-snr",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 22.506292000005487,
+    "metrics": {
+      "snrDb": 56.44983579824328,
+      "pass": false,
+      "perChannel": [
+        {
+          "snrDb": 56.44983579824328,
+          "pass": false
+        },
+        {
+          "snrDb": 56.44983579824328,
+          "pass": false
+        }
+      ],
+      "minSnr": 70,
+      "lengthError": 0,
+      "inputUnchanged": true
+    }
+  }
+}

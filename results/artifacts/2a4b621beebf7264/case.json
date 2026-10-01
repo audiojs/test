@@ -1,0 +1,53 @@
+{
+  "adapter": "audacity",
+  "version": "3.4.2+dfsg-1build4",
+  "metadata": {
+    "mode": "isolated mod-script-pipe; float32 WAV export",
+    "experimental": true,
+    "source": "https://manual.audacityteam.org/man/scripting_reference.html"
+  },
+  "test": {
+    "id": "edit.repeat.1f.2ch",
+    "feature": "edit.repeat",
+    "title": "edit · repeat · 1f · 2ch",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "frames": 1,
+      "signal": "sample-id"
+    },
+    "steps": [
+      {
+        "op": "repeat",
+        "count": 3
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "edit.repeat.1f.2ch",
+    "feature": "edit.repeat",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 138.90858300030231,
+    "metrics": {
+      "channels": 2,
+      "expectedChannels": 2,
+      "lengthDelta": [
+        -3,
+        -3
+      ],
+      "maxAbsError": 0,
+      "rmsError": 0,
+      "pass": false,
+      "reason": "length",
+      "inputUnchanged": true
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "adapter": "ffmpeg",
+  "version": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "metadata": {
+    "build": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers\nbuilt with Apple clang version 17.0.0 (clang-1700.6.3.2)\nconfiguration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0.1_4 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags= --enable-ffplay --enable-gpl --enable-libsvtav1 --enable-libopus --enable-libx264 --enable-libmp3lame --enable-libdav1d --enable-libvpx --enable-libx265 --enable-openssl --enable-videotoolbox --enable-audiotoolbox --enable-neon\nlibavutil      60.  8.100 / 60.  8.100\nlibavcodec     62. 11.100 / 62. 11.100\nlibavformat    62.  3.100 / 62.  3.100\nlibavdevice    62.  1.100 / 62.  1.100\nlibavfilter    11.  4.100 / 11.  4.100\nlibswscale      9.  1.100 /  9.  1.100\nlibswresample   6.  1.100 /  6.  1.100\n\nExiting with exit code 0\n",
+    "executableSha256": "feaee5cd168960437853cdacabe314b08c8498600177301687b9ef2ff76abc28",
+    "mode": "subprocess with float WAV I/O"
+  },
+  "test": {
+    "id": "restoration.denoise.reference",
+    "feature": "restoration.denoise",
+    "title": "Profiled denoise improves a tone in stationary noise",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 144000,
+      "signal": "tone-noise",
+      "startFrames": 24000,
+      "frequency": 997,
+      "amplitude": 0.2,
+      "noiseAmplitude": 0.05,
+      "seed": 5731
+    },
+    "steps": [
+      {
+        "op": "denoise",
+        "noiseFrames": 24000,
+        "reduction": 12
+      }
+    ],
+    "oracle": {
+      "type": "denoise",
+      "minImprovement": 3,
+      "maxSignalLoss": 1,
+      "minNoiseReduction": 6
+    },
+    "limitations": [
+      "Synthetic stationary noise only; speech/music corpora and perceptual listening studies are not covered."
+    ]
+  },
+  "result": {
+    "id": "restoration.denoise.reference",
+    "feature": "restoration.denoise",
+    "oracle": "denoise",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 41.226833999997325,
+    "metrics": {
+      "pass": false,
+      "before": 13.807797857042917,
+      "after": 5.884520482920609,
+      "improvement": -7.923277374122309,
+      "gainDb": -1.0059090614224928,
+      "noiseReduction": 0.5821923045158819,
+      "scope": "Seeded stationary noise plus one tone; no perceptual-quality claim",
+      "inputUnchanged": true
+    }
+  }
+}

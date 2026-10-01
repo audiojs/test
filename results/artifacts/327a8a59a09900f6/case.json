@@ -1,0 +1,56 @@
+{
+  "adapter": "sox",
+  "version": "SoX 14.4.2_6 (Homebrew package)",
+  "metadata": {
+    "version": "SoX 14.4.2_6 (Homebrew package)",
+    "build": "sox:      SoX v\n",
+    "executable": "/opt/homebrew/Cellar/sox/14.4.2_6/bin/sox",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "packageVersion": "14.4.2_6",
+    "versionSource": "resolved Homebrew installation path; binary omits version",
+    "mode": "subprocess with float WAV I/O",
+    "measurementPrecision": "Statistics use the CLI text precision; derived energy inherits rounded RMS error."
+  },
+  "test": {
+    "id": "edit.integral.1024f.1ch",
+    "feature": "edit.integral",
+    "title": "edit · integral · 1024f · 1ch",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 1024,
+      "signal": "sample-id"
+    },
+    "steps": [
+      {
+        "op": "integral"
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "edit.integral.1024f.1ch",
+    "feature": "edit.integral",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 7.378540999998222,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        0
+      ],
+      "maxAbsError": 133.60984802246094,
+      "rmsError": 106.54023038629242,
+      "pass": false,
+      "reason": "samples",
+      "inputUnchanged": true
+    }
+  }
+}

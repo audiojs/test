@@ -1,0 +1,61 @@
+{
+  "name": "@audio/test",
+  "version": "0.1.0",
+  "description": "Tool-neutral audio processing conformance, parity and quality tests",
+  "type": "module",
+  "sideEffects": false,
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./adapter": "./src/adapter.js",
+    "./spec": "./src/spec.js",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "audio-test": "./bin/audio-test.js"
+  },
+  "files": [
+    "adapters",
+    "bin",
+    "docs",
+    "spec",
+    "src",
+    "scripts/bench-worker.js",
+    "site/app.js",
+    "site/style.css",
+    "index.d.ts",
+    "index.js"
+  ],
+  "scripts": {
+    "test": "node scripts/test.js",
+    "test:smoke": "node bin/audio-test.js run --adapter reference --tier smoke --out results/reference.local.json",
+    "report": "node bin/audio-test.js report --input results/latest.json",
+    "check": "npm test && npm run test:smoke",
+    "parity": "node bin/audio-test.js run --adapter all --tier research --timeout 120000 --out results/latest.json --report-only",
+    "bench": "node bin/audio-test.js bench",
+    "gate": "node bin/audio-test.js gate",
+    "test:site": "node scripts/check-site.js"
+  },
+  "keywords": [
+    "audio",
+    "conformance",
+    "dsp",
+    "testing",
+    "benchmark",
+    "ffmpeg",
+    "sox"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": { "playwright": "1.63.0" },
+  "repository": "github:audiojs/test",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}

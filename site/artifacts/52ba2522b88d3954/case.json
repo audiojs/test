@@ -1,0 +1,61 @@
+{
+  "adapter": "audacity",
+  "version": "3.4.2+dfsg-1build4",
+  "metadata": {
+    "mode": "isolated mod-script-pipe; float32 WAV export",
+    "mapping": "native edit/effect commands and linear fades; gains beyond +/-50 dB use multiple Amplify calls; final resampling uses project-rate export, not the interactive Resample menu; Export2 preserves native export boundaries",
+    "python": "/usr/bin/python3",
+    "pythonVersion": "3.12.3",
+    "numpyVersion": "1.26.4",
+    "soundfileVersion": "0.12.1",
+    "libsndfileVersion": "1.2.2",
+    "experimental": true,
+    "source": "https://manual.audacityteam.org/man/scripting_reference.html"
+  },
+  "test": {
+    "id": "edit.fade.linear.out",
+    "feature": "edit.fade",
+    "title": "edit · fade · linear · out",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 4097,
+      "signal": "dc",
+      "value": 0.5
+    },
+    "steps": [
+      {
+        "op": "fade",
+        "direction": "out",
+        "length": 4097,
+        "curve": "linear"
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "edit.fade.linear.out",
+    "feature": "edit.fade",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 172.8588330000639,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        0
+      ],
+      "maxAbsError": 0.00012205541133880615,
+      "rmsError": 0.00012204051745208983,
+      "pass": false,
+      "reason": "samples",
+      "inputUnchanged": true
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "adapter": "webaudio-webkit",
+  "version": "webkit 26.6",
+  "metadata": {
+    "engine": "webkit",
+    "mode": "OfflineAudioContext in a persistent browser; PCM crosses Playwright",
+    "source": "https://www.w3.org/TR/webaudio-1.0/"
+  },
+  "test": {
+    "id": "rate.resample.48000-16000.alias",
+    "feature": "rate.resample",
+    "title": "rate · resample · 48000-16000 · alias",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 48000,
+      "signal": "sine",
+      "frequency": 11200
+    },
+    "steps": [
+      {
+        "op": "resample",
+        "to": 16000
+      }
+    ],
+    "oracle": {
+      "type": "resample",
+      "to": 16000,
+      "min": -200,
+      "max": -40
+    }
+  },
+  "result": {
+    "id": "rate.resample.48000-16000.alias",
+    "feature": "rate.resample",
+    "oracle": "resample",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 124.72712499999034,
+    "metrics": {
+      "pass": false,
+      "sampleRate": 16000,
+      "expectedRate": 16000,
+      "lengthError": 0,
+      "gainDb": 9.567909335476364e-8,
+      "frequency": 4799.945854902194,
+      "inputUnchanged": true
+    }
+  }
+}

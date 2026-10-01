@@ -1,0 +1,2537 @@
+
+> audio@2.9.0 test:browser
+> node test/browser.js
+
+Building browser bundle...
+
+> audio@2.9.0 build
+> node .esbuild.js
+
+done
+» audio() — record from mic (null backend) (skip)
+» audio(URL) — from URL object (skip)
+» core without plan — direct page read (skip)
+» save — write to file (skip)
+» save — bad path rejects instead of crashing process (skip)
+» storage: persistent — throws in Node (no OPFS) (skip)
+» detectBudget — derives budget from storage.estimate() (skip)
+» save — format option overrides extension (skip)
+» save — format extension is case-insensitive (skip)
+» save – lengths at and across a burst decode sample-exact (skip)
+» decode – a file read in chunks decodes the same as its bytes, frames split across reads (skip)
+» save — progress event fires during encode (skip)
+» save/encode — empty range guarded (#27) (skip)
+» save — with non-plannable edits (filter + trim) (skip)
+» filter(fn) — custom filter function (skip)
+» stat(chords): without the GPL chroma packages, chords and key name them; key pcp works (skip)
+» playbackRate — live change speeds playback (varispeed ramp) (skip)
+» vocals: model with its weights missing names the file and the export script; an unknown model names the known ones (skip)
+» vocals: model umxhq equals separate() on the op input, remove is the complement, one inference per input (skip)
+clipboard: copy preserves audio; repeated paste inserts the same stereo range
+√ 1 (is) — copy is chainable
+√ 2 (is) — should be equal
+√ 3 (is) — paste is chainable and does not consume the clipboard
+√ 4 (is) — should be equal
+√ 5 (is) — should be equal
+√ 6 (is) — should be equal
+√ 7 (ok) — source pages stay shared and untouched
+√ 8 (is) — should be equal
+clipboard: captures processed samples at Copy without repeating earlier effects at Paste
+√ 1 (is) — copied fade keeps its original time coordinates
+√ 2 (is) — should be equal
+√ 3 (is) — effects after Paste affect the whole result
+clip: excerpts preserve processed coordinates and can transfer between independent clipboards
+√ 1 (is) — 0 frames: {"at":0}
+√ 2 (is) — should be equal
+√ 3 (is) — cross-instance insert preserves the excerpt
+√ 4 (is) — 0 frames: {"at":0,"duration":0}
+√ 5 (is) — should be equal
+√ 6 (is) — cross-instance insert preserves the excerpt
+√ 7 (is) — 0 frames: {"at":0}
+√ 8 (is) — should be equal
+√ 9 (is) — cross-instance insert preserves the excerpt
+√ 10 (is) — 0 frames: {"at":0}
+√ 11 (is) — should be equal
+√ 12 (is) — cross-instance insert preserves the excerpt
+√ 13 (is) — 0 frames: {"at":-0.000020833333333333333}
+√ 14 (is) — should be equal
+√ 15 (is) — cross-instance insert preserves the excerpt
+√ 16 (is) — later source edits do not change captured samples
+√ 17 (is) — shared pages survive source disposal
+√ 18 (is) — 1 frames: {"at":0}
+√ 19 (is) — should be equal
+√ 20 (is) — cross-instance insert preserves the excerpt
+√ 21 (is) — 1 frames: {"at":0,"duration":0}
+√ 22 (is) — should be equal
+√ 23 (is) — cross-instance insert preserves the excerpt
+√ 24 (is) — 1 frames: {"at":0}
+√ 25 (is) — should be equal
+√ 26 (is) — cross-instance insert preserves the excerpt
+√ 27 (is) — 1 frames: {"at":0.000020833333333333333}
+√ 28 (is) — should be equal
+√ 29 (is) — cross-instance insert preserves the excerpt
+√ 30 (is) — 1 frames: {"at":-0.000020833333333333333}
+√ 31 (is) — should be equal
+√ 32 (is) — cross-instance insert preserves the excerpt
+√ 33 (is) — later source edits do not change captured samples
+√ 34 (is) — shared pages survive source disposal
+√ 35 (is) — 4 frames: {"at":0}
+√ 36 (is) — should be equal
+√ 37 (is) — cross-instance insert preserves the excerpt
+√ 38 (is) — 4 frames: {"at":0,"duration":0}
+√ 39 (is) — should be equal
+√ 40 (is) — cross-instance insert preserves the excerpt
+√ 41 (is) — 4 frames: {"at":0.0000625}
+√ 42 (is) — should be equal
+√ 43 (is) — cross-instance insert preserves the excerpt
+√ 44 (is) — 4 frames: {"at":0.00008333333333333333}
+√ 45 (is) — should be equal
+√ 46 (is) — cross-instance insert preserves the excerpt
+√ 47 (is) — 4 frames: {"at":-0.000020833333333333333}
+√ 48 (is) — should be equal
+√ 49 (is) — cross-instance insert preserves the excerpt
+√ 50 (is) — later source edits do not change captured samples
+√ 51 (is) — shared pages survive source disposal
+√ 52 (is) — 1023 frames: {"at":0}
+√ 53 (is) — should be equal
+√ 54 (is) — cross-instance insert preserves the excerpt
+√ 55 (is) — 1023 frames: {"at":0,"duration":0}
+√ 56 (is) — should be equal
+√ 57 (is) — cross-instance insert preserves the excerpt
+√ 58 (is) — 1023 frames: {"at":0.021291666666666667}
+√ 59 (is) — should be equal
+√ 60 (is) — cross-instance insert preserves the excerpt
+√ 61 (is) — 1023 frames: {"at":0.0213125}
+√ 62 (is) — should be equal
+√ 63 (is) — cross-instance insert preserves the excerpt
+√ 64 (is) — 1023 frames: {"at":-0.000020833333333333333}
+√ 65 (is) — should be equal
+√ 66 (is) — cross-instance insert preserves the excerpt
+√ 67 (is) — later source edits do not change captured samples
+√ 68 (is) — shared pages survive source disposal
+√ 69 (is) — 1024 frames: {"at":0}
+√ 70 (is) — should be equal
+√ 71 (is) — cross-instance insert preserves the excerpt
+√ 72 (is) — 1024 frames: {"at":0,"duration":0}
+√ 73 (is) — should be equal
+√ 74 (is) — cross-instance insert preserves the excerpt
+√ 75 (is) — 1024 frames: {"at":0.0213125}
+√ 76 (is) — should be equal
+√ 77 (is) — cross-instance insert preserves the excerpt
+√ 78 (is) — 1024 frames: {"at":0.021333333333333333}
+√ 79 (is) — should be equal
+√ 80 (is) — cross-instance insert preserves the excerpt
+√ 81 (is) — 1024 frames: {"at":-0.000020833333333333333}
+√ 82 (is) — should be equal
+√ 83 (is) — cross-instance insert preserves the excerpt
+√ 84 (is) — later source edits do not change captured samples
+√ 85 (is) — shared pages survive source disposal
+√ 86 (is) — 1025 frames: {"at":0}
+√ 87 (is) — should be equal
+√ 88 (is) — cross-instance insert preserves the excerpt
+√ 89 (is) — 1025 frames: {"at":0,"duration":0}
+√ 90 (is) — should be equal
+√ 91 (is) — cross-instance insert preserves the excerpt
+√ 92 (is) — 1025 frames: {"at":0.021333333333333333}
+√ 93 (is) — should be equal
+√ 94 (is) — cross-instance insert preserves the excerpt
+√ 95 (is) — 1025 frames: {"at":0.021354166666666667}
+√ 96 (is) — should be equal
+√ 97 (is) — cross-instance insert preserves the excerpt
+√ 98 (is) — 1025 frames: {"at":-0.000020833333333333333}
+√ 99 (is) — should be equal
+√ 100 (is) — cross-instance insert preserves the excerpt
+√ 101 (is) — later source edits do not change captured samples
+√ 102 (is) — shared pages survive source disposal
+clipboard: Cut removes processed samples and Undo restores the audio and previous clipboard together
+√ 1 (is) — should be equal
+√ 2 (is) — should be equal
+√ 3 (is) — should be equal
+√ 4 (is) — should be equal
+√ 5 (is) — should be equal
+√ 6 (is) — should be equal
+√ 7 (is) — should be equal
+√ 8 (is) — one Undo restored the earlier Copy
+√ 9 (is) — should be equal
+√ 10 (is) — should be equal
+√ 11 (throws) — Undoing the only Cut empties the clipboard
+clipboard: Cut handles empty and clamped ranges, replay and clone isolation
+√ 1 (is) — should be equal
+√ 2 (is) — should be equal
+√ 3 (is) — should be equal
+√ 4 (is) — clone paste leaves source alone
+√ 5 (is) — should be equal
+√ 6 (is) — should be equal
+√ 7 (is) — should be equal
+√ 8 (is) — should be equal
+√ 9 (is) — clone paste leaves source alone
+√ 10 (is) — should be equal
+√ 11 (is) — should be equal
+√ 12 (is) — should be equal
+√ 13 (is) — should be equal
+√ 14 (is) — clone paste leaves source alone
+√ 15 (is) — should be equal
+√ 16 (is) — should be equal
+√ 17 (is) — should be equal
+√ 18 (is) — should be equal
+√ 19 (is) — clone paste leaves source alone
+√ 20 (is) — should be equal
+√ 21 (is) — should be equal
+√ 22 (is) — should be equal
+√ 23 (is) — should be equal
+√ 24 (is) — clone paste leaves source alone
+√ 25 (is) — should be equal
+√ 26 (is) — should be equal
+√ 27 (is) — should be equal
+√ 28 (is) — should be equal
+√ 29 (is) — clone paste leaves source alone
+√ 30 (is) — should be equal
+√ 31 (is) — should be equal
+√ 32 (is) — should be equal
+√ 33 (is) — should be equal
+√ 34 (is) — clone paste leaves source alone
+√ 35 (is) — should be equal
+√ 36 (is) — should be equal
+√ 37 (is) — should be equal
+√ 38 (is) — should be equal
+√ 39 (is) — clone paste leaves source alone
+√ 40 (is) — should be equal
+√ 41 (is) — should be equal
+√ 42 (is) — should be equal
+√ 43 (is) — should be equal
+√ 44 (is) — clone paste leaves source alone
+√ 45 (is) — should be equal
+√ 46 (is) — should be equal
+√ 47 (is) — should be equal
+√ 48 (is) — should be equal
+√ 49 (is) — clone paste leaves source alone
+√ 50 (is) — should be equal
+√ 51 (is) — should be equal
+√ 52 (is) — should be equal
+√ 53 (is) — should be equal
+√ 54 (is) — clone paste leaves source alone
+√ 55 (is) — should be equal
+√ 56 (is) — should be equal
+√ 57 (is) — should be equal
+√ 58 (is) — should be equal
+√ 59 (is) — clone paste leaves source alone
+√ 60 (is) — should be equal
+√ 61 (is) — should be equal
+√ 62 (is) — should be equal
+√ 63 (is) — should be equal
+√ 64 (is) — clone paste leaves source alone
+√ 65 (is) — should be equal
+√ 66 (is) — should be equal
+√ 67 (is) — should be equal
+√ 68 (is) — should be equal
+√ 69 (is) — clone paste leaves source alone
+√ 70 (is) — should be equal
+√ 71 (is) — should be equal
+√ 72 (is) — should be equal
+√ 73 (is) — should be equal
+√ 74 (is) — clone paste leaves source alone
+√ 75 (is) — should be equal
+√ 76 (is) — should be equal
+√ 77 (is) — should be equal
+√ 78 (is) — should be equal
+√ 79 (is) — clone paste leaves source alone
+√ 80 (is) — should be equal
+√ 81 (is) — should be equal
+√ 82 (is) — should be equal
+√ 83 (is) — should be equal
+√ 84 (is) — clone paste leaves source alone
+√ 85 (is) — should be equal
+√ 86 (is) — should be equal
+√ 87 (is) — should be equal
+√ 88 (is) — should be equal
+√ 89 (is) — clone paste leaves source alone
+√ 90 (is) — should be equal
+√ 91 (is) — Remove also clamps negative lengths
+clipboard: latest Copy, Undo, replay and clone have independent clipboard histories
+√ 1 (is) — should be equal
+√ 2 (is) — Undo restores the earlier clipboard
+√ 3 (is) — undone edits replay
+√ 4 (is) — should be equal
+√ 5 (is) — should be equal
+√ 6 (is) — should be equal
+clipboard: empty, one-sample and clamped ranges; empty Copy replaces a previous value
+√ 1 (is) — should be equal
+√ 2 (is) — should be equal
+√ 3 (is) — should be equal
+√ 4 (is) — should be equal
+√ 5 (is) — should be equal
+√ 6 (is) — should be equal
+√ 7 (is) — should be equal
+√ 8 (is) — should be equal
+√ 9 (is) — {"at":1}
+√ 10 (is) — {"at":99}
+√ 11 (is) — {"duration":0}
+√ 12 (is) — {"duration":-1}
+√ 13 (is) — should be equal
+√ 14 (is) — should be equal
+√ 15 (is) — positional shorthand
+√ 16 (is) — null options use the defaults
+clipboard: missing Copy and invalid times fail without adding an edit
+√ 1 (ok) — invalid edit rejects
+√ 2 (is) — should be equal
+√ 3 (ok) — invalid edit rejects
+√ 4 (is) — should be equal
+√ 5 (ok) — invalid edit rejects
+√ 6 (is) — should be equal
+√ 7 (ok) — invalid edit rejects
+√ 8 (is) — should be equal
+√ 9 (ok) — invalid edit rejects
+√ 10 (is) — should be equal
+√ 11 (ok) — invalid edit rejects
+√ 12 (is) — should be equal
+√ 13 (ok) — invalid edit rejects
+√ 14 (is) — should be equal
+√ 15 (ok) — invalid edit rejects
+√ 16 (is) — should be equal
+√ 17 (ok) — Undoing the only Copy empties the clipboard
+√ 18 (throws) — clipboard does not leak between instances
+clipboard: read and stream agree before, at and after the final block boundary, A → A → B
+√ 1 (is) — should be equal
+√ 2 (is) — A: 1 source frames
+√ 3 (is) — replay A
+√ 4 (is) — different B on the same instance
+√ 5 (is) — should be equal
+√ 6 (is) — A: 1023 source frames
+√ 7 (is) — replay A
+√ 8 (is) — different B on the same instance
+√ 9 (is) — should be equal
+√ 10 (is) — A: 1024 source frames
+√ 11 (is) — replay A
+√ 12 (is) — different B on the same instance
+√ 13 (is) — should be equal
+√ 14 (is) — A: 1025 source frames
+√ 15 (is) — replay A
+√ 16 (is) — different B on the same instance
+clipboard: Copy/Cut and Paste queued before decode and across final push boundaries use the completed source
+√ 1 (is) — should be equal
+√ 2 (is) — copy: 0 frames, decode split at 0
+√ 3 (is) — copy: 1 frames, decode split at 0
+√ 4 (is) — copy: 1 frames, decode split at 1
+√ 5 (is) — copy: 4 frames, decode split at 0
+√ 6 (is) — copy: 4 frames, decode split at 3
+√ 7 (is) — copy: 4 frames, decode split at 4
+√ 8 (is) — cut: 0 frames, decode split at 0
+√ 9 (is) — cut: 1 frames, decode split at 0
+√ 10 (is) — cut: 1 frames, decode split at 1
+√ 11 (is) — cut: 4 frames, decode split at 0
+√ 12 (is) — cut: 4 frames, decode split at 3
+√ 13 (is) — cut: 4 frames, decode split at 4
+clipboard: Cut and Paste cross block boundaries on A → A → B without losing samples
+√ 1 (is) — should be equal
+√ 2 (is) — A
+√ 3 (is) — A again
+√ 4 (is) — different B restores the original order
+√ 5 (is) — should be equal
+√ 6 (is) — A
+√ 7 (is) — A again
+√ 8 (is) — different B restores the original order
+√ 9 (is) — should be equal
+√ 10 (is) — A
+√ 11 (is) — A again
+√ 12 (is) — different B restores the original order
+√ 13 (is) — should be equal
+√ 14 (is) — A
+√ 15 (is) — A again
+√ 16 (is) — different B restores the original order
+clipboard: serialization replays the chain and leaves its clipboard usable
+√ 1 (is) — should be equal
+√ 2 (is) — should be equal
+√ 3 (is) — restored clipboard supports another paste
+clipboard: channel/rate changes and clone preserve the copied format and duration
+√ 1 (is) — should be equal
+√ 2 (is) — should be equal
+√ 3 (is) — should be equal
+√ 4 (is) — copied stereo uses insert channel mapping and rate conversion
+√ 5 (is) — clone retains the source rate before replaying resample
+√ 6 (is) — should be equal
+√ 7 (is) — should be equal
+clipboard: evicted source pages are restored through the copied range
+√ 1 (is) — restored pages at 48000 Hz
+√ 2 (is) — should be equal
+√ 3 (is) — restored pages at 96000 Hz
+√ 4 (is) — should be equal
+clipboard: cached filters restore warm-up pages through direct, copied, inserted and pulled ranges
+√ 1 (is) — should be equal
+√ 2 (is) — direct: zero-work read restores no pages
+√ 3 (is) — direct: filter state is warm at the range start
+√ 4 (ok) — direct: both sides of the page boundary restored
+√ 5 (is) — direct: stream matches read
+√ 6 (is) — should be equal
+√ 7 (is) — copy: zero-work read restores no pages
+√ 8 (is) — copy: filter state is warm at the range start
+√ 9 (ok) — copy: both sides of the page boundary restored
+√ 10 (is) — copy: stream matches read
+√ 11 (is) — should be equal
+√ 12 (is) — insert: zero-work read restores no pages
+√ 13 (is) — insert: filter state is warm at the range start
+√ 14 (ok) — insert: both sides of the page boundary restored
+√ 15 (is) — insert: stream matches read
+√ 16 (is) — should be equal
+√ 17 (is) — mix: zero-work read restores no pages
+√ 18 (is) — mix: filter state is warm at the range start
+√ 19 (ok) — mix: both sides of the page boundary restored
+√ 20 (is) — mix: stream matches read
+√ 21 (is) — should be equal
+√ 22 (is) — crossfade: zero-work read restores no pages
+√ 23 (is) — crossfade: filter state is warm at the range start
+√ 24 (ok) — crossfade: both sides of the page boundary restored
+√ 25 (is) — crossfade: stream matches read
+clipboard: cyclic pull references reject and a corrected chain remains usable
+√ 1 (rejects) — should reject
+√ 2 (is) — should be equal
+√ 3 (rejects) — should reject
+√ 4 (is) — should be equal
+parity: sample-weighted DC/MS at 1 frames, scalar and bins
+√ 1 (almost) — dc stereo
+√ 2 (almost) — dc channel
+√ 3 (almost) — should almost equal
+√ 4 (almost) — should almost equal
+√ 5 (almost) — dc one bin
+√ 6 (almost) — should almost equal
+√ 7 (almost) — should almost equal
+√ 8 (almost) — ms stereo
+√ 9 (almost) — ms channel
+√ 10 (almost) — should almost equal
+√ 11 (almost) — should almost equal
+√ 12 (almost) — ms one bin
+√ 13 (almost) — should almost equal
+√ 14 (almost) — should almost equal
+√ 15 (almost) — MS equals RMS squared
+parity: sample-weighted DC/MS at 1023 frames, scalar and bins
+√ 1 (almost) — dc stereo
+√ 2 (almost) — dc channel
+√ 3 (almost) — should almost equal
+√ 4 (almost) — should almost equal
+√ 5 (almost) — dc one bin
+√ 6 (almost) — should almost equal
+√ 7 (almost) — should almost equal
+√ 8 (almost) — ms stereo
+√ 9 (almost) — ms channel
+√ 10 (almost) — should almost equal
+√ 11 (almost) — should almost equal
+√ 12 (almost) — ms one bin
+√ 13 (almost) — should almost equal
+√ 14 (almost) — should almost equal
+√ 15 (almost) — MS equals RMS squared
+parity: sample-weighted DC/MS at 1024 frames, scalar and bins
+√ 1 (almost) — dc stereo
+√ 2 (almost) — dc channel
+√ 3 (almost) — should almost equal
+√ 4 (almost) — should almost equal
+√ 5 (almost) — dc one bin
+√ 6 (almost) — should almost equal
+√ 7 (almost) — should almost equal
+√ 8 (almost) — ms stereo
+√ 9 (almost) — ms channel
+√ 10 (almost) — should almost equal
+√ 11 (almost) — should almost equal
+√ 12 (almost) — ms one bin
+√ 13 (almost) — should almost equal
+√ 14 (almost) — should almost equal
+√ 15 (almost) — MS equals RMS squared
+parity: sample-weighted DC/MS at 1025 frames, scalar and bins
+√ 1 (almost) — dc stereo
+√ 2 (almost) — dc channel
+√ 3 (almost) — should almost equal
+√ 4 (almost) — should almost equal
+√ 5 (almost) — dc one bin
+√ 6 (almost) — should almost equal
+√ 7 (almost) — should almost equal
+√ 8 (almost) — ms stereo
+√ 9 (almost) — ms channel
+√ 10 (almost) — should almost equal
+√ 11 (almost) — should almost equal
+√ 12 (almost) — ms one bin
+√ 13 (almost) — should almost equal
+√ 14 (almost) — should almost equal
+√ 15 (almost) — MS equals RMS squared
+parity: sample-weighted DC/MS at 2065 frames, scalar and bins
+√ 1 (almost) — dc stereo
+√ 2 (almost) — dc channel
+√ 3 (almost) — should almost equal
+√ 4 (almost) — should almost equal
+√ 5 (almost) — dc one bin
+√ 6 (almost) — should almost equal
+√ 7 (almost) — should almost equal
+√ 8 (almost) — dc aligned range
+√ 9 (almost) — should almost equal
+√ 10 (almost) — dc partial final bin
+√ 11 (almost) — ms stereo
+√ 12 (almost) — ms channel
+√ 13 (almost) — should almost equal
+√ 14 (almost) — should almost equal
+√ 15 (almost) — ms one bin
+√ 16 (almost) — should almost equal
+√ 17 (almost) — should almost equal
+√ 18 (almost) — ms aligned range
+√ 19 (almost) — should almost equal
+√ 20 (almost) — ms partial final bin
+√ 21 (almost) — MS equals RMS squared
+parity: correlation weights the final block by samples
+√ 1 (almost) — should almost equal
+√ 2 (almost) — should almost equal
+parity: weighted statistics survive gain, crop, reverse and undo
+√ 1 (almost) — should almost equal
+√ 2 (almost) — should almost equal
+√ 3 (almost) — should almost equal
+√ 4 (almost) — should almost equal
+√ 5 (almost) — should almost equal
+√ 6 (almost) — should almost equal
+√ 7 (almost) — should almost equal
+√ 8 (almost) — should almost equal
+parity: reversed partial blocks are measured on the output grid
+√ 1 (almost) — should almost equal
+√ 2 (almost) — should almost equal
+√ 3 (almost) — should almost equal
+√ 4 (almost) — should almost equal
+√ 5 (is) — should be equal
+parity: lowpass rejects unsupported orders
+√ 1 (rejects) — 0
+√ 2 (rejects) — 0
+√ 3 (rejects) — 1
+√ 4 (rejects) — 1
+√ 5 (rejects) — 3
+√ 6 (rejects) — 3
+√ 7 (rejects) — -2
+√ 8 (rejects) — -2
+√ 9 (rejects) — 2.5
+√ 10 (rejects) — 2.5
+√ 11 (rejects) — NaN
+√ 12 (rejects) — NaN
+√ 13 (rejects) — Infinity
+√ 14 (rejects) — Infinity
+parity: lowpass accepts default and even orders
+√ 1 (ok) — undefined
+√ 2 (ok) — 2
+√ 3 (ok) — 4
+√ 4 (ok) — 6
+√ 5 (ok) — 8
+√ 6 (ok) — 10
+parity: highpass rejects unsupported orders
+√ 1 (rejects) — 0
+√ 2 (rejects) — 0
+√ 3 (rejects) — 1
+√ 4 (rejects) — 1
+√ 5 (rejects) — 3
+√ 6 (rejects) — 3
+√ 7 (rejects) — -2
+√ 8 (rejects) — -2
+√ 9 (rejects) — 2.5
+√ 10 (rejects) — 2.5
+√ 11 (rejects) — NaN
+√ 12 (rejects) — NaN
+√ 13 (rejects) — Infinity
+√ 14 (rejects) — Infinity
+parity: highpass accepts default and even orders
+√ 1 (ok) — undefined
+√ 2 (ok) — 2
+√ 3 (ok) — 4
+√ 4 (ok) — 6
+√ 5 (ok) — 8
+√ 6 (ok) — 10
+audio(wav) — load from file path
+√ 1 (ok) — returns audio instance
+√ 2 (is) — sampleRate
+√ 3 (is) — channels
+√ 4 (ok) — duration ~12.27s (got 12.27)
+√ 5 (ok) — has 1 pages
+√ 6 (ok) — index populated
+audio() — sync + thenable
+√ 1 (is) — sampleRate unknown before decode
+√ 2 (ok) — ready is promise before decode
+√ 3 (is) — thenable
+√ 4 (is) — edit pushed before decode
+√ 5 (ok) — resolves to same instance
+√ 6 (is) — sampleRate after decode
+√ 7 (is) — ready resolves to true
+√ 8 (is) — then removed after resolve
+audio(mp3) — decode mp3
+√ 1 (ok) — duration > 12s (got 12.27)
+√ 2 (is) — sampleRate
+audio(buffer) — from ArrayBuffer
+√ 1 (ok) — decoded from ArrayBuffer
+audio(pcm) — wraps Float32Array[]
+√ 1 (is) — 1 second
+√ 2 (is) — mono
+decode — WebAudio (OfflineAudioContext) fallback for unbundled codecs
+√ 1 (is) — fallback sample rate
+√ 2 (is) — fallback channels
+√ 3 (ok) — fallback duration
+√ 4 (ok) — original decode error preserved: Unknown audio format
+audio.from(pcm) — sync
+√ 1 (is) — stereo
+√ 2 (is) — 1 second
+audio.from(seconds) — silence
+√ 1 (is) — 3 seconds
+√ 2 (is) — stereo
+√ 3 (is) — custom sample rate
+audio.from(fn) — function source
+√ 1 (is) — 1 second
+√ 2 (is) — mono
+√ 3 (ok) — matches sine (maxDiff: 2.9765755527044746e-8)
+audio.from(fn) — receives (t, i) args
+√ 1 (is) — first index is 0
+√ 2 (is) — second index is 1
+√ 3 (is) — third index is 2
+√ 4 (ok) — first t ≈ 0
+√ 5 (ok) — second t ≈ 1/sr
+√ 6 (ok) — third t ≈ 2/sr
+audio.from(int16) — format conversion
+√ 1 (is) — has duration
+√ 2 (ok) — 0 → ~0 (got 0.000)
+√ 3 (ok) — 32767 → ~1 (got 1.000)
+audio([a, b]) — concat from array
+√ 1 (ok) — 2 seconds (got 2.000)
+√ 2 (ok) — first half: 0.5 (got 0.500)
+√ 3 (ok) — second half: -0.5 (got -0.500)
+audio.version
+√ 1 (ok) — version is string: 2.9.0
+√ 2 (ok) — semver format
+parseTime — timecodes
+√ 1 (is) — 00:00 = 0
+√ 2 (is) — 1:30 = 90s
+√ 3 (is) — 0:05 = 5s
+√ 4 (is) — 1:30:00 = 5400s
+√ 5 (is) — 0:00:05 = 5s
+√ 6 (is) — 1:02:03.5
+√ 7 (is) — 5s still works
+√ 8 (is) — number passthrough
+audio() — push-based source
+√ 1 (is) — ready immediately for push-based
+√ 2 (ok) — has duration after push: 1.00
+√ 3 (ok) — 2 seconds (got 2.000)
+√ 4 (ok) — first half: 0.5 (got 0.500)
+√ 5 (ok) — second half: -0.5 (got -0.500)
+audio() — push with Int16Array format
+√ 1 (ok) — has duration: 0.0023
+√ 2 (ok) — int16 → float conversion works
+audio() — stop before push
+√ 1 (is) — decoded after immediate stop
+audio() — stereo push with format
+√ 1 (is) — stereo
+√ 2 (ok) — left positive (0.500)
+√ 3 (ok) — right negative (-0.500)
+audio(number) — silence is sync
+√ 1 (ok) — returns instance
+√ 2 (is) — 3 seconds
+audio.from(audio) — structural copy
+√ 1 (ok) — different instance
+√ 2 (is) — copy has no edits (independent edit list)
+√ 3 (ok) — copy shares page contents, independent array
+√ 4 (ok) — copy reads original source PCM unaffected by source edits
+audio.from(AudioBuffer-like) — from object with getChannelData
+√ 1 (is) — 1 second
+√ 2 (is) — mono
+audio.stat — custom field
+√ 1 (ok) — custom stat field exists
+√ 2 (is) — 2 blocks
+√ 3 (ok) — blockRms ≈ 0.5 (got 0.500)
+√ 4 (ok) — cross-channel field exists
+√ 5 (ok) — correlated (0.250)
+√ 6 (is) — same value both channels
+audio.stat – one block function serves several stats (record)
+√ 1 (is) — one call per block serves both stats
+√ 2 (is) — each stat stores its own field, per channel
+√ 3 (is) — a record from a block function of its own
+stat – block stats at the edges: 16-bit full scale and beyond clip, NaN counts for nothing
+√ 1 (is) — ±1, ±1.5, ±32767/32768 and ∞ clip; 32766/32768 and NaN do not
+√ 2 (is) — extremes skip NaN
+index — block structure
+√ 1 (is) — blockSize = 1024
+√ 2 (is) — 2048 blocks
+√ 3 (is) — max same length
+√ 4 (is) — energy same length
+index — values correct for sine wave
+√ 1 (ok) — max ≈ 1 (got 1.000)
+√ 2 (ok) — min ≈ -1 (got -1.000)
+√ 3 (ok) — energy > 0.4 (got 0.500)
+custom BLOCK_SIZE — finer stats
+√ 1 (is) — blockSize stored as 32
+√ 2 (is) — 32 blocks at 32-sample resolution
+√ 3 (ok) — stats computed correctly at fine resolution
+custom BLOCK_SIZE — coarser stats
+√ 1 (is) — blockSize stored as 4096
+√ 2 (is) — 3 blocks at 4096-sample resolution
+√ 3 (ok) — max ≈ 0.5
+custom PAGE_SIZE — smaller pages
+√ 1 (is) — 4 pages (3 full + 1 partial)
+√ 2 (is) — first page = 256 samples
+√ 3 (is) — last page = 100 samples
+√ 4 (is) — blockSize = 64
+√ 5 (is) — correct block count
+√ 6 (is) — full length preserved
+√ 7 (ok) — first sample ≈ 0
+√ 8 (ok) — last sample ≈ 1
+√ 9 (ok) — sample at page boundary correct
+custom PAGE_SIZE — large pages
+√ 1 (is) — 2 pages at 128K page size
+√ 2 (is) — first page = 128K samples
+√ 3 (is) — second page = remainder
+√ 4 (is) — read back full length
+√ 5 (ok) — cross-page read correct
+custom sizes — ops work across page boundaries
+√ 1 (ok) — page 0 gain applied (0.501)
+√ 2 (ok) — page 1 gain applied (0.501)
+√ 3 (ok) — page 2 gain applied (0.501)
+custom sizes — trim respects block resolution
+√ 1 (ok) — trimmed to ≈0.0073s (got 0.0073s)
+√ 2 (ok) — not empty after trim
+on(data) — fires during decode
+√ 1 (ok) — on(data) fired 18 times
+√ 2 (ok) — offset progresses
+√ 3 (ok) — delta has fromBlock
+√ 4 (ok) — delta.min is array of channels
+√ 5 (ok) — delta.min[0] is Float32Array
+√ 6 (ok) — delta has max and energy
+on(data) — delta covers full index
+√ 1 (is) — deltas cover all index blocks
+crop — keeps range in place
+√ 1 (is) — one edit
+√ 2 (is) — should be equal
+√ 3 (is) — cropped to 3 seconds
+remove + insert — chain
+√ 1 (is) — 3 edits
+√ 2 (is) — should be equal
+√ 3 (is) — should be equal
+√ 4 (is) — should be equal
+repeat
+√ 1 (is) — should be equal
+√ 2 (is) — compact edit tuple [type, opts]
+√ 3 (is) — should be equal
+crop — materialized correctly
+√ 1 (is) — 2 seconds
+√ 2 (ok) — starts at ~0.25 (1s of 4s)
+remove — materialized correctly
+√ 1 (is) — 3s - 1s = 2s
+insert — materialized correctly
+√ 1 (is) — 1s + 1s = 2s
+√ 2 (ok) — start is original
+√ 3 (ok) — inserted at 0.5s
+insert silence — append
+√ 1 (is) — 1s + 1s pad = 2s
+√ 2 (is) — original preserved
+√ 3 (is) — padded with silence
+insert silence — prepend
+√ 1 (is) — 1s silence + 1s = 2s
+√ 2 (is) — silence at start
+√ 3 (ok) — original at end
+repeat — materialized correctly
+√ 1 (is) — 100 × 3
+√ 2 (is) — first copy
+√ 3 (is) — third copy
+structural + sample chained — materialized
+√ 1 (is) — 2s - 1s = 1s
+√ 2 (ok) — gain applied to remaining
+duration/length reflect structural edits
+√ 1 (is) — source: 4s
+√ 2 (is) — source: 176400 samples
+√ 3 (is) — after crop(1,2): 2s
+√ 4 (is) — after crop: 88200 samples
+√ 5 (is) — after undo: back to 4s
+duration reflects remove/insert/repeat
+√ 1 (is) — after remove(0,1): 2s
+√ 2 (is) — after insert(0.5): 2.5s
+√ 3 (is) — after repeat(2): 9s
+channels reflects remix
+√ 1 (is) — mono
+√ 2 (is) — stereo after remix
+√ 3 (is) — mono after undo
+undo — returns edit
+√ 1 (is) — one edit
+√ 2 (is) — version incremented
+√ 3 (is) — undone
+√ 4 (is) — version incremented again
+√ 5 (ok) — undo returns the edit
+√ 6 (is) — returned edit is gain
+√ 7 (is) — undo on empty returns null
+run — re-apply undone edit
+√ 1 (is) — undone
+√ 2 (is) — re-applied
+√ 3 (is) — same edit type
+√ 4 (ok) — effect re-applied correctly
+run — variadic edit arrays
+√ 1 (is) — two edits from one run() call
+√ 2 (is) — stored as [type, opts]
+√ 3 (is) — param mapped into opts
+√ 4 (ok) — double gain: 0.251 ≈ 0.251
+transform — inline function
+√ 1 (ok) — transform applied: 1 * 0.5 = 0.5
+transform — passthrough copies input
+√ 1 (ok) — passthrough + next transform applies
+on(change) — fires
+√ 1 (is) — fired on edit
+√ 2 (is) — fired on undo
+on — multiple listeners
+√ 1 (is) — listener 1 fired
+√ 2 (is) — listener 2 fired
+on — returns this for chaining
+√ 1 (is) — returns instance
+off — removes listener
+√ 1 (is) — fired before off
+√ 2 (is) — not fired after off
+dispose — releases resources
+√ 1 (is) — pages cleared
+√ 2 (is) — stats cleared
+√ 3 (is) — pcm cache cleared
+√ 4 (is) — plan cache cleared
+√ 5 (is) — waiters cleared
+√ 6 (ok) — listeners cleared
+dispose — stops recording
+√ 1 (is) — decoded after dispose
+√ 2 (is) — pages cleared
+dispose — Symbol.dispose alias
+√ 1 (is) — Symbol.dispose points to dispose
+gain — applies dB
+√ 1 (ok) — gain -6dB: 0.501 ≈ 0.501
+gain with range
+√ 1 (ok) — before range: unchanged
+√ 2 (ok) — in range: -6dB
+√ 3 (ok) — after range: unchanged
+gain — linear unit
+√ 1 (ok) — linear 0.5: 0.500
+gain — linear automation
+√ 1 (ok) — start ≈ 1 (got 1.000)
+√ 2 (ok) — end ≈ 0 (got 0.000)
+fade in/out
+√ 1 (ok) — start is silent (fade in)
+√ 2 (ok) — middle is full
+√ 3 (ok) — end is silent (fade out)
+fade in/out — two-arg shorthand
+√ 1 (ok) — start is silent (fade in)
+√ 2 (ok) — middle is full
+√ 3 (ok) — end is silent (fade out)
+√ 4 (is) — one edit (resolve splits at compile)
+fade in/out — two-arg with curve
+√ 1 (is) — one edit (resolve splits at compile)
+√ 2 (ok) — fade-in applied
+√ 3 (ok) — fade-out applied
+fade — adjustable: start/end gain levels
+√ 1 (ok) — starts at 0.2 (0.200)
+√ 2 (ok) — halfway at 0.5
+√ 3 (ok) — past fade: passthrough
+fade — adjustable: mid-point skew
+√ 1 (ok) — 0.5 at quarter-fade (0.500)
+√ 2 (ok) — ends at 1
+fade — adjustable: partial-selection level duck
+√ 1 (ok) — before: unity
+√ 2 (ok) — end of ramp ≈0.33 (0.335)
+reverse
+√ 1 (is) — first = last
+√ 2 (is) — last = first
+mix
+√ 1 (ok) — mixed: 0.5 + 0.3 = 0.8
+crossfade — overlap with complementary fades
+√ 1 (ok) — duration: 1.500s ≈ 1.5s
+√ 2 (ok) — before overlap: 1.0
+√ 3 (ok) — mid-overlap: 1.000 ≈ 1.0 (equal-power)
+√ 4 (ok) — after overlap: 1.0
+crossfade — different amplitudes
+√ 1 (ok) — before: 0.8
+√ 2 (ok) — mid-overlap: 0.550 blends 0.8→0.3
+√ 3 (ok) — after: 0.3
+crossfade — linear curve
+√ 1 (ok) — linear midpoint: 0.500 ≈ 0.5
+√ 2 (ok) — last sample: 0.0
+crossfade — default duration
+√ 1 (ok) — default 0.5s overlap → 1.5s total
+√ 2 (ok) — after overlap: 0.7
+crossfade — stereo
+√ 1 (is) — stereo output
+√ 2 (ok) — L before: 0.8
+√ 3 (ok) — R before: 0.4
+√ 4 (ok) — L after: 0.3
+√ 5 (ok) — R after: 0.9
+crossfade — asymmetric source lengths
+√ 1 (ok) — 1s + 2s - 0.5s = 2.5s (got 2.500)
+√ 2 (ok) — b plays through to end
+crossfade — stream matches read
+√ 1 (is) — same length
+√ 2 (ok) — stream≈read (maxDiff: 0.000000)
+crossfade — no NaN
+√ 1 (ok) — no NaN in output
+crossfade — concat sugar
+√ 1 (ok) — 3×1s - 2×0.5s = 2.0s
+√ 2 (ok) — starts at a
+√ 3 (ok) — b region
+crossfade — concat per-transition durations
+√ 1 (ok) — 3s - 0.2 - 0.3 = 2.5s
+crossfade — edits array
+√ 1 (is) — crossfade edit registered
+remix — mono to stereo
+√ 1 (is) — mono
+√ 2 (is) — stereo after remix
+√ 3 (ok) — left preserved
+√ 4 (ok) — right = left (mono duplicate)
+remix — stereo to mono
+√ 1 (is) — stereo
+√ 2 (is) — mono after remix
+√ 3 (ok) — mono = average of L+R
+remix — array map swap L/R
+√ 1 (is) — 2ch
+√ 2 (ok) — left = old right
+√ 3 (ok) — right = old left
+remix — array map with null (silence)
+√ 1 (is) — 3ch output
+√ 2 (ok) — ch0 from left
+√ 3 (ok) — ch1 silent
+√ 4 (ok) — ch2 from right
+remix — array map duplicate channel
+√ 1 (is) — 2ch from mono
+√ 2 (ok) — ch0
+√ 3 (ok) — ch1 = ch0
+read — format via pcm-convert
+√ 1 (ok) — Int16Array
+√ 2 (ok) — int16 value: 16384
+write
+√ 1 (is) — overwritten
+√ 2 (is) — rest unchanged
+trim — removes silence
+√ 1 (ok) — trimmed: 45056 < 132300
+√ 2 (ok) — kept signal: 45056 > 44000
+silence, trim — a ringing tail with no floor under it is sound
+√ 1 (is) — no silence in the tails
+√ 2 (ok) — trim keeps both tails: 3.000 s
+√ 3 (ok) — [{"at":1.0216780045351475,"duration":0.4643990929705215}]
+normalize
+√ 1 (ok) — normalized peak ~1 (got 1.000)
+two-tier stats — source stats preserved after edit
+√ 1 (ok) — post-edit db (-12.0) < source (-6.0)
+√ 2 (ok) — source stats preserved in _.srcStats
+√ 3 (ok) — source stats peak still 0.5 (got 0.500)
+custom op
+√ 1 (ok) — doubled: 0.25 → 0.5
+custom op — with arg
+√ 1 (ok) — amplified: 0.1 × 3 = 0.3
+custom op — with range
+√ 1 (ok) — before range: unchanged
+√ 2 (ok) — in range: muted
+runtime op registration — audio.op
+√ 1 (ok) — inverted: 0.5 → -0.5
+√ 2 (ok) — inverted: -0.3 → 0.3
+toJSON — serializable with source
+√ 1 (is) — source preserved
+√ 2 (is) — 2 edits
+√ 3 (is) — first is gain
+√ 4 (is) — second is reverse
+√ 5 (is) — sampleRate
+√ 6 (is) — channels
+√ 7 (ok) — duration
+toJSON — PCM source is null
+√ 1 (is) — PCM source is null
+audio(json) — restore from serialized document
+√ 1 (is) — source restored
+√ 2 (is) — edits restored
+√ 3 (is) — same length after restore
+√ 4 (ok) — samples match after round-trip
+audio(json) — rejects document without source
+√ 1 (ok) — throws on missing source
+read — full materialization
+√ 1 (is) — 1 channel
+√ 2 (ok) — 541184 samples (lena ~541184)
+read — sub-range
+√ 1 (is) — 3 seconds = 132300 samples
+read — with format
+√ 1 (ok) — Int16Array
+√ 2 (ok) — int16 value: 16384
+read — returns copies
+√ 1 (is) — modifying r1 does not affect r2
+encode + decode round-trip
+√ 1 (ok) — read as wav → Uint8Array
+√ 2 (ok) — wav size: 88244
+√ 3 (ok) — round-trip duration
+encode ≡ read for a stateful windowed op (batched fast path, no seam re-warm)
+√ 1 (is) — full encode length
+√ 2 (ok) — full encode ≡ read within 16-bit LSB (1.5e-5)
+√ 3 (is) — ranged encode length
+√ 4 (ok) — ranged encode ≡ read within 16-bit LSB (1.5e-5)
+stat — sine wave
+√ 1 (ok) — peak ≈ -2dB (got -1.9)
+√ 2 (ok) — rms > 0 (got 0.566)
+√ 3 (ok) — loudness negative (got -5.6)
+stat — with range
+√ 1 (ok) — full db includes signal
+√ 2 (ok) — first 0.5s is silent
+waveform
+√ 1 (is) — 100 min bins
+√ 2 (is) — 100 max bins
+√ 3 (ok) — Float32Array
+√ 4 (ok) — has signal
+waveform — per-channel
+√ 1 (ok) — ch0 positive
+√ 2 (ok) — ch1 negative
+loudness — K-weighted LUFS
+√ 1 (ok) — returns number
+√ 2 (ok) — LUFS is negative (got -9.0)
+√ 3 (ok) — LUFS > -30 (got -9.0)
+loudness — dual-mono stereo reads +3.01 dB vs mono (ITU-R BS.1770-4 §2)
+√ 1 (ok) — dual-mono +3.01dB (got 3.010)
+loudness — -20 dBFS 997Hz sine matches ITU-R BS.1770-4 §2 eq.2 prediction
+√ 1 (ok) — ≈ -23.01 LUFS (got -23.01)
+loudness + db — lena real audio
+√ 1 (ok) — LUFS negative (got -17.2)
+√ 2 (ok) — LUFS > -40 (got -17.2)
+√ 3 (ok) — rms > 0 (got 0.130)
+√ 4 (ok) — peak dBFS negative (got -4.1)
+stat — after dirty op reindexes
+√ 1 (ok) — db dropped after gain(-6): -6.0 → -12.0
+stat — array of names
+√ 1 (is) — 50 min bins
+√ 2 (is) — 50 max bins
+√ 3 (ok) — min is Float32Array
+√ 4 (ok) — max is Float32Array
+√ 5 (ok) — min <= max
+√ 6 (ok) — db is number
+√ 7 (ok) — loudness is number
+√ 8 (ok) — peak negative (-4.1)
+√ 9 (ok) — loud negative (-17.2)
+play — returns controller
+√ 1 (ok) — controller returned
+√ 2 (ok) — has pause
+√ 3 (ok) — has stop
+√ 4 (ok) — has currentTime
+√ 5 (ok) — has playing
+√ 6 (ok) — has volume
+√ 7 (ok) — has loop
+√ 8 (is) — volume defaults to 1
+√ 9 (is) — loop defaults to false
+play — volume and loop settable
+√ 1 (is) — volume is settable
+√ 2 (is) — loop is settable
+play — loop with offset restarts at offset
+√ 1 (ok) — currentTime after loop (0.387) >= 0.3 (offset)
+play — returns instance
+√ 1 (ok) — play returns this
+muted — boolean gate, emits volumechange
+√ 1 (is) — muted defaults to false
+√ 2 (is) — muted settable
+√ 3 (is) — volumechange on mute
+√ 4 (is) — no event on redundant set
+√ 5 (is) — volumechange on unmute
+volume — emits volumechange
+√ 1 (is) — volume settable
+√ 2 (is) — event on change
+√ 3 (is) — no event on same value
+√ 4 (is) — event on restore
+√ 5 (is) — clamped above 1
+√ 6 (is) — clamped below 0
+ended — true on natural end
+√ 1 (is) — ended defaults to false
+√ 2 (is) — ended false during play
+√ 3 (is) — ended false after stop
+seeking — true during seek
+√ 1 (is) — seeking defaults to false
+√ 2 (is) — seeking false when not playing
+currentTime — smooth interpolation
+√ 1 (ok) — interpolated forward: 5.052
+√ 2 (ok) — not too far: 5.052
+√ 3 (ok) — paused: no interpolation
+√ 4 (ok) — clamped to duration: 10.000 <= 10.000
+played — promise property
+√ 1 (ok) — played is a Promise
+play/pause events
+√ 1 (ok) — play event fired on start
+√ 2 (ok) — pause event fired
+√ 3 (is) — play event fired on resume
+√ 4 (is) — no double pause event
+meter — fires during playback
+√ 1 (ok) — meter fired 13 times
+√ 2 (ok) — rms ≈ 0.707 (got 0.707)
+meter — zero listeners = no dispatch
+√ 1 (is) — stopped probe not called
+√ 2 (is) — no meter subscribers
+meter — no type arg emits {delta, offset} like decode data
+√ 1 (ok) — meter fired
+√ 2 (ok) — has delta
+√ 3 (ok) — has offset
+√ 4 (ok) — delta.min is per-channel array
+√ 5 (ok) — typed array per channel
+meter — array type returns keyed object
+√ 1 (ok) — got object payload
+√ 2 (ok) — has rms and peak keys
+√ 3 (ok) — peak (1.000) >= rms (0.709)
+meter — channel:[0,1] returns per-channel array
+√ 1 (ok) — per-channel array
+√ 2 (is) — two channels
+√ 3 (ok) — L has signal (0.709)
+√ 4 (ok) — R is silent (0.000)
+meter — spectrum type returns Float32Array of bins
+√ 1 (ok) — Float32Array
+√ 2 (is) — 32 bins
+√ 3 (ok) — non-zero spectrum (max 0.1686)
+meter – spectrum hears every channel
+√ 1 (ok) — the right channel's tone (max 0.1762)
+meter — smoothing attenuates step response
+√ 1 (ok) — same block count for both probes
+√ 2 (ok) — smoothed jump (0.144) < raw jump (0.497)
+meter — probe.stop() removes subscription
+√ 1 (ok) — got 2 values before stop
+√ 2 (is) — no more values after stop
+meter — does NOT fire during decode
+√ 1 (is) — meter is playback-only, not decode-time
+meter — probe.value exposes last computed value (pull form)
+√ 1 (ok) — probe.value is scalar
+√ 2 (ok) — rms ≈ 0.707 (got 0.710)
+stream — yields blocks
+√ 1 (ok) — yielded 3072 blocks
+√ 2 (ok) — Float32Array channels
+stream — sub-range
+√ 1 (ok) — ~132300 samples (got 132300)
+stream — after ops
+√ 1 (ok) — gain applied in stream (0.251 ≈ 0.251)
+stream — plan-based crop+gain matches full render
+√ 1 (is) — same length
+√ 2 (ok) — first sample matches (0.1253 ≈ 0.1253)
+√ 3 (ok) — last sample matches
+stream — plan-based remove matches full render
+√ 1 (is) — same length
+√ 2 (ok) — first sample matches
+√ 3 (ok) — last sample matches
+stream — plan-based insert matches full render
+√ 1 (is) — same length
+√ 2 (ok) — silence at insert point
+stream — sample-level op via run()
+√ 1 (ok) — op applied via stream
+seek — preloads nearby pages only
+√ 1 (ok) — render cache NOT warmed by seek (lazy)
+√ 2 (ok) — currentTime position set
+metadata event — fires before full decode with sampleRate/channels
+√ 1 (ok) — sampleRate in event (44100)
+√ 2 (ok) — channels in event (1)
+√ 3 (ok) — instance sampleRate set (44100)
+√ 4 (ok) — not yet fully decoded
+√ 5 (is) — edits chain during decode
+√ 6 (ok) — stream yielded 541184 samples
+√ 7 (ok) — await a resolves to same instance
+√ 8 (ok) — fully decoded after await
+stream — live decode yields before full page
+√ 1 (ok) — first chunk has data (1024)
+√ 2 (ok) — first chunk 1024 <= 4096 (not PAGE_SIZE 1048576)
+√ 3 (ok) — data correct
+stream — live decode total samples correct
+√ 1 (is) — all 40960 samples streamed
+stream — live decode with process edits streams immediately
+√ 1 (ok) — got a chunk during decode
+√ 2 (ok) — chunk has data (1024)
+√ 3 (ok) — gain applied: 0.5012 ≈ 0.5012
+stream — live decode with process edits matches full render
+√ 1 (is) — same total samples (40960)
+√ 2 (ok) — first sample correct: 0.2506 ≈ 0.2506
+stream — live decode with filter applies statefully across chunks
+√ 1 (ok) — got first chunk
+√ 2 (ok) — got last chunk
+√ 3 (ok) — highpass attenuated DC: first=0.0002 last=0.0000
+stream — live decode with plan edit waits for full decode
+√ 1 (is) — crop respected: 2205 samples (expected 2205)
+stream — incremental structural: crop streams before decode completes
+√ 1 (ok) — got chunk during live decode with crop
+√ 2 (ok) — chunk has data (1024)
+√ 3 (ok) — data correct
+stream — incremental structural: crop matches full render
+√ 1 (is) — same total samples (2205)
+√ 2 (ok) — first sample matches
+stream — incremental structural: remove matches full render
+√ 1 (is) — same total: 3141318 vs 3141318
+stream — incremental structural: crop + gain matches full render
+√ 1 (is) — same total: 4410
+√ 2 (ok) — first sample: 0.4009 ≈ 0.4009
+stream — incremental structural: speed matches full render
+√ 1 (is) — same total: 1048576
+√ 2 (ok) — first sample matches
+√ 3 (ok) — last sample matches
+stream — incremental structural: non-incremental ops fall back to full plan
+√ 1 (is) — reverse streamed all 4096 samples
+stream — incremental repeat: first pass streams, rest after decode
+√ 1 (is) — same total: 6291456 vs 6291456
+stream — incremental repeat: streams before decode completes
+√ 1 (ok) — got chunk during live decode with repeat
+√ 2 (ok) — chunk has data (1024)
+√ 3 (ok) — data correct
+stream — incremental repeat + gain matches full render
+√ 1 (is) — same total: 4194304
+√ 2 (ok) — first sample: 0.4009 ≈ 0.4009
+stream — incremental pad-after matches full render
+√ 1 (is) — same total: 2119202 vs 2119202
+√ 2 (ok) — content at start
+stream — incremental speed + repeat matches full render
+√ 1 (is) — same total: 2097152
+√ 2 (ok) — first sample matches
+√ 3 (ok) — last sample matches
+stream — pad-after + repeat matches full render
+√ 1 (is) — same total: 4211944 vs 4211944
+stream — pad-after + reverse matches full render
+√ 1 (is) — same total: 2101562 vs 2101562
+√ 2 (ok) — first sample matches
+stream — pad-after + trim matches full render
+√ 1 (is) — consistent: 45056
+√ 2 (ok) — trimmed: 45056 < 88200
+stream — clip + repeat applies only to clip range
+√ 1 (ok) — clip+repeat length: 26460 ≈ 26460
+stream — clip + reverse applies only to clip range
+√ 1 (ok) — clip+reverse length: 13230 ≈ 13230
+√ 2 (ok) — first sample reversed: 0.5000 ≈ 0.5000
+stream — clip + trim applies only to clip range
+√ 1 (ok) — clip+trim shorter: 45056 < 88200
+√ 2 (ok) — clip+trim has content: 45056 > 22050
+stream — clip + normalize applies only to clip range
+√ 1 (ok) — clip+normalize peak ~1 (got 1.000)
+√ 2 (ok) — length preserved: 13230 ≈ 13230
+stream — crop open-left (..2s) matches full render
+√ 1 (is) — open-left crop: 88200
+√ 2 (ok) — starts at 0
+stream — crop open-right (2s..) matches full render
+√ 1 (is) — open-right crop: 88200
+√ 2 (ok) — starts at ~0.5: 0.5000
+stream — remove open-left (..1s)
+√ 1 (is) — removed 1s: 88200
+stream — remove open-right (1s..)
+√ 1 (is) — kept first 1s: 44100
+stream — reverse open-left (..2s) reverses only head
+√ 1 (is) — length preserved
+√ 2 (ok) — first sample ~0.5 (reversed head): 0.5000
+√ 3 (ok) — sample at 3s normal: 0.7500
+stream — reverse open-right (1s..) reverses from 1s to end
+√ 1 (is) — length preserved
+√ 2 (ok) — first sample normal
+√ 3 (ok) — sample at 1s (start of reversed region) near end: 1.0000
+stream — reverse rangeless = reverse(0..end)
+√ 1 (is) — length preserved
+√ 2 (ok) — first sample is last (reversed): 1.0000
+√ 3 (ok) — last sample is first
+stream — reverse open-right incremental: pre-reverse data streams
+√ 1 (ok) — got chunk before decode completes
+√ 2 (ok) — chunk has data: 1024
+√ 3 (ok) — data correct (unreversed region)
+stream — reverse rangeless blocks until decode, then streams
+√ 1 (is) — reverse streamed all 4096 samples after decode
+stream — pad open-left (before)
+√ 1 (is) — padded: 132300
+√ 2 (is) — starts with silence
+√ 3 (ok) — content at 1s
+stream — repeat open-right (2s..)
+√ 1 (ok) — repeat 2s..: 264600 ≈ 264600
+stream — repeat open-left (..2s)
+√ 1 (ok) — repeat ..2s: 264600 ≈ 264600
+stream — speed open-right (2s..)
+√ 1 (ok) — speed 2x: 88200 ≈ 88200
+stream — insert open-right (at end) matches full render
+√ 1 (is) — total: 132300
+√ 2 (ok) — original at start
+√ 3 (ok) — inserted at end
+stream — insert at position matches full render
+√ 1 (is) — total: 132300
+√ 2 (ok) — original at start
+√ 3 (ok) — inserted at 1s
+√ 4 (ok) — original resumes after insert
+stream — trim progressive: head silence removed during live decode
+√ 1 (ok) — trimmed head: 8192 < 12288
+√ 2 (ok) — kept loud content: 8192 >= 7168
+stream — normalize progressive: gain applied from partial stats
+√ 1 (ok) — normalized peak ~1 (got 1.000)
+stream — negative at blocks until decode, then works
+√ 1 (ok) — negative at crop: 2205 ≈ 2205
+√ 2 (ok) — data correct
+stream — negative at on live source waits for decode
+√ 1 (ok) — got data after decode completed
+stream — chained structural ops: crop + speed + gain
+√ 1 (is) — chained ops same length: 6615
+√ 2 (ok) — first sample matches
+√ 3 (ok) — last sample matches
+stream — chained: remove + speed matches full render
+√ 1 (is) — remove+speed: 4185484 vs 4185484
+stream — insert at end blocks then matches full render
+√ 1 (is) — insert-at-end: 66150 vs 66150
+stream — very short audio (< BLOCK_SIZE) with crop
+√ 1 (is) — short audio cropped: 50
+stream — very short audio (< BLOCK_SIZE) with speed
+√ 1 (is) — short audio sped up: 100
+stream — trim + normalize chained on live source
+√ 1 (ok) — trimmed: 10240 < 14336
+√ 2 (ok) — normalized peak ~1 (got 1.000)
+normalize: LUFS preset keeps peaks under the ceiling (stats match the render)
+√ 1 (ok) — peak within ceiling (got -12.3 dBFS)
+√ 2 (ok) — actual peak within ceiling (got 0.2424)
+stream — normalize progressive: no clicks from gain discontinuity
+√ 1 (ok) — no clicks: max jump 0.0627 at sample 1103
+√ 2 (ok) — normalized peak ~1 (got 1.000)
+stream — reverse ranged streams non-reversed region
+√ 1 (ok) — got chunk from non-reversed region
+√ 2 (ok) — data matches source start
+stream — empty result after remove-all
+√ 1 (is) — remove-all produces empty stream
+stream — crop + remove + pad chained matches full render
+√ 1 (is) — triple chain: 44100 vs 44100
+√ 2 (ok) — samples match (maxDiff 0.000000)
+stream — resolve op (trim) limit tracks through crop
+√ 1 (ok) — trim limit converges: 20480 ≈ 20480
+cache backend — evicts pages when budget exceeded
+√ 1 (ok) — budget enforced: 2 resident pages (max 2)
+√ 2 (ok) — 1 pages evicted to cache
+cache backend — evicted pages restore on read
+√ 1 (is) — full length restored
+√ 2 (ok) — first sample correct (ramp start)
+√ 3 (ok) — last sample correct (ramp end)
+cache backend — index survives eviction
+√ 1 (ok) — 1 pages evicted
+√ 2 (ok) — stats work after eviction: db=-3.1
+cache backend — analysis from index without page-in
+√ 1 (ok) — all pages evicted
+√ 2 (ok) — waveform from stats without page-in
+√ 3 (ok) — db from stats without page-in
+storage: memory — bypasses OPFS even for large files
+√ 1 (ok) — loaded with storage: memory
+storage option — preserved on instance
+√ 1 (is) — storage = memory
+√ 2 (is) — from() defaults to memory
+fade out — negative duration auto-positions at end
+√ 1 (ok) — start unchanged
+√ 2 (ok) — middle unchanged
+√ 3 (ok) — end is silent (got 0.000)
+fade out — explicit negative offset
+√ 1 (ok) — start unchanged
+√ 2 (ok) — end is silent
+batch recipe via chaining
+√ 1 (is) — 4 edits from batch
+√ 2 (ok) — trimmed shorter
+√ 3 (ok) — starts near-silent (fade in): 0.000
+multi-track mixing via read windows
+√ 1 (is) — window is 1s
+√ 2 (is) — window is 1s
+√ 3 (ok) — mixed: 0.3 + 0.5 = 0.8
+encode wav — read with format after edits
+√ 1 (ok) — wav bytes after edits
+√ 2 (ok) — wav size: 88244
+√ 3 (ok) — round-trip duration
+√ 4 (ok) — fade in preserved after encode
+on(data) — fires incrementally for mp3
+√ 1 (ok) — offset monotonic: 4.0239229024943315 >= 0
+√ 2 (ok) — offset monotonic: 8.12514739229025 >= 4.0239229024943315
+√ 3 (ok) — offset monotonic: 12.200249433106576 >= 8.12514739229025
+√ 4 (ok) — offset monotonic: 12.271746031746032 >= 12.200249433106576
+√ 5 (ok) — offset monotonic: 12.271746031746032 >= 12.271746031746032
+√ 6 (ok) — on(data) fired 5 times (chunked decode)
+√ 7 (is) — deltas cover all index blocks
+read — no edits returns copies from source pages
+√ 1 (ok) — read returns independent copies
+√ 2 (ok) — source not mutated
+stat — no edits uses clean stats
+√ 1 (ok) — db from clean stats: -6.0
+√ 2 (ok) — rms from clean stats
+insert audio — plan-based matches render
+√ 1 (is) — 1s + 0.5s insert
+√ 2 (ok) — original at start
+√ 3 (ok) — inserted at 0.5s
+√ 4 (ok) — original at end
+waveform — sub-range matches full-range slice
+√ 1 (is) — 100 buckets
+√ 2 (ok) — subrange detected signal
+waveform — per-channel returns arrays
+√ 1 (ok) — min is array
+√ 2 (is) — two channels
+√ 3 (is) — first channel 100 buckets
+√ 4 (ok) — channel 0 min 0.300 ~0.3
+√ 5 (ok) — channel 1 min 0.700 ~0.7
+waveform — shorthand stat(name, opts)
+√ 1 (is) — shorthand works
+seek — doesn't trigger render
+√ 1 (ok) — _cache stays null after seek
+insert clean source — source _cache stays null
+√ 1 (ok) — clean source _cache not materialized
+undo(3) — pops 3, returns array
+√ 1 (ok) — returns array
+√ 2 (is) — 3 edits removed
+√ 3 (is) — all edits cleared
+undo(edits.length) — clears all
+√ 1 (is) — no edits left
+undo() — backward compatible, pops 1
+√ 1 (ok) — returns single edit
+√ 2 (is) — 1 edit remains
+trim — auto-floor on audio with silence margins
+√ 1 (ok) — trimmed: 35840 < 44100
+√ 2 (ok) — kept signal: 35840 >= 34000
+trim — post-edit trim works after gain
+√ 1 (ok) — trim removed silence after gain
+√ 2 (ok) — trim kept gained signal
+trim — all-silence produces empty output
+√ 1 (is) — zero-length output for silence
+clip — shares pages reference
+√ 1 (ok) — clip shares page contents, independent array
+√ 2 (is) — clip shares stats
+clip(offset, dur) — reads correct sub-range PCM
+√ 1 (is) — 0.25s at 44100 Hz = 11025 samples
+√ 2 (ok) — clip reads correct window
+split — correct count and durations
+√ 1 (is) — three parts for two offsets
+√ 2 (ok) — part 0 ~1s
+√ 3 (ok) — part 1 ~1s
+√ 4 (ok) — part 2 ~1s
+audio.from(instance) — structural copy: shares pages, independent edit list
+√ 1 (ok) — copy shares page contents, independent array
+√ 2 (ok) — copy has independent edit list
+√ 3 (is) — original unaffected by copy's edit
+√ 4 (is) — copy has its own edit
+encode — format is case-insensitive
+√ 1 (ok) — WAV (uppercase) encodes
+√ 2 (ok) — Mp3 (mixed-case) encodes
+normalize — LUFS mode adjusts loudness
+√ 1 (ok) — LUFS mode applied gain
+normalize — peak mode unchanged
+√ 1 (ok) — peak mode: max ~0.708 dBFS (got 0.708)
+normalize — preset strings
+√ 1 (ok) — streaming preset applied
+normalize — RMS mode
+√ 1 (ok) — RMS ~-12dB (got -12.0)
+normalize — DC removal by default
+√ 1 (ok) — DC removed (mean 0.0000)
+√ 2 (ok) — peak normalized after DC (got 1.000)
+normalize — dc: false preserves offset
+√ 1 (ok) — peak normalized without dc removal (got 1.000)
+normalize — ceiling
+√ 1 (ok) — peak within ceiling -1dB (got -1.0dB)
+normalize — per-channel via chained calls
+√ 1 (ok) — left peak ~1 (got 1.000)
+√ 2 (ok) — right peak ~1 (got 1.000)
+insert — joins sources (append)
+√ 1 (ok) — insert: 1s + 1s = 2s
+√ 2 (ok) — first source at start
+√ 3 (ok) — second source at 1s
+resolve — trim uses index when clean
+√ 1 (ok) — trimmed via resolve: 45056 < 132300
+√ 2 (ok) — kept signal: 45056 > 40000
+resolve — normalize uses index when clean
+√ 1 (ok) — normalized via resolve: 1.000 ≈ 1
+highpass — removes low frequency, passes high
+√ 1 (ok) — attenuated: 0.707 < 0.800
+√ 2 (ok) — high passes: 0.707 > 0.354
+lowpass — removes high frequency, passes low
+√ 1 (ok) — high attenuated: 0.707
+√ 2 (ok) — low passes: 0.707
+bandpass — passes center, rejects edges
+√ 1 (ok) — 100Hz rejected: 0.014
+√ 2 (ok) — 1kHz passes: 0.705
+notch — removes target frequency
+√ 1 (ok) — notched: 0.708 < 0.850
+eq — parametric boost at target frequency
+√ 1 (ok) — boosted: 2.811 > 1.061
+lowshelf — boosts bass region
+√ 1 (ok) — shelf boost: 2.806 > 1.061
+highshelf — boosts treble region
+√ 1 (ok) — shelf boost: 2.802 > 1.061
+highpass — stereo channels filtered independently
+√ 1 (ok) — left attenuated: 0.002
+√ 2 (ok) — right passes: 0.707
+filter — state persists across streaming blocks
+√ 1 (is) — same length
+√ 2 (ok) — stream ≈ full read (maxDiff: 0.000000)
+filter — warm-up on seek matches full render
+√ 1 (is) — same length: 44100
+√ 2 (ok) — seek ≈ full[offset:] (maxDiff: 0.000000)
+fade in — stream matches read (no looping)
+√ 1 (is) — same length
+√ 2 (ok) — stream ≈ read (maxDiff: 0.000000)
+√ 3 (ok) — sample at 1s is unmodified (got 1)
+√ 4 (ok) — sample at 0s is faded (got 0.000)
+fade out — stream matches read (no looping)
+√ 1 (is) — same length
+√ 2 (ok) — stream ≈ read (maxDiff: 0.000000)
+√ 3 (ok) — sample at 0s is unmodified (got 1)
+√ 4 (ok) — last sample is faded (got 0.000)
+pan — center (0) is identity
+√ 1 (ok) — L unchanged (got 1)
+√ 2 (ok) — R unchanged (got 1)
+pan — full left (-1) mutes right
+√ 1 (ok) — L at unity (got 1)
+√ 2 (ok) — R muted (got 0)
+pan — full right (1) mutes left
+√ 1 (ok) — L muted (got 0)
+√ 2 (ok) — R at unity (got 1)
+pan — half right attenuates left
+√ 1 (ok) — L halved (got 0.5)
+√ 2 (ok) — R unchanged (got 1)
+pan — mono is no-op
+√ 1 (ok) — mono unchanged (got 0.5)
+pan — with range
+√ 1 (ok) — L before range unchanged
+√ 2 (ok) — L in range muted (got 0)
+√ 3 (ok) — L after range unchanged
+pad — adds silence to both ends
+√ 1 (is) — duration 3s (got 3)
+√ 2 (ok) — start is silent
+√ 3 (ok) — start padding end
+√ 4 (ok) — original starts
+√ 5 (ok) — original ends
+√ 6 (ok) — end padding starts
+√ 7 (ok) — end is silent
+pad — asymmetric padding
+√ 1 (is) — duration 4s (got 4)
+√ 2 (is) — 8 samples total
+√ 3 (ok) — before padding
+√ 4 (ok) — original audio
+√ 5 (ok) — after padding
+pad — zero is no-op
+√ 1 (is) — length unchanged
+pad — plan-based (stream)
+√ 1 (is) — total 2s (88200 samples)
+√ 2 (ok) — start is silent
+√ 3 (ok) — original data at correct offset
+√ 4 (ok) — end is silent
+stat(crest) — dynamic range of sine wave
+√ 1 (ok) — sine crest ~3dB (got 3.01)
+stat(crest) — square wave has ~0dB crest
+√ 1 (ok) — square crest ~0dB (got -0.00)
+stat(crest) — silence returns 0
+√ 1 (is) — silent = 0
+stat(centroid) — 440Hz tone has low centroid
+√ 1 (ok) — centroid near 440Hz (got 439Hz)
+stat(centroid) — higher tone has higher centroid
+√ 1 (ok) — 4kHz centroid (4001) > 440Hz centroid (439)
+stat(flatness) — sine wave is tonal (low flatness)
+√ 1 (ok) — sine flatness near 0 (got 0.0000)
+stat(flatness) — noise has higher flatness than tone
+√ 1 (ok) — noise flatness (0.561) > sine flatness (0.000)
+stat(flatness) — white noise ≈ exp(-γ)≈0.5614 (Wiener entropy of an exponential power spectrum)
+√ 1 (ok) — ≈0.5614 (got 0.5657)
+stat(correlation) — identical L/R = +1
+√ 1 (ok) — identical channels ~1 (got 1.0000)
+stat(correlation) — inverted L/R = -1
+√ 1 (ok) — inverted channels ~-1 (got -1.0000)
+stat(correlation) — uncorrelated channels ~0
+√ 1 (ok) — uncorrelated ~0 (got -0.0000)
+stat(correlation) — mono returns 1
+√ 1 (is) — mono = 1
+stat(spectrum) — returns mel-binned spectrum
+√ 1 (ok) — returns Float32Array
+√ 2 (is) — 64 bins
+√ 3 (ok) — peak not at edges (bin 8)
+√ 4 (ok) — peak louder than lowest bin
+stat(spectrum) — with range
+√ 1 (ok) — 1kHz peak (bin 15) > 440Hz peak (bin 8)
+stat(spectrum) – every channel: the mean of their power spectra, anti-phase content kept
+√ 1 (ok) — each band the mean of the channels' powers (max error 0.00018 dB)
+√ 2 (ok) — identical channels read as mono
+stat(centroid, flatness, cepstrum) – a sound in the right channel alone reads as in mono
+√ 1 (almost) — centroid
+√ 2 (almost) — flatness
+√ 3 (almost) — c0 at half the power (-27.712)
+√ 4 (ok) — c1.. as mono
+stat(spectrum, centroid, cepstrum, notes), detect() – { channel } reads the chosen channels
+√ 1 (ok) — spectrum: channel 0 is silent
+√ 2 (is) — spectrum: channel 1 is the tone
+√ 3 (is) — centroid: [0, 1] per channel
+√ 4 (is) — cepstrum: channel 1 is the tone
+√ 5 (is) — notes: none in channel 0
+√ 6 (is) — notes: A4 in channel 1
+√ 7 (is) — detect: no beat in channel 0
+√ 8 (ok) — detect: 120 BPM in channel 1 (got 120.0)
+stat: a channel the audio lacks throws, naming it
+√ 1 (ok) — db: channel 2 of 2
+√ 2 (ok) — spectrum: channel 2 of 2
+√ 3 (ok) — notes: channel 2 of 2
+√ 4 (ok) — a negative channel in an array
+stat(cepstrum) — returns MFCC coefficients
+√ 1 (ok) — returns Float32Array
+√ 2 (is) — 13 coefficients
+√ 3 (ok) — C0 non-zero (got -802.97)
+√ 4 (ok) — C0 dominant: |-803.0| > max|rest|=106.6
+stat(silence) — detects silent regions
+√ 1 (ok) — returns array
+√ 2 (ok) — found silence segments (2)
+√ 3 (ok) — first at ~1s (got 1.02)
+√ 4 (ok) — first ~0.5s (got 0.46)
+stat(silence) — no silence in continuous tone
+√ 1 (is) — no silence in continuous signal
+stat(silence) — all silent
+√ 1 (is) — one segment
+√ 2 (ok) — ~1s (got 1.00)
+stat(silence) — minDuration filters short gaps
+√ 1 (is) — only long silence found
+√ 2 (ok) — long gap: 0.98s
+stat(silence) — with range opts
+√ 1 (is) — no silence in ranged query
+crossover — splits into bands, band-major channel order
+√ 1 (is) — stereo × 2 bands = 4 channels
+√ 2 (ok) — band0 ≈ low tone (0.283)
+√ 3 (ok) — band1 ≈ high tone (0.282)
+√ 4 (ok) — low band keeps energy
+crossover — 3 bands sum allpass-flat
+√ 1 (is) — 3 bands
+√ 2 (ok) — bands sum to input energy (0.3999 vs 0.4000)
+crossover: 3 and 4 bands sum flat at every frequency (LR4 tree, LP² + HP² = allpass per split)
+√ 1 (ok) — 3 bands: sum within 3.9e-7 dB of flat
+√ 2 (ok) — 4 bands: sum within 5.7e-7 dB of flat
+crossover — no freqs is passthrough, Nyquist guarded, stream width matches
+√ 1 (is) — no split points → unchanged
+√ 2 (ok) — freq ≥ Nyquist rejected
+√ 3 (is) — stream yields band-split width
+pitch — ranged read matches full-read slice (vocoder warm-up across seams)
+√ 1 (is) — ranged length exact
+√ 2 (ok) — full: target dominates −1 semitone
+√ 3 (ok) — full: target dominates +1 semitone
+√ 4 (ok) — ranged: target dominates −1 semitone
+√ 5 (ok) — ranged: target dominates +1 semitone
+√ 6 (ok) — ranged level matches full render
+√ 7 (ok) — finite (no cold-state NaN)
+dither — stream ≡ read statistically (independent TPDF draws)
+√ 1 (is) — lengths equal
+√ 2 (ok) — pass divergence ≤ 2.5 LSB (2.00)
+√ 3 (ok) — no bias between passes (0.001 LSB)
+√ 4 (ok) — pass within TPDF bound of source (1.46 LSB)
+push source — dither/pitch/stretch/mix apply over pushed audio
+√ 1 (is) — dither: pushed length preserved
+√ 2 (ok) — dither: finite
+√ 3 (ok) — pitch on push source: 440Hz (440)
+√ 4 (ok) — stretch on push source: 2.00s
+√ 5 (ok) — stretch preserves pitch on push source
+√ 6 (ok) — mix adds energy over pushed audio
+push source — dither applies while stream runs live
+√ 1 (ok) — live chunks finite
+√ 2 (is) — live stream drained the full pushed length through the op
+streaming instrument — per-block note events, block-relative times
+√ 1 (ok) — silent before first note
+√ 2 (ok) — note 1 pitch — voice persists across blocks
+√ 3 (ok) — silent in the gap (off event delivered)
+√ 4 (ok) — note 2 on lands mid-timeline
+√ 5 (ok) — silent after
+√ 6 (ok) — stream ≡ read
+stretch(fn) — sliding factor: duration integrates, pitch preserved throughout
+√ 1 (ok) — duration = ∫factor dt (3.000 ≈ 3)
+√ 2 (ok) — finite
+√ 3 (ok) — pitch preserved in slow region
+√ 4 (ok) — pitch preserved in mid ramp
+√ 5 (ok) — pitch preserved in 2× region
+√ 6 (ok) — no seams/pumping (min window rms 0.338)
+√ 7 (is) — stream length matches
+√ 8 (ok) — stream ≡ read
+stretch(curve) — serializable sliding stretch + ranged form
+√ 1 (ok) — curve factor integrates
+√ 2 (ok) — curve form serializes
+√ 3 (ok) — ranged sliding stretch (2.500 ≈ 2.5)
+√ 4 (ok) — pre-range untouched
+√ 5 (ok) — no dropout: quietest window RMS 0.194
+warp — markers move a hit, neighbours and length stay; equals the ranged stretches it stands for
+√ 1 (is) — length kept
+√ 2 (ok) — same samples as the two ranged stretches (4.656612873077393e-10)
+√ 3 (ok) — hits land where the markers put them (0.000,1.022,2.392,3.019)
+warp — one marker: start and end stay; an end marker moves the end; crossing markers throw
+√ 1 (is) — end stays
+√ 2 (ok) — the hit at 2 s plays at 2.4 s (0.023,1.207,2.415,3.204)
+√ 3 (ok) — a marker at the end moves the end
+√ 4 (ok) — no markers: untouched
+√ 5 (ok) — crossing markers throw
+√ 6 (ok) — a marker past the end throws
+whole op frames hook — structural output length
+√ 1 (is) — plan length follows frames hook
+√ 2 (is) — output doubled
+√ 3 (is) — second half is the repeat
+√ 4 (ok) — downstream ops run over the extended timeline
+shrink — compresses all pauses to target gap
+√ 1 (ok) — pauses → 0.2s: 1.250s (expect ≈1.2)
+shrink — pauses shorter than gap untouched
+√ 1 (is) — unchanged
+shrink(0) — removes silence entirely (silenceremove)
+√ 1 (ok) — only signal remains: 0.650s (expect ≈0.6)
+shrink — ranged compresses only pauses in range
+√ 1 (ok) — only ranged pause cut: 2.073s (expect ≈2.1)
+shrink — after gain (stats remapped), stream ≡ read
+√ 1 (ok) — post-gain shrink: 1.250s
+√ 2 (is) — stream length matches read
+shrink — negative gap clamps to 0 (never eats signal)
+√ 1 (ok) — clamped to shrink(0): 0.650s (expect ≈0.6)
+shrink — composes with trim
+√ 1 (ok) — shrink+trim: 0.859s (expect ≈0.8)
+stat(bpm) — detects BPM from click track
+√ 1 (ok) — returns number (got 118)
+√ 2 (ok) — positive BPM
+√ 3 (ok) — BPM within 10%: expected 120, got 118.0
+stat(bpm) — a.bpm() shorthand works
+√ 1 (ok) — returns number
+√ 2 (ok) — BPM in range (got 118.0)
+stat(beats) — returns Float64Array of timestamps
+√ 1 (ok) — returns Float64Array
+√ 2 (ok) — ~16 beats (got 17)
+√ 3 (ok) — beat[0] in range: 0.000
+√ 4 (ok) — beat[1] in range: 0.511
+√ 5 (ok) — beat[2] in range: 0.998
+√ 6 (ok) — beat[3] in range: 1.509
+√ 7 (ok) — beat[4] in range: 1.997
+√ 8 (ok) — beat[5] in range: 2.508
+√ 9 (ok) — beat[6] in range: 3.019
+√ 10 (ok) — beat[7] in range: 3.506
+√ 11 (ok) — beat[8] in range: 4.017
+√ 12 (ok) — beat[9] in range: 4.505
+√ 13 (ok) — beat[10] in range: 5.016
+√ 14 (ok) — beat[11] in range: 5.503
+√ 15 (ok) — beat[12] in range: 6.014
+√ 16 (ok) — beat[13] in range: 6.502
+√ 17 (ok) — beat[14] in range: 7.012
+√ 18 (ok) — beat[15] in range: 7.500
+√ 19 (ok) — beat[16] in range: 7.988
+√ 20 (ok) — beats ascending at 1
+√ 21 (ok) — beats ascending at 2
+√ 22 (ok) — beats ascending at 3
+√ 23 (ok) — beats ascending at 4
+√ 24 (ok) — beats ascending at 5
+√ 25 (ok) — beats ascending at 6
+√ 26 (ok) — beats ascending at 7
+√ 27 (ok) — beats ascending at 8
+√ 28 (ok) — beats ascending at 9
+√ 29 (ok) — beats ascending at 10
+√ 30 (ok) — beats ascending at 11
+√ 31 (ok) — beats ascending at 12
+√ 32 (ok) — beats ascending at 13
+√ 33 (ok) — beats ascending at 14
+√ 34 (ok) — beats ascending at 15
+√ 35 (ok) — beats ascending at 16
+stat(onsets) — returns Float64Array of onset timestamps
+√ 1 (ok) — returns Float64Array
+√ 2 (ok) — enough onsets detected (got 16)
+√ 3 (ok) — onset[0] in range
+√ 4 (ok) — onset[1] in range
+√ 5 (ok) — onset[2] in range
+√ 6 (ok) — onset[3] in range
+√ 7 (ok) — onset[4] in range
+√ 8 (ok) — onset[5] in range
+√ 9 (ok) — onset[6] in range
+√ 10 (ok) — onset[7] in range
+√ 11 (ok) — onset[8] in range
+√ 12 (ok) — onset[9] in range
+√ 13 (ok) — onset[10] in range
+√ 14 (ok) — onset[11] in range
+√ 15 (ok) — onset[12] in range
+√ 16 (ok) — onset[13] in range
+√ 17 (ok) — onset[14] in range
+√ 18 (ok) — onset[15] in range
+detect() — full result with all fields
+√ 1 (ok) — bpm is number
+√ 2 (ok) — confidence is number
+√ 3 (ok) — beats is Float64Array
+√ 4 (ok) — onsets is Float64Array
+√ 5 (ok) — confidence non-negative
+detect() – every channel: a beat in the right channel alone reads as in the channels' mean
+√ 1 (ok) — 120 BPM heard in the right channel (got 120.0)
+√ 2 (is) — beats of the channels' mean
+√ 3 (is) — identical channels read as mono
+stat(bpm) — with range opts
+√ 1 (ok) — returns number
+√ 2 (ok) — BPM within 15% on 4s range: got 118.0
+stat(bpm) — minBpm/maxBpm opts narrow search range
+√ 1 (ok) — BPM in constrained range (got 118.0)
+stat(bpm) — silence returns 0
+√ 1 (is) — silence → 0 BPM
+stat(onsets) — silence returns empty array
+√ 1 (is) — no onsets in silence
+stat(onsets) — a ring that beats as it decays is one hit, not one per swell
+√ 1 (ok) — the four strikes (0.511,1.509,2.508,3.506)
+stat(onsets) — a sound struck at its first sample has an onset at 0; a range from mid-ring has none at its start
+√ 1 (ok) — the three strikes, the first at 0 (0.000,0.998,1.997)
+√ 2 (ok) — from 0.5 s: the strikes at 1 and 2 s (0.511,1.509)
+stat(beats) — silence returns empty array
+√ 1 (is) — no beats in silence
+stat(clipping) — returns timestamps of clipping blocks
+√ 1 (ok) — returns Float32Array
+√ 2 (ok) — has clipping blocks
+√ 3 (ok) — clip at 0.488s >= 0.45s
+√ 4 (ok) — clip at 0.511s >= 0.45s
+√ 5 (ok) — clip at 0.534s >= 0.45s
+√ 6 (ok) — clip at 0.557s >= 0.45s
+√ 7 (ok) — clip at 0.580s >= 0.45s
+√ 8 (ok) — clip at 0.604s >= 0.45s
+√ 9 (ok) — clip at 0.627s >= 0.45s
+√ 10 (ok) — clip at 0.650s >= 0.45s
+√ 11 (ok) — clip at 0.673s >= 0.45s
+√ 12 (ok) — clip at 0.697s >= 0.45s
+√ 13 (ok) — clip at 0.720s >= 0.45s
+√ 14 (ok) — clip at 0.743s >= 0.45s
+√ 15 (ok) — clip at 0.766s >= 0.45s
+√ 16 (ok) — clip at 0.789s >= 0.45s
+√ 17 (ok) — clip at 0.813s >= 0.45s
+√ 18 (ok) — clip at 0.836s >= 0.45s
+√ 19 (ok) — clip at 0.859s >= 0.45s
+√ 20 (ok) — clip at 0.882s >= 0.45s
+√ 21 (ok) — clip at 0.906s >= 0.45s
+√ 22 (ok) — clip at 0.929s >= 0.45s
+√ 23 (ok) — clip at 0.952s >= 0.45s
+√ 24 (ok) — clip at 0.975s >= 0.45s
+√ 25 (ok) — clip at 0.998s >= 0.45s
+√ 26 (is) — count === length
+stat(clipping) — clean audio returns empty
+√ 1 (ok) — returns Float32Array
+√ 2 (is) — no clips in clean audio
+stat(clipping) — bins mode returns per-bin counts
+√ 1 (ok) — returns Float32Array
+√ 2 (is) — 10 bins
+√ 3 (ok) — bin 0 has clips: 4096
+√ 4 (ok) — bin 1 has clips: 4096
+√ 5 (ok) — bin 2 has clips: 5120
+√ 6 (ok) — bin 3 has clips: 4096
+√ 7 (ok) — bin 4 has clips: 5120
+√ 8 (ok) — bin 5 has clips: 4096
+√ 9 (ok) — bin 6 has clips: 4096
+√ 10 (ok) — bin 7 has clips: 5120
+√ 11 (ok) — bin 8 has clips: 4096
+√ 12 (ok) — bin 9 has clips: 4164
+stat(notes) — detects A4 from 440Hz sine
+√ 1 (ok) — returns array
+√ 2 (ok) — has notes (got 1)
+√ 3 (is) — note name is A4 (got A4)
+√ 4 (is) — midi 69 (got 69)
+√ 5 (ok) — freq ~440Hz (got 440.0)
+√ 6 (ok) — clarity > 0.5 (got 1.00)
+√ 7 (ok) — duration > 0.5s (got 0.99)
+stat(notes) — detects tone sequence
+√ 1 (ok) — at least 2 notes (got 2)
+√ 2 (ok) — first note exists
+√ 3 (is) — first note A4 (got A4)
+√ 4 (ok) — second note exists
+√ 5 (is) — second note C5 (got C5)
+√ 6 (ok) — second note after first
+stat(notes) — silence returns empty
+√ 1 (ok) — returns array
+√ 2 (is) — no notes in silence
+stat(chords) — detects C major triad
+√ 1 (ok) — returns array
+√ 2 (is) — N then C (got N,C)
+√ 3 (is) — quality is maj (got maj)
+√ 4 (ok) — confidence > 0.3 (got 0.89)
+√ 5 (ok) — lasts to the end
+stat(chords) — reads the tuning; every channel counts
+√ 1 (is) — C, 40 cents sharp (got N,C)
+√ 2 (ok) — key from the right channel (got C)
+stat(chords) — detects chord change
+√ 1 (ok) — at least 2 chords (got 3)
+√ 2 (ok) — has C (got N,C,Am)
+√ 3 (ok) — has Am (got N,C,Am)
+√ 4 (ok) — chords in time order
+stat(chords) — silence returns empty
+√ 1 (ok) — returns array
+√ 2 (is) — no chords in silence
+stat(key) — detects C major from I-IV-V-I progression
+√ 1 (ok) — nnls: confidence > 0 (got 0.94)
+√ 2 (is) — nnls: key is C (got C)
+√ 3 (ok) — pcp: confidence > 0 (got 0.94)
+√ 4 (is) — pcp: key is C (got C)
+stat(key) — silence returns N
+√ 1 (is) — silence → N
+√ 2 (is) — zero confidence
+gain — automation function
+√ 1 (ok) — t=0: ~1 (got 1.000)
+√ 2 (ok) — t=2: attenuated (got 0.501)
+√ 3 (ok) — t=2: not silent (got 0.501)
+gain — automation with range
+√ 1 (ok) — before range: untouched
+√ 2 (ok) — in range: attenuated
+√ 3 (ok) — after range: untouched
+pan — automation function
+√ 1 (ok) — start: L untouched
+√ 2 (ok) — start: R muted
+√ 3 (ok) — end: L muted
+√ 4 (ok) — end: R untouched
+toJSON — omits automation and transform edits
+√ 1 (is) — function edits omitted
+√ 2 (is) — static edit preserved
+gain — channel scoping
+√ 1 (ok) — L channel muted
+√ 2 (ok) — R channel untouched
+gain — channel array scoping
+√ 1 (ok) — L untouched
+√ 2 (ok) — R channel muted
+gain — at without duration
+√ 1 (ok) — before at: untouched
+√ 2 (ok) — after at: muted
+reverse — with range
+√ 1 (ok) — before: ascending
+√ 2 (ok) — in range: descending
+√ 3 (ok) — after: ascending
+mix — with at and duration
+√ 1 (ok) — before: 0.5
+√ 2 (ok) — mixed: 0.5+0.3=0.8
+√ 3 (ok) — after duration: 0.5 again
+filter — channel scoping
+√ 1 (ok) — L filtered (88.6 < 11025.0)
+write — at non-zero offset
+√ 1 (ok) — before offset: zero
+√ 2 (ok) — at offset: 0.7
+crop — at only (no duration)
+√ 1 (ok) — cropped from 2s (got 10.27)
+remove — at end
+√ 1 (ok) — removed last 1s (got 11.27)
+repeat — with range
+√ 1 (ok) — duration 5s (got 5.00)
+√ 2 (ok) — first second: silence
+√ 3 (ok) — second second: ones
+√ 4 (ok) — third second: repeated ones
+√ 5 (ok) — fourth second: repeated ones
+√ 6 (ok) — fifth second: silence
+stat — channel array returns per-channel
+√ 1 (ok) — returns array
+√ 2 (is) — two channels
+√ 3 (ok) — ch0 ~0.3 (got 0.300)
+√ 4 (ok) — ch1 ~0.9 (got 0.900)
+stat — single channel
+√ 1 (ok) — channel 1 max ~0.8 (got 0.800)
+crop — out-of-range offset clamps gracefully
+√ 1 (is) — past-end offset → 0 duration
+√ 2 (ok) — large negative offset → non-negative
+remove — out-of-range clamps without negative length
+√ 1 (ok) — excess duration clamps
+repeat — out-of-range at clamps gracefully
+√ 1 (ok) — past-end at still valid
+audio.from(interleaved Int16Array) — stereo deinterleave
+√ 1 (is) — stereo
+√ 2 (ok) — ch0 positive (got 0.500)
+√ 3 (ok) — ch1 negative (got -0.500)
+stat(db) — channel-scoped
+√ 1 (ok) — loud ch (-0.9 dB) > quiet ch (-40.0 dB)
+√ 2 (ok) — all-ch dB (-0.9) >= quiet ch
+stat(rms) — channel-scoped
+√ 1 (ok) — loud ch rms (0.800) > quiet ch (0.050)
+stat(peak) — max absolute amplitude
+√ 1 (ok) — peak = max(|min|,|max|) = 0.8 (got 0.800)
+stat(peak) — positive-dominant signal
+√ 1 (ok) — peak = 0.7 (got 0.700)
+stat(peak) — channel-scoped
+√ 1 (ok) — ch0 peak 0.9 (got 0.900)
+√ 2 (ok) — ch1 peak 0.1 (got 0.100)
+stat(peak) — per-channel array
+√ 1 (ok) — array
+√ 2 (is) — two channels
+√ 3 (ok) — [0.5, 0.2] (got [0.50, 0.20])
+normalize — channel array does not crash
+√ 1 (ok) — ch0 non-zero (0.500)
+√ 2 (ok) — ch1 non-zero (0.100)
+time strings — crop({at: "2s"}) works
+√ 1 (ok) — duration ~1s (got 1.000)
+time strings — read({at: "1s"}) works
+√ 1 (ok) — read at 1s got signal (0.700)
+time strings — stat({at: "1s"}) works
+√ 1 (ok) — db in range (got -6.0)
+speed(2) — double speed halves duration
+√ 1 (is) — duration 0.5
+√ 2 (is) — sample count 22050
+√ 3 (ok) — value preserved (0.500)
+speed(0.5) — half speed doubles duration
+√ 1 (is) — duration 2
+√ 2 (is) — sample count 88200
+√ 3 (ok) — value preserved (0.500)
+speed(-1) — reverse
+√ 1 (is) — same length
+√ 2 (is) — first = 4
+√ 3 (is) — second = 3
+√ 4 (is) — third = 2
+√ 5 (is) — fourth = 1
+speed(-2) — reverse at double speed
+√ 1 (is) — half length
+√ 2 (ok) — stream matches flat (max diff 0.000000)
+√ 3 (ok) — reversed order
+speed(2) then reverse — composable
+√ 1 (is) — half length
+√ 2 (ok) — reversed order
+speed — crop after speed
+√ 1 (is) — duration 0.5
+√ 2 (is) — sample count 22050
+√ 3 (ok) — value preserved
+speed — insert after speed preserves data
+√ 1 (is) — duration 0.75
+√ 2 (ok) — first half has data
+√ 3 (ok) — silence at insert point
+speed — streaming matches flat render
+√ 1 (is) — stream length matches flat (29400)
+√ 2 (ok) — stream matches flat (max diff 0.000000)
+stretch(2) — doubles duration, preserves pitch
+√ 1 (is) — duration 4
+√ 2 (is) — sample count
+√ 3 (ok) — stretch(2): energy at 440Hz = 0.500
+√ 4 (ok) — stretch(2): no octave leakage (down=0.000 up=0.000)
+stretch(0.5) — halves duration, preserves pitch
+√ 1 (is) — duration 1
+√ 2 (is) — sample count
+√ 3 (ok) — stretch(0.5): energy at 440Hz = 0.500
+√ 4 (ok) — stretch(0.5): no octave leakage (down=0.000 up=0.000)
+stretch(1.5) — preserves pitch at fractional factor
+√ 1 (is) — length 1.5×
+√ 2 (ok) — stretch(1.5): energy at 440Hz = 0.500
+√ 3 (ok) — stretch(1.5): no octave leakage (down=0.000 up=0.000)
+stretch — pitch stable across blocks for varied factors
+√ 1 (ok) — factor=0.75: min window energy 0.500 > 0.3
+√ 2 (ok) — factor=0.9: min window energy 0.499 > 0.3
+√ 3 (ok) — factor=1.25: min window energy 0.500 > 0.3
+√ 4 (ok) — factor=1.7: min window energy 0.500 > 0.3
+√ 5 (ok) — factor=2.5: min window energy 0.500 > 0.3
+stretch(1) — no-op
+√ 1 (is) — duration unchanged
+√ 2 (ok) — values preserved
+stretch — negative factor throws
+√ 1 (ok) — throws on negative factor
+stretch — streaming matches flat render
+√ 1 (is) — stream length matches flat (132300)
+√ 2 (ok) — streamed: energy at 440Hz = 0.500
+√ 3 (ok) — streamed: no octave leakage (down=0.000 up=0.000)
+stretch, pitch — continuous from the first sample: no stall, gap or step at any factor
+√ 1 (ok) — stretch(0.05): no gap (longest run of zeros 0)
+√ 2 (ok) — stretch(0.05): no step (peak curvature 0.87× the sine's)
+√ 3 (ok) — stretch(0.05): starts from silence
+√ 4 (ok) — stretch(0.3): no gap (longest run of zeros 0)
+√ 5 (ok) — stretch(0.3): no step (peak curvature 1.03× the sine's)
+√ 6 (ok) — stretch(0.3): starts from silence
+√ 7 (ok) — stretch(0.5): no gap (longest run of zeros 0)
+√ 8 (ok) — stretch(0.5): no step (peak curvature 1.02× the sine's)
+√ 9 (ok) — stretch(0.5): starts from silence
+√ 10 (ok) — stretch(0.8): no gap (longest run of zeros 0)
+√ 11 (ok) — stretch(0.8): no step (peak curvature 1.09× the sine's)
+√ 12 (ok) — stretch(0.8): starts from silence
+√ 13 (ok) — stretch(1.5): no gap (longest run of zeros 0)
+√ 14 (ok) — stretch(1.5): no step (peak curvature 1.13× the sine's)
+√ 15 (ok) — stretch(1.5): starts from silence
+√ 16 (ok) — stretch(3): no gap (longest run of zeros 0)
+√ 17 (ok) — stretch(3): no step (peak curvature 1.00× the sine's)
+√ 18 (ok) — stretch(3): starts from silence
+√ 19 (ok) — pitch(-12): no gap (longest run of zeros 0)
+√ 20 (ok) — pitch(-12): no step (peak curvature 1.01× the sine's)
+√ 21 (ok) — pitch(-12): starts from silence
+√ 22 (ok) — pitch(7): no gap (longest run of zeros 0)
+√ 23 (ok) — pitch(7): no step (peak curvature 1.01× the sine's)
+√ 24 (ok) — pitch(7): starts from silence
+stretch, pitch: a low voice keeps its harmonics, no lost fundamental, no sub-octave
+√ 1 (ok) — stretch(2): 2nd harmonic -6.0 dB (the input's -6.0)
+√ 2 (ok) — stretch(2): no sub-octave (-76.4 dB)
+√ 3 (ok) — stretch(2): nothing between harmonics (-45.6 dB at 1.5·f0)
+√ 4 (ok) — stretch(3): 2nd harmonic -6.0 dB (the input's -6.0)
+√ 5 (ok) — stretch(3): no sub-octave (-78.3 dB)
+√ 6 (ok) — stretch(3): nothing between harmonics (-67.6 dB at 1.5·f0)
+√ 7 (ok) — pitch(7): 2nd harmonic -6.2 dB (the input's -6.0)
+√ 8 (ok) — pitch(7): no sub-octave (-77.5 dB)
+√ 9 (ok) — pitch(7): nothing between harmonics (-51.5 dB at 1.5·f0)
+pitch, stretch — a range splices in place: outside it the input, untouched
+√ 1 (ok) — pitch: the input before (0) and after (0) the range
+√ 2 (ok) — pitch in range: energy at 659.2551138257398Hz = 0.250
+√ 3 (ok) — pitch in range: no octave leakage (down=0.000 up=0.000)
+√ 4 (is) — stretch: the range doubles
+√ 5 (ok) — stretch: the input before (0) and after (0) the range
+√ 6 (ok) — stretch in range: energy at 440Hz = 0.250
+√ 7 (ok) — stretch in range: no octave leakage (down=0.000 up=0.000)
+decoded source — reads past the end are silent, so a lookahead op matches the same PCM in memory
+√ 1 (is) — same length (7200)
+√ 2 (ok) — same samples to the last (max diff 0)
+stretch stereo — preserves both channels with same pitch
+√ 1 (is) — 2 channels
+√ 2 (is) — length doubled
+√ 3 (ok) — ch0: energy at 440Hz = 0.500
+√ 4 (ok) — ch0: no octave leakage (down=0.000 up=0.000)
+√ 5 (ok) — ch1: energy at 660Hz = 0.500
+√ 6 (ok) — ch1: no octave leakage (down=0.000 up=0.000)
+stretch then crop — pitch preserved in crop window
+√ 1 (is) — 2s @ 44100
+√ 2 (ok) — stretch+crop: energy at 440Hz = 0.500
+√ 3 (ok) — stretch+crop: no octave leakage (down=0.000 up=0.000)
+crop then stretch — operates on cropped region
+√ 1 (is) — 2s
+√ 2 (ok) — crop+stretch: energy at 440Hz = 0.500
+√ 3 (ok) — crop+stretch: no octave leakage (down=0.000 up=0.000)
+stretch then reverse — reversed output, same pitch
+√ 1 (is) — length preserved
+√ 2 (ok) — stretch+reverse: energy at 440Hz = 0.396
+√ 3 (ok) — stretch+reverse: no octave leakage (down=0.000 up=0.004)
+reverse then stretch — stretched reversed audio
+√ 1 (is) — length 2×
+√ 2 (ok) — reverse+stretch: energy at 440Hz = 0.500
+√ 3 (ok) — reverse+stretch: no octave leakage (down=0.000 up=0.000)
+stretch then speed — composable
+√ 1 (is) — 2s
+√ 2 (ok) — stretch+speed: energy at 880Hz = 0.500
+√ 3 (ok) — stretch+speed: no octave leakage (down=0.000 up=0.000)
+stretch then pitch — stacked pitch-preserving ops
+√ 1 (is) — length doubled by stretch, preserved by pitch
+√ 2 (ok) — stretch+pitch: energy at 880Hz = 0.500
+√ 3 (ok) — stretch+pitch: no octave leakage (down=0.000 up=0.000)
+stretch then gain — amplitude correctly scaled, pitch preserved
+√ 1 (ok) — gain applied (energy 0.250)
+√ 2 (ok) — stretch+gain: energy at 440Hz = 0.250
+√ 3 (ok) — stretch+gain: no octave leakage (down=0.000 up=0.000)
+stretch then trim — silence-trimmed stretched output keeps pitch
+√ 1 (ok) — trim kept tone region
+√ 2 (ok) — trim removed silence
+√ 3 (ok) — stretch+trim: energy at 440Hz = 0.500
+√ 4 (ok) — stretch+trim: no octave leakage (down=0.000 up=0.000)
+stretch chain — stretch(2).stretch(0.5) cancels to original length
+√ 1 (is) — length restored
+√ 2 (ok) — stretch chain: energy at 440Hz = 0.500
+√ 3 (ok) — stretch chain: no octave leakage (down=0.000 up=0.000)
+stretch on fixture file — real audio maintains pitch
+√ 1 (ok) — duration doubled (24.54s)
+√ 2 (is) — sample count doubled
+√ 3 (ok) — no NaN/Inf
+√ 4 (ok) — audible (peak 0.638)
+pitch(12) — octave up, same duration
+√ 1 (is) — duration preserved 1
+√ 2 (is) — sample count preserved 44100
+pitch(-12) — octave down, same duration
+√ 1 (is) — duration preserved 1
+√ 2 (is) — sample count preserved
+pitch(0) — no-op
+√ 1 (ok) — values unchanged
+playbackRate — defaults to 1
+√ 1 (is) — default
+playbackRate — clamped to [0.0625, 16]
+√ 1 (is) — min clamp
+√ 2 (is) — max clamp
+playbackRate — emits ratechange
+√ 1 (ok) — ratechange event
+allpass — unity magnitude, phase shift only
+√ 1 (ok) — energy preserved: in 0.707 out 0.707
+√ 2 (ok) — samples differ (phase shifted)
+allpass — stereo independent channels
+√ 1 (ok) — left energy preserved
+√ 2 (ok) — right energy preserved
+vocals — isolate center (default)
+√ 1 (ok) — isolate extracts center: maxDiff 0.000000
+√ 2 (ok) — L=R after isolate: 0.000000
+vocals — remove center
+√ 1 (ok) — remove extracts side: maxDiff 0.000000
+vocals — mono passthrough
+√ 1 (ok) — mono unchanged: maxDiff 0.000000
+vocals: model option records beside mode
+√ 1 (is) — should be equal
+vocals: without a model, mid/side runs and no separation package loads
+√ 1 (ok) — mid: maxDiff 2.9802322387695312e-8
+√ 2 (ok) — neural-separate not imported
+vocals: model without @audio/neural-separate rejects naming the package
+√ 1 (ok) — vocals({ model }): install @audio/neural-separate (Cannot find package '@audio/neural-separate')
+dither — quantizes to target bit depth
+√ 1 (ok) — output quantized to 8-bit levels
+√ 2 (ok) — TPDF noise differs from naive: 1418 samples
+dither — 16-bit preserves signal integrity
+√ 1 (ok) — 16-bit dither maxDiff 0.000045
+crossfeed — mixes channels
+√ 1 (ok) — R gets crossfeed: rms 0.1973
+√ 2 (ok) — L slightly reduced: 0.4950 < 0.7071
+crossfeed — mono passthrough
+√ 1 (ok) — mono unchanged: maxDiff 0.000000
+crossfeed — custom cutoff and level
+√ 1 (ok) — more crossfeed at higher level: 0.3490 > 0.0698
+crossfeed — unity-sum: dual-mono tone keeps input RMS (Chu Moy / bs2b Bauer crossfeed)
+√ 1 (ok) — dual-mono 100Hz within ±0.05dB of input (got -0.0383dB)
+resample — 44100→22050 halves length, preserves duration
+√ 1 (is) — target sample rate
+√ 2 (is) — half the samples
+√ 3 (ok) — duration preserved: 1.000
+resample — 22050→44100 doubles length
+√ 1 (is) — target sample rate
+√ 2 (is) — double the samples
+resample — returns this (chainable)
+√ 1 (ok) — same instance (chainable)
+√ 2 (is) — rate updated
+resample — same rate is no-op
+√ 1 (is) — rate unchanged
+√ 2 (is) — length unchanged
+√ 3 (ok) — audio unchanged
+resample — preserves pitch
+√ 1 (ok) — 440Hz preserved at 48k: energy 0.500
+resample — stereo
+√ 1 (is) — stereo preserved
+√ 2 (is) — target rate
+resample – sinc downsampling keeps a tone clean
+√ 1 (ok) — 44.1k→22.05k, 1 kHz: 83.5 dB
+√ 2 (ok) — 48k→44.1k, 1 kHz: 66.6 dB
+resample – sinc downsampling: flat to 0.9 of the new Nyquist, aliases down, alike at 2:1, 3:1 and 4.35:1
+√ 1 (ok) — 44100→22050: 0.9 Nyquist at 0.10 dB
+√ 2 (ok) — 44100→22050: 1.1× Nyquist aliases at -38.6 dB
+√ 3 (ok) — 44100→22050: 1.36× Nyquist aliases at -62.3 dB
+√ 4 (ok) — 48000→16000: 0.9 Nyquist at 0.10 dB
+√ 5 (ok) — 48000→16000: 1.1× Nyquist aliases at -38.6 dB
+√ 6 (ok) — 48000→16000: 1.36× Nyquist aliases at -62.1 dB
+√ 7 (ok) — 96000→22050: 0.9 Nyquist at 0.08 dB
+√ 8 (ok) — 96000→22050: 1.1× Nyquist aliases at -40.9 dB
+√ 9 (ok) — 96000→22050: 1.36× Nyquist aliases at -62.6 dB
+resample — non-destructive (undoable)
+√ 1 (is) — resampled
+√ 2 (is) — one edit
+√ 3 (is) — undo restores original rate
+√ 4 (is) — edit removed
+resample — chainable with other ops
+√ 1 (is) — resampled rate
+√ 2 (is) — two edits
+√ 3 (is) — output at new rate
+√ 4 (ok) — 440Hz survives resample+gain: 0.251
+resample — invalid rate/type throw
+√ 1 (ok) — RangeError for rate 0
+√ 2 (ok) — RangeError for rate -1
+√ 3 (ok) — RangeError for rate Infinity
+√ 4 (ok) — RangeError for rate NaN
+√ 5 (ok) — RangeError for rate 48000
+√ 6 (ok) — RangeError for unknown type
+boundary — stream reads across page boundaries
+√ 1 (is) — all samples streamed
+√ 2 (ok) — sample 63 at page boundary correct (0.2813 ≈ 0.2813)
+√ 3 (ok) — sample 64 at page boundary correct (0.2857 ≈ 0.2857)
+√ 4 (ok) — sample 127 at page boundary correct (0.5670 ≈ 0.5670)
+√ 5 (ok) — sample 128 at page boundary correct (0.5714 ≈ 0.5714)
+√ 6 (ok) — sample 191 at page boundary correct (0.8527 ≈ 0.8527)
+√ 7 (ok) — sample 192 at page boundary correct (0.8571 ≈ 0.8571)
+boundary — dither stays within 1 LSB across page boundaries
+√ 1 (is) — length preserved
+√ 2 (ok) — every sample within TPDF bound incl. page boundaries (max dev 1.25 LSB)
+boundary — pitch shift continuous across page boundaries
+√ 1 (is) — duration preserved
+√ 2 (ok) — no dropouts at page seams (min window rms 0.353)
+√ 3 (ok) — pitch shifted to ≈880Hz (880)
+boundary — block size does not divide page size evenly
+√ 1 (is) — length preserved
+√ 2 (ok) — sample at page boundary correct
+√ 3 (ok) — sample after page boundary correct
+boundary — reverse across blocks matches flat render
+√ 1 (is) — length preserved
+√ 2 (ok) — first sample ≈ 1 (got 0.9961)
+√ 3 (ok) — last sample ≈ 0 (got 0.0000)
+√ 4 (ok) — reversed ramp is monotonically decreasing
+boundary — reverse streaming matches flat render
+√ 1 (is) — lengths match
+√ 2 (ok) — stream matches flat reverse (max diff 0.000000)
+boundary — filter state continuity across blocks
+√ 1 (is) — lengths match
+√ 2 (ok) — filter state continuous across blocks (max diff 0.000000)
+boundary — fade spans page boundary
+√ 1 (ok) — fade starts at 0
+√ 2 (ok) — monotonic across first page boundary
+√ 3 (ok) — fade end ≈ 1
+√ 4 (ok) — post-fade region untouched
+boundary — crop+gain across page boundary stream vs flat
+√ 1 (is) — lengths match
+√ 2 (ok) — crop+gain stream matches flat (max diff 0.000000)
+boundary — concurrent decode + stream across page boundary
+√ 1 (ok) — all samples correct across page boundary
+boundary — evicted pages restored during streaming
+√ 1 (is) — stream length matches flat after restore
+√ 2 (ok) — restored pages stream correctly (max diff 0.0000)
+dither — 16-bit SNR > 80 dB for full-scale sine
+√ 1 (ok) — 16-bit SNR: 93.3 dB > 80 dB
+dither — 8-bit SNR > 35 dB for full-scale sine
+√ 1 (ok) — 8-bit SNR: 45.1 dB > 35 dB
+dither — TPDF noise floor uniform (not correlated with signal)
+√ 1 (ok) — noise floor uniform: max deviation 1.8% < 30%
+dither — noise-shape pushes noise above ~Nyquist/2 (8-bit silence)
+√ 1 (ok) — shaped low-freq noise ≥10× quieter: 5.42e-7 < 3.43e-5 × 0.1
+√ 2 (ok) — shaped high-freq noise boosted: 2.05e-4 > 5.07e-5 × 1.5
+dither — noise-shape preserves signal (440Hz sine, 16-bit)
+√ 1 (ok) — shaped 16-bit signal preserved: maxDiff 0.000140 < 0.001
+dither — noise-shape state persists across stream blocks (no boundary clicks)
+√ 1 (ok) — multi-block stream: 44 blocks
+√ 2 (ok) — stream≈read RMS: 0.7071 vs 0.7071
+resample — round-trip 44100→48000→44100 preserves energy
+√ 1 (ok) — energy preserved: 0.7071 → 0.7071 (0.0% < 5%)
+resample — round-trip preserves pitch at 440 Hz
+√ 1 (ok) — 440Hz dominant after round-trip: 0.500 vs harmonic 0.000
+resample — downsampling attenuates above new Nyquist
+√ 1 (ok) — 5kHz survives: rms 0.707
+√ 2 (ok) — 15kHz attenuated vs 5kHz: 0.002 < 0.707 × 0.1
+resample — sinc preserves length and 1kHz amplitude (44100→22050)
+√ 1 (is) — output length
+√ 2 (ok) — 1kHz amplitude ≈ 0.5 (got 0.500)
+resample — sinc upsample 44100→48000 preserves pitch
+√ 1 (is) — output length
+√ 2 (ok) — 1kHz dominant: 0.500 >> 0.000
+resample — sinc 1kHz round-trip 44100↔96000 preserves signal
+√ 1 (ok) — 1kHz round-trip ≈ 0.5 (got 0.500)
+resample — sinc stream≡read (state-free, deterministic)
+√ 1 (is) — lengths match
+√ 2 (ok) — stream≡read max diff 0.00e+0
+resample — sinc anti-aliasing survives structural composition
+√ 1 (ok) — sinc survives crop: rms 0.001
+√ 2 (ok) — sinc survives reverse: rms 0.002
+allpass — flat magnitude across frequencies (< ±1 dB)
+√ 1 (ok) — allpass 100Hz: -0.00 dB
+√ 2 (ok) — allpass 500Hz: -0.00 dB
+√ 3 (ok) — allpass 1000Hz: -0.00 dB
+√ 4 (ok) — allpass 5000Hz: -0.00 dB
+√ 5 (ok) — allpass 10000Hz: -0.00 dB
+highpass — frequency response: attenuates below cutoff, passes above
+√ 1 (ok) — 100Hz: -40.0 dB (< -10)
+√ 2 (ok) — 500Hz: -12.3 dB (< -3)
+√ 3 (ok) — 2kHz: -0.3 dB (> -3)
+√ 4 (ok) — 5kHz: -0.0 dB (> -1)
+lowpass — frequency response: passes below cutoff, attenuates above
+√ 1 (ok) — 100Hz: -0.0 dB (> -1)
+√ 2 (ok) — 500Hz: -0.3 dB (> -3)
+√ 3 (ok) — 2kHz: -12.4 dB (< -3)
+√ 4 (ok) — 5kHz: -28.7 dB (< -10)
+crossfade — equal-power: RMS constant ±1 dB through transition
+√ 1 (ok) — mid-transition: 0.00 dB (< ±1)
+√ 2 (ok) — post-transition: 0.00 dB (< ±0.5)
+stream≡read — crossfeed
+√ 1 (is) — crossfeed ch0: length
+√ 2 (ok) — crossfeed ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — crossfeed ch1: length
+√ 4 (ok) — crossfeed ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — vocals isolate
+√ 1 (is) — vocals ch0: length
+√ 2 (ok) — vocals ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — vocals ch1: length
+√ 4 (ok) — vocals ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — vocals remove
+√ 1 (is) — vocals-remove ch0: length
+√ 2 (ok) — vocals-remove ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — vocals-remove ch1: length
+√ 4 (ok) — vocals-remove ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — pan
+√ 1 (is) — pan ch0: length
+√ 2 (ok) — pan ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — pan ch1: length
+√ 4 (ok) — pan ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — pan with range
+√ 1 (is) — pan-range ch0: length
+√ 2 (ok) — pan-range ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — pan-range ch1: length
+√ 4 (ok) — pan-range ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — speed 2x
+√ 1 (is) — speed-2x ch0: length
+√ 2 (ok) — speed-2x ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — speed 0.5x
+√ 1 (is) — speed-0.5x ch0: length
+√ 2 (ok) — speed-0.5x ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — highpass + gain + trim
+√ 1 (is) — hp+gain+trim ch0: length
+√ 2 (ok) — hp+gain+trim ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — vocals + lowpass + normalize
+√ 1 (is) — vocals+lp+norm ch0: length
+√ 2 (ok) — vocals+lp+norm ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — vocals+lp+norm ch1: length
+√ 4 (ok) — vocals+lp+norm ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — reverse + gain + fade
+√ 1 (is) — rev+gain+fade ch0: length
+√ 2 (ok) — rev+gain+fade ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — crop + speed + pan (stereo)
+√ 1 (is) — crop+speed+pan ch0: length
+√ 2 (ok) — crop+speed+pan ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — crop+speed+pan ch1: length
+√ 4 (ok) — crop+speed+pan ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — crossfeed + highpass + gain
+√ 1 (is) — crossfeed+hp+gain ch0: length
+√ 2 (ok) — crossfeed+hp+gain ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — crossfeed+hp+gain ch1: length
+√ 4 (ok) — crossfeed+hp+gain ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — pad + repeat + gain
+√ 1 (is) — pad+repeat+gain ch0: length
+√ 2 (ok) — pad+repeat+gain ch0: stream≈read (maxDiff: 0.000000)
+speed(2) — halves duration, shifts pitch up
+√ 1 (is) — duration halved
+√ 2 (is) — sample count halved
+√ 3 (ok) — 880Hz dominant: 0.500 vs 0.000
+speed(0.5) — doubles duration
+√ 1 (is) — duration doubled
+√ 2 (is) — sample count doubled
+speed(-1) — reverses audio
+√ 1 (ok) — first ≈ 1 (got 0.999)
+√ 2 (ok) — last ≈ 0 (got 0.000)
+speed(0) — throws RangeError on read
+√ 1 (ok) — RangeError on speed(0)
+speed — stereo preserves channel count
+√ 1 (is) — stereo preserved
+√ 2 (is) — channels same length
+stream≡read — bandpass
+√ 1 (is) — bandpass ch0: length
+√ 2 (ok) — bandpass ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — notch
+√ 1 (is) — notch ch0: length
+√ 2 (ok) — notch ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — eq (peak)
+√ 1 (is) — eq ch0: length
+√ 2 (ok) — eq ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — lowshelf
+√ 1 (is) — lowshelf ch0: length
+√ 2 (ok) — lowshelf ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — highshelf
+√ 1 (is) — highshelf ch0: length
+√ 2 (ok) — highshelf ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — allpass
+√ 1 (is) — allpass ch0: length
+√ 2 (ok) — allpass ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — mix with audio source
+√ 1 (is) — mix ch0: length
+√ 2 (ok) — mix ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — remix mono→stereo
+√ 1 (is) — remix-2 ch0: length
+√ 2 (ok) — remix-2 ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — remix-2 ch1: length
+√ 4 (ok) — remix-2 ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — remix stereo swap
+√ 1 (is) — remix-swap ch0: length
+√ 2 (ok) — remix-swap ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — remix-swap ch1: length
+√ 4 (ok) — remix-swap ch1: stream≈read (maxDiff: 0.000000)
+stream≡read — remix stereo→mono
+√ 1 (is) — remix-mono ch0: length
+√ 2 (ok) — remix-mono ch0: stream≈read (maxDiff: 0.000000)
+stream≡read — clip with gain
+√ 1 (is) — clip+gain ch0: length
+√ 2 (ok) — clip+gain ch0: stream≈read (maxDiff: 0.000000)
+bandpass — passes center, rejects flanks
+√ 1 (ok) — 100Hz flank: -20.0 dB (< -10)
+√ 2 (ok) — center 1kHz passes: 0.0 dB (> -3)
+√ 3 (ok) — 10kHz flank: -21.6 dB (< -10)
+notch — rejects center, passes flanks
+√ 1 (ok) — 200Hz flank: -0.0 dB (±2)
+√ 2 (ok) — center 1kHz: -83.0 dB (< -10)
+√ 3 (ok) — 5kHz flank: -0.0 dB (±2)
+eq — peak boost at center, flat elsewhere
+√ 1 (ok) — 100Hz flat: 0.2 dB (±2)
+√ 2 (ok) — 1kHz boost: 12.0 dB (≈ +12)
+√ 3 (ok) — 10kHz flat: 0.1 dB (±2)
+lowshelf — boost below, flat above
+√ 1 (ok) — 100Hz boosted: 12.0 dB (> 9)
+√ 2 (ok) — 5kHz flat: 0.0 dB (±2)
+highshelf — boost above, flat below
+√ 1 (ok) — 200Hz flat: 0.0 dB (±2)
+√ 2 (ok) — 8kHz boosted: 12.0 dB (> 9)
+live-decode — crossfeed streams on push source
+√ 1 (is) — all 16384 samples streamed through crossfeed
+live-decode — vocals streams on push source
+√ 1 (ok) — vocals streamed some blocks
+√ 2 (is) — stereo preserved
+live-decode — pan streams on push source
+√ 1 (ok) — right louder after pan(1): L=0.000 R=0.500
+live-decode — fade streams on push source
+√ 1 (ok) — fade starts near 0 (got 0.000)
+live-decode — gain chain streams on push source
+√ 1 (is) — all samples streamed
+√ 2 (ok) — gain+fade applied, peak 0.251 ≈ 0.251
+live-decode — remix mono→stereo on push source
+√ 1 (ok) — remixed to stereo (got 2 channels)
+boundary — crossfeed streaming matches flat render
+√ 1 (is) — crossfeed page-boundary ch0: length
+√ 2 (ok) — crossfeed page-boundary ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — crossfeed page-boundary ch1: length
+√ 4 (ok) — crossfeed page-boundary ch1: stream≈read (maxDiff: 0.000000)
+boundary — vocals streaming matches flat render
+√ 1 (is) — vocals page-boundary ch0: length
+√ 2 (ok) — vocals page-boundary ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — vocals page-boundary ch1: length
+√ 4 (ok) — vocals page-boundary ch1: stream≈read (maxDiff: 0.000000)
+boundary — pan streaming matches flat render
+√ 1 (is) — pan page-boundary ch0: length
+√ 2 (ok) — pan page-boundary ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — pan page-boundary ch1: length
+√ 4 (ok) — pan page-boundary ch1: stream≈read (maxDiff: 0.000000)
+boundary — mix streaming matches flat render
+√ 1 (is) — mix page-boundary ch0: length
+√ 2 (ok) — mix page-boundary ch0: stream≈read (maxDiff: 0.000000)
+boundary — remix streaming matches flat render
+√ 1 (is) — remix page-boundary ch0: length
+√ 2 (ok) — remix page-boundary ch0: stream≈read (maxDiff: 0.000000)
+√ 3 (is) — remix page-boundary ch1: length
+√ 4 (ok) — remix page-boundary ch1: stream≈read (maxDiff: 0.000000)
+analysis — BPM at 60
+√ 1 (ok) — 60 BPM MIREX ±8%: got 60.0, err 0.0%
+analysis — BPM at 80
+√ 1 (ok) — 80 BPM MIREX ±8%: got 81.0, err 1.3%
+analysis — BPM at 140
+√ 1 (ok) — 140 BPM MIREX ±8%: got 143.0, err 2.1%
+analysis — BPM at 180
+√ 1 (ok) — 180 BPM MIREX ±8%: got 184.0, err 2.2%
+analysis — beats within 70ms of click positions (MIREX)
+√ 1 (ok) — 16/17 beats within 70ms (94%)
+analysis — onsets within 50ms of click positions
+√ 1 (ok) — 12/12 onsets within 50ms (100%)
+stream≡read — mix + normalize + fade
+√ 1 (is) — mix+norm+fade ch0: length
+√ 2 (ok) — mix+norm+fade ch0: stream≈read (maxDiff: 0.000000)
+composition — filter + gain + dither (mastering chain produces audio)
+√ 1 (is) — mono preserved
+√ 2 (ok) — has samples
+√ 3 (ok) — audible output: rms 0.501
+filter — sequential filters build cumulative response
+√ 1 (ok) — cascaded lowpass attenuates more: 1x=0.0419 > 2x=0.0025
+markers — crop shifts marker times
+√ 1 (is) — both markers survive crop
+√ 2 (is) — marker a preserved
+√ 3 (ok) — marker a at 1 → 0.5 (got 0.5)
+√ 4 (ok) — marker b at 3 → 2.5 (got 2.5)
+markers — crop drops markers outside range
+√ 1 (is) — only inside-range marker survives
+√ 2 (is) — inside preserved
+√ 3 (ok) — time: 2 → 1 (got 1)
+markers — reverse flips marker times
+√ 1 (is) — both markers preserved
+√ 2 (ok) — reversed: time 3 → ~1 (got 0.9999773242630385)
+√ 3 (ok) — reversed: time 1 → ~3 (got 2.9999773242630385)
+√ 4 (is) — first after reverse is "late"
+√ 5 (is) — second after reverse is "early"
+markers — crop+reverse chains correctly
+√ 1 (is) — marker survives crop+reverse
+√ 2 (ok) — crop+reverse: 1.5 → 1.5 (got 1.4999773242630385)
+markers — speed 2x halves marker times
+√ 1 (is) — both survive speed
+√ 2 (ok) — a: 1 → 0.5 (got 0.5)
+√ 3 (ok) — b: 2 → 1 (got 1)
+regions — crop clips region bounds
+√ 1 (is) — region survives
+√ 2 (ok) — region.at: 1 → 0.5 (got 0.5)
+√ 3 (ok) — region.duration stable (got 2)
+───
+# total 564 (1897 assertions)
+# pass 545
+# skip 19
+context: one per page, reachable, shared by the engine and the worker facade
+√ 1 (ok) — audio.context
+√ 2 (is) — audioWorker.context is the same one
+√ 3 (is) — running
+local: a sine plays gapless and click-free through a main thread busy for 0.5 s
+√ 1 (ok) — no click, no gap: bend 3.6e-3 (the sine's 1.7e-3) at 2.9950 s: -0.4970,-0.4930,-0.4874,-0.4802,-0.4693,-0.4570,-0.4433
+√ 2 (ok) — never silent inside
+√ 3 (ok) — all 3 s of it (3.000 s)
+worker: renders straight into the worklet; a main thread busy for 2.5 s changes nothing
+√ 1 (ok) — no click, no gap (3.6e-3)
+√ 2 (ok) — never silent inside
+√ 3 (ok) — all 6 s of it (6.000 s)
+start: under 30 ms from play() to sound, the audio there and the context warm
+√ 1 (ok) — local: 0.0 ms (the device adds 29.3 ms)
+√ 2 (ok) — worker: 0.0 ms (the device adds 29.3 ms)
+loop: seamless seams, and the playhead (and a seek) stays in the span
+√ 1 (ok) — no click at the seams (2.4e-3)
+√ 2 (ok) — no gap
+√ 3 (ok) — the playhead stays in [0.1, 0.35] (0.100..0.350)
+√ 4 (ok) — and wraps
+currentTime: what the speakers play, within 2 ms; held at pause, and resume goes on from there
+√ 1 (ok) — |currentTime − heard| ≤ 0.05 ms over 12 readings
+√ 2 (is) — held while paused
+√ 3 (ok) — resumes where it held: 0.6930 → 0.7030 two ramps in
+live edit: heard within 100 ms at the same place, crossfaded
+√ 1 (ok) — heard 45 ms after the edit
+√ 2 (ok) — the edited level
+√ 3 (ok) — no click (1.7e-3) at 0.0127 s
+hand-off: another instance takes over where playback is, no gap, no click
+√ 1 (ok) — the other stops
+√ 2 (ok) — no click (1.7e-3)
+√ 3 (ok) — no gap
+√ 4 (ok) — from the one to the other
+worker: an app worker speaks its own messages, exposes its outputs; the page follows a new one while playing
+√ 1 (is) — the app's messages and the engine's never meet
+√ 2 (ok) — no click (8.3e-4)
+√ 3 (ok) — no gap
+√ 4 (ok) — the new output plays on
+meters: known signals, released when heard (local and worker)
+√ 1 (ok) — local: the tone's first value arrives as it is heard (0.501 s of 0.5)
+√ 2 (ok) — local: rms 0.3535 (0.5/√2 = 0.3536)
+√ 3 (ok) — local: peak 0.5000
+√ 4 (ok) — local: spectrum peaks in band 15 (1 kHz: 15)
+√ 5 (ok) — worker: the tone's first value arrives as it is heard (0.501 s of 0.5)
+√ 6 (ok) — worker: rms 0.3535 (0.5/√2 = 0.3536)
+√ 7 (ok) — worker: peak 0.5000
+√ 8 (ok) — worker: spectrum peaks in band 15 (1 kHz: 15)
+pause, resume, seek and stop ramp: no click
+√ 1 (ok) — no click anywhere (3.7e-3)
+progressive: a pushed source plays what has come, and goes on as more comes
+√ 1 (is) — what came, then the rest once it came
+√ 2 (ok) — faded at the gap, no click (3.5e-3)
+channels: as the source has them, the device downmixes
+√ 1 (is) — six channels reach the destination
+√ 2 (ok) — each on its own channel
+@audio/speaker: chunks play back to back, no gap
+√ 1 (is) — plays into the context given
+√ 2 (ok) — no gap between chunks (4.6e-3)
+√ 3 (ok) — all of it (65534 of 65536 frames)
+───
+# total 14 (45 assertions)
+# pass 14

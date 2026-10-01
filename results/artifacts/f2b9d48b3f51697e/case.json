@@ -1,0 +1,52 @@
+{
+  "adapter": "sox",
+  "version": "sox:      SoX v",
+  "metadata": {
+    "build": "sox:      SoX v\n",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "mode": "subprocess with float WAV I/O"
+  },
+  "test": {
+    "id": "filter.lowpass1.16000.4",
+    "feature": "filter.lowpass1",
+    "title": "filter · lowpass1 · 16000 · 4",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 16000,
+      "channels": 1,
+      "frames": 16000,
+      "signal": "sine",
+      "frequency": 4000,
+      "amplitude": 0.1
+    },
+    "steps": [
+      {
+        "op": "lowpass",
+        "freq": 1000,
+        "order": 1,
+        "Q": 0.7071067811865476
+      }
+    ],
+    "oracle": {
+      "type": "response",
+      "min": -14.495285488505608,
+      "max": -13.895285488505607
+    }
+  },
+  "result": {
+    "id": "filter.lowpass1.16000.4",
+    "feature": "filter.lowpass1",
+    "oracle": "response",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 7.933916999998473,
+    "metrics": {
+      "pass": false,
+      "gainDb": -11.399962491049347,
+      "min": -14.495285488505608,
+      "max": -13.895285488505607,
+      "inputUnchanged": true
+    }
+  }
+}

@@ -1,0 +1,89 @@
+
+> @audio/test@0.1.0 test
+> node scripts/test.js
+
+✔ audio mappings reject dropped operations and unsupported measurement controls (0.776875ms)
+✔ audio composes undo/replay and spectrum from public APIs on repeated inputs (122.047167ms)
+✔ audio delay mapping requests the canonical input-length render without changing echoes (18.580291ms)
+✔ benchmark merge keeps 14 primary contenders plus Audacity with their own environments and sessions (23.265875ms)
+✔ benchmark merge refuses fixture, oracle and repetition mismatches (1.847125ms)
+✔ benchmark merge rejects duplicate contenders, duplicate rows and undefined fixtures (0.411959ms)
+✔ an isolated Audacity artifact retains provenance when the primary speed artifact is absent (0.954333ms)
+✔ benchmark workloads span sizes, channels and operation families with independent exact goldens (2512.280875ms)
+✔ benchmark rejects empty selections and invalid repetitions (0.631083ms)
+✔ benchmark worker closes skipped adapters and rejects input mutation before recording timings (120.195625ms)
+✔ Web Audio probes distinguish native filters from unsupported orders (0.650542ms)
+﹣ chromium renders boundaries and repeated inputs without stale state (0.22975ms) # SKIP
+﹣ firefox renders boundaries and repeated inputs without stale state (0.047ms) # SKIP
+﹣ webkit renders boundaries and repeated inputs without stale state (0.037459ms) # SKIP
+✔ CLI rejects empty selections instead of emitting a green report (138.846791ms)
+✔ CLI records unavailable adapters and fails even with report-only (144.854ms)
+✔ merge rejects different specs and duplicate contenders (147.446625ms)
+✔ regression gate catches missing contenders, mapping loss and new failures (285.279ms)
+✔ reference adapter passes every active core case it supports (714.040792ms)
+✔ harness reports source mutation separately (4.18125ms)
+✔ SoX statistics accept the CLI alignment spaces without inventing missing values (1.664917ms)
+✔ FFmpeg statistics aggregate channel energy and DC before the overall summary (0.489833ms)
+✔ native support rejects controls the mapped filters cannot honor (0.293667ms)
+﹣ FFmpeg delay preserves channel gains and the declared input length (0.038292ms) # SKIP
+﹣ sox native convolution preserves causal timing, channels and the requested tail (0.035959ms) # SKIP
+﹣ ffmpeg native convolution preserves causal timing, channels and the requested tail (0.028958ms) # SKIP
+﹣ FFmpeg noise profiling preserves the signal timeline while reducing the declared noise (0.031084ms) # SKIP
+﹣ SoundStretch accepts its version exit status and converts stretch, rate and pitch units (0.02725ms) # SKIP
+✔ editing goldens are independent literal vectors (1.433292ms)
+✔ mix, insert and crossfade goldens are literal (0.306917ms)
+✔ scalar oracle detects numerical discrepancies (0.436458ms)
+✔ exact oracle rejects corruption, missing channels, ragged and NaN (0.143125ms)
+✔ integrity is not a quality assertion but rejects empty output (0.081084ms)
+✔ spectral pitch ignores extra zero crossings and rejects wrong pitch (21.965583ms)
+✔ response rejects passthrough at a notch; zero is sufficient rejection (9.141417ms)
+✔ rate oracle detects metadata and duration changes (2.174667ms)
+✔ Python contenders only claim operations supplied by their own libraries (1.813042ms)
+✔ Pedalboard mappings reject unsupported controls and hard/soft clipping substitution (0.10775ms)
+﹣ installed Python libraries execute real DSP and analysis (1.759083ms) # SKIP
+﹣ streaming resamplers preserve empty, tiny and final-boundary inputs across worker requests (0.07075ms) # SKIP
+✔ scalar expectations process long stereo signals without argument spreading (42.906833ms)
+✔ synthetic fixtures are reproducible and reject inconsistent segment lengths (30.46ms)
+✔ equal-power crossfade raises identical signals at the midpoint (0.326834ms)
+✔ delay and convolution expectations agree with literal samples and tails (0.886625ms)
+✔ undo-redo checks both restored and redone buffers (1.378541ms)
+✔ independent loudness weighting matches EBU stereo calibration (23.77775ms)
+✔ intersample peak is not mistaken for sample peak (47.157958ms)
+✔ normalization oracle rejects untouched, muted and over-ceiling output (226.063041ms)
+✔ resampler SNR rejects wrong phase and chunk oracle rejects lost flush samples (53.266ms)
+✔ dynamics windows reject bypass and preserve a fully closed gate as valid (11.744333ms)
+✔ limiter checks ceiling and timeline independently of finite output (4.384083ms)
+✔ dither statistics reject silence and unquantized random noise (19.296875ms)
+✔ denoise cannot pass by attenuating or discarding the clean signal (90.446584ms)
+✔ analysis rejects wrong amplitude, missing events and octave tempo errors (3.381834ms)
+✔ partially tested features retain the full case count (0.706042ms)
+✔ basic checks cannot produce a behavior-test pass (0.074042ms)
+✔ missing, failing and broken tests never look like a pass (0.056667ms)
+✔ the matrix preserves partial results and keeps plans in their own details (141.345709ms)
+✔ npm file origins and workspace builds remain distinct in both comparisons (124.055542ms)
+✔ speed results keep their own contenders and versions (41.29375ms)
+✔ empty and reference-only runs show an empty comparison without inventing measurements (141.6005ms)
+✔ speed comparison preserves every operation, profile and tool without fixed dimensions (75.857625ms)
+✔ speed columns follow correctness order and append benchmark-only tools (45.728416ms)
+✔ case evidence combines ordinary skips while preserving custom reasons and measurements (55.112917ms)
+✔ unavailable tools are errors, never successful skips (1.293ms)
+✔ an empty selection fails closed (1.551291ms)
+✔ missing adapter modules fail promptly and close without hanging (18.488959ms)
+✔ async mapping probes and mapping errors are accounted for (0.484167ms)
+✔ input mutation is detected even when output matches (0.923ms)
+✔ failures include replay case, input, actual, expected and diff WAVs (29.945667ms)
+✔ worker detects input mutation across structured clone boundary (24.600625ms)
+✔ synchronous hangs time out and a fresh worker can probe again (537.893833ms)
+✔ spec ids, references and support claims are internally consistent (35.913542ms)
+✔ every active case is executable and every planned case names an oracle (18.703542ms)
+✔ EBU gating fixtures use the same serialized amplitude on every runtime (16.357292ms)
+✔ float WAV round-trips channels and rate exactly (1.367166ms)
+✔ WAV rejects unequal channel lengths (0.178ms)
+ℹ tests 77
+ℹ suites 0
+ℹ pass 67
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 10
+ℹ todo 0
+ℹ duration_ms 2751.951542

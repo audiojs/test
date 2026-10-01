@@ -1,0 +1,70 @@
+{
+  "adapter": "ffmpeg",
+  "version": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "metadata": {
+    "build": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers\nbuilt with Apple clang version 17.0.0 (clang-1700.6.3.2)\nconfiguration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0.1_4 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags= --enable-ffplay --enable-gpl --enable-libsvtav1 --enable-libopus --enable-libx264 --enable-libmp3lame --enable-libdav1d --enable-libvpx --enable-libx265 --enable-openssl --enable-videotoolbox --enable-audiotoolbox --enable-neon\nlibavutil      60.  8.100 / 60.  8.100\nlibavcodec     62. 11.100 / 62. 11.100\nlibavformat    62.  3.100 / 62.  3.100\nlibavdevice    62.  1.100 / 62.  1.100\nlibavfilter    11.  4.100 / 11.  4.100\nlibswscale      9.  1.100 /  9.  1.100\nlibswresample   6.  1.100 /  6.  1.100\n\nExiting with exit code 0\n",
+    "executableSha256": "feaee5cd168960437853cdacabe314b08c8498600177301687b9ef2ff76abc28",
+    "mode": "subprocess with float WAV I/O"
+  },
+  "test": {
+    "id": "dynamics.limiter.zero-lookahead",
+    "feature": "dynamics.limiter",
+    "title": "Limiter ceiling and timeline alignment (0 ms lookahead)",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 48000,
+      "signal": "segments",
+      "segments": [
+        {
+          "signal": "silence",
+          "frames": 4800
+        },
+        {
+          "signal": "impulse",
+          "amplitude": 0.1,
+          "at": 0,
+          "frames": 4800
+        },
+        {
+          "signal": "dc",
+          "value": 0.8,
+          "frames": 28800
+        },
+        {
+          "signal": "silence",
+          "frames": 9600
+        }
+      ]
+    },
+    "steps": [
+      {
+        "op": "limiter",
+        "ceiling": -6,
+        "lookahead": 0,
+        "release": 0.05
+      }
+    ],
+    "oracle": {
+      "type": "limiter",
+      "ceiling": -6,
+      "atol": 0.00001,
+      "probeThreshold": 0.05,
+      "latencyTolerance": 1
+    },
+    "limitations": [
+      "Measured latency is effective output alignment, not a claim about internal algorithm latency metadata."
+    ]
+  },
+  "result": {
+    "id": "dynamics.limiter.zero-lookahead",
+    "feature": "dynamics.limiter",
+    "oracle": "limiter",
+    "level": "conformance",
+    "status": "error",
+    "durationMs": 19.09870900000169,
+    "error": "Error: Command failed: ffmpeg -nostdin -v error -y -i /var/folders/3t/xg6gkls520sbqc17r99qzmdw0000gn/T/audio-test-OhDroz/input.wav -af alimiter=limit=0.5011872336272722:attack=0:release=50:level=false:latency=true -c:a pcm_f32le /var/folders/3t/xg6gkls520sbqc17r99qzmdw0000gn/T/audio-test-OhDroz/output.wav\n[Parsed_alimiter_0 @ 0x72300ca80] Value 0.000000 for parameter 'attack' out of range [0.1 - 80]\n[fc#-1 @ 0x722c5c000] Error applying option 'attack' to filter 'alimiter': Result too large\nError opening output file /var/folders/3t/xg6gkls520sbqc17r99qzmdw0000gn/T/audio-test-OhDroz/output.wav.\nError opening output files: Result too large\n\n    at genericNodeError (node:internal/errors:998:15)\n    at wrappedFn (node:internal/errors:543:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1108:16)\n    at ChildProcess._handle.onexit (node:internal/child_process:305:5)"
+  }
+}

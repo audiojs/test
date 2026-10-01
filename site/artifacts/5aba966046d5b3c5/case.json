@@ -1,0 +1,59 @@
+{
+  "adapter": "audacity",
+  "version": "3.4.2+dfsg-1build4",
+  "metadata": {
+    "mode": "isolated mod-script-pipe; float32 WAV export",
+    "mapping": "native edit/effect commands and linear fades; gains beyond +/-50 dB use multiple Amplify calls; final resampling uses project-rate export, not the interactive Resample menu; Export2 preserves native export boundaries",
+    "python": "/usr/bin/python3",
+    "pythonVersion": "3.12.3",
+    "numpyVersion": "1.26.4",
+    "soundfileVersion": "0.12.1",
+    "libsndfileVersion": "1.2.2",
+    "experimental": true,
+    "source": "https://manual.audacityteam.org/man/scripting_reference.html"
+  },
+  "test": {
+    "id": "edit.gain.1f.2ch",
+    "feature": "edit.gain",
+    "title": "edit · gain · 1f · 2ch",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "frames": 1,
+      "signal": "sample-id"
+    },
+    "steps": [
+      {
+        "op": "gain",
+        "value": 0.25
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "edit.gain.1f.2ch",
+    "feature": "edit.gain",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 169.5413750037551,
+    "metrics": {
+      "channels": 2,
+      "expectedChannels": 2,
+      "lengthDelta": [
+        -1,
+        -1
+      ],
+      "maxAbsError": 0,
+      "rmsError": 0,
+      "pass": false,
+      "reason": "length",
+      "inputUnchanged": true
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "adapter": "ffmpeg",
+  "version": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "metadata": {
+    "build": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers\nbuilt with Apple clang version 17.0.0 (clang-1700.6.3.2)\nconfiguration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0.1_4 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags= --enable-ffplay --enable-gpl --enable-libsvtav1 --enable-libopus --enable-libx264 --enable-libmp3lame --enable-libdav1d --enable-libvpx --enable-libx265 --enable-openssl --enable-videotoolbox --enable-audiotoolbox --enable-neon\nlibavutil      60.  8.100 / 60.  8.100\nlibavcodec     62. 11.100 / 62. 11.100\nlibavformat    62.  3.100 / 62.  3.100\nlibavdevice    62.  1.100 / 62.  1.100\nlibavfilter    11.  4.100 / 11.  4.100\nlibswscale      9.  1.100 /  9.  1.100\nlibswresample   6.  1.100 /  6.  1.100\n\nExiting with exit code 0\n",
+    "executableSha256": "feaee5cd168960437853cdacabe314b08c8498600177301687b9ef2ff76abc28",
+    "mode": "subprocess with float WAV I/O",
+    "measurementPrecision": "Statistics use the CLI text precision; derived energy inherits rounded RMS error."
+  },
+  "test": {
+    "id": "edit.crossfade.1025.2.end",
+    "feature": "edit.crossfade",
+    "title": "edit · crossfade · 1025 · 2 · end",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 2,
+      "frames": 1025,
+      "signal": "sample-id"
+    },
+    "steps": [
+      {
+        "op": "crossfade",
+        "other": {
+          "signal": "dc",
+          "value": 0.125,
+          "frames": 17,
+          "channels": 2,
+          "sampleRate": 48000
+        },
+        "at": 1025,
+        "length": 8,
+        "curve": "linear"
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "edit.crossfade.1025.2.end",
+    "feature": "edit.crossfade",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 20.440374999999904,
+    "metrics": {
+      "channels": 2,
+      "expectedChannels": 2,
+      "lengthDelta": [
+        0,
+        0
+      ],
+      "maxAbsError": 0.06925821304321289,
+      "rmsError": 0.004559393686031678,
+      "pass": false,
+      "reason": "samples",
+      "inputUnchanged": true
+    }
+  }
+}

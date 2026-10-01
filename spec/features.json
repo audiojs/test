@@ -1,0 +1,329 @@
+{
+  "schema": 1,
+  "supportStatus": "Legacy unverified availability hypotheses; use measured adapter results, not these values, for coverage claims.",
+  "support": {
+    "native": "first-class operation",
+    "composed": "expressible from ordinary primitives",
+    "partial": "only part of the contract is available",
+    "absent": "not provided",
+    "unknown": "not yet verified",
+    "na": "outside the contender's scope"
+  },
+  "classes": {
+    "standard": "defined by a published standard",
+    "canonical": "common operation with a mathematical or stable behavioral contract",
+    "editor": "workflow integrity expected from an editor",
+    "specialized": "algorithm-dependent capability requiring metric tests"
+  },
+  "sources": [
+    { "id": "bs1770", "title": "ITU-R BS.1770", "url": "https://www.itu.int/rec/R-REC-BS.1770" },
+    { "id": "ebu", "title": "EBU Loudness Test Set", "url": "https://tech.ebu.ch/publications/ebu_loudness_test_set" },
+    { "id": "webaudio", "title": "Web Audio API", "url": "https://www.w3.org/TR/webaudio-1.0/" },
+    { "id": "wpt", "title": "Web Platform Tests: Web Audio", "url": "https://github.com/web-platform-tests/wpt/tree/master/webaudio" },
+    { "id": "fate", "title": "FFmpeg FATE", "url": "https://www.ffmpeg.org/fate.html" },
+    { "id": "sox", "title": "SoX tests", "url": "https://github.com/chirlu/sox/blob/master/test/README" },
+    { "id": "pedalboard", "title": "Pedalboard tests", "url": "https://github.com/spotify/pedalboard/tree/master/tests" },
+    { "id": "librosa", "title": "librosa tests", "url": "https://github.com/librosa/librosa/tree/main/tests" },
+    { "id": "audacity", "title": "Audacity editor tests", "url": "https://github.com/audacity/audacity/tree/master/src/trackedit/tests" },
+    { "id": "src", "title": "libsamplerate tests", "url": "https://github.com/libsndfile/libsamplerate/tree/master/tests" }
+  ],
+  "features": [
+    {
+      "id": "execution.identity",
+      "title": "Identity processing",
+      "category": "Execution",
+      "class": "canonical",
+      "contract": "Processing with no effective operation preserves every channel and sample.",
+      "sources": ["wpt", "pedalboard"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "native" }
+    },
+    {
+      "id": "execution.block-invariance",
+      "title": "Block-size invariance",
+      "category": "Execution",
+      "class": "canonical",
+      "contract": "Changing block boundaries does not change a batch-equivalent result.",
+      "sources": ["wpt", "pedalboard", "src"],
+      "support": { "audio": "native", "ffmpeg": "partial", "sox": "partial", "pedalboard": "native", "librosa": "na", "audacity": "partial", "webaudio": "native", "libsamplerate": "native" }
+    },
+    {
+      "id": "execution.channel-independence",
+      "title": "Channel independence",
+      "category": "Execution",
+      "class": "canonical",
+      "contract": "Independent processing neither swaps nor leaks channels unless the operation declares mixing.",
+      "sources": ["wpt", "pedalboard", "src"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "native", "audacity": "native", "webaudio": "native", "libsamplerate": "native" }
+    },
+    {
+      "id": "editor.fragment-isolation",
+      "title": "Fragment isolation",
+      "category": "Editor integrity",
+      "class": "editor",
+      "contract": "Transforming a copied or clipped fragment cannot alter its source.",
+      "sources": ["audacity"],
+      "support": { "audio": "native", "ffmpeg": "na", "sox": "na", "pedalboard": "na", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "editor.undo-redo",
+      "title": "Undo and redo",
+      "category": "Editor integrity",
+      "class": "editor",
+      "contract": "An edit and its history state can be reversed and replayed without drift.",
+      "sources": ["audacity"],
+      "support": { "audio": "native", "ffmpeg": "na", "sox": "na", "pedalboard": "na", "librosa": "na", "audacity": "native", "webaudio": "na", "libsamplerate": "na" }
+    },
+    {
+      "id": "editor.seams",
+      "title": "Edit seams",
+      "category": "Editor integrity",
+      "class": "editor",
+      "contract": "The result reports and, where promised, suppresses discontinuities introduced at edit boundaries.",
+      "sources": ["audacity", "sox"],
+      "support": { "audio": "partial", "ffmpeg": "composed", "sox": "native", "pedalboard": "composed", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "edit.trim",
+      "title": "Trim",
+      "category": "Editing",
+      "class": "canonical",
+      "contract": "Select an exact half-open frame interval without changing retained samples.",
+      "sources": ["fate", "sox", "librosa", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "composed", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "edit.reverse",
+      "title": "Reverse",
+      "category": "Editing",
+      "class": "canonical",
+      "contract": "Reverse sample order while preserving channel alignment and frame count.",
+      "sources": ["fate", "sox", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "composed", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "edit.mix",
+      "title": "Mix",
+      "category": "Editing",
+      "class": "canonical",
+      "contract": "Sum aligned channels with declared headroom and length behavior.",
+      "sources": ["fate", "sox", "wpt"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "edit.fade",
+      "title": "Fade",
+      "category": "Editing",
+      "class": "canonical",
+      "contract": "Apply a named envelope with defined endpoints and frame coordinates.",
+      "sources": ["fate", "sox", "audacity", "wpt"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "edit.crossfade",
+      "title": "Crossfade",
+      "category": "Editing",
+      "class": "canonical",
+      "contract": "Overlap two signals under declared complementary curves and duration.",
+      "sources": ["fate", "sox", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "composed", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "level.gain",
+      "title": "Gain",
+      "category": "Level",
+      "class": "canonical",
+      "contract": "Scale every finite sample by the declared linear or decibel factor.",
+      "sources": ["fate", "sox", "pedalboard", "wpt"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "level.peak-normalize",
+      "title": "Peak normalization",
+      "category": "Level",
+      "class": "canonical",
+      "contract": "Reach the target sample peak without changing relative sample values.",
+      "sources": ["sox", "librosa", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "composed", "sox": "native", "pedalboard": "composed", "librosa": "native", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "level.loudness-normalize",
+      "title": "Loudness normalization",
+      "category": "Level",
+      "class": "standard",
+      "contract": "Reach a BS.1770 loudness target while respecting declared true-peak constraints.",
+      "sources": ["bs1770", "ebu", "fate", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "absent", "pedalboard": "absent", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "rate.resample",
+      "title": "Sample-rate conversion",
+      "category": "Time and rate",
+      "class": "specialized",
+      "contract": "Convert rate with defined output length, passband, stopband, alias floor and streaming behavior.",
+      "sources": ["src", "pedalboard", "fate"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "native", "audacity": "native", "webaudio": "native", "libsamplerate": "native" }
+    },
+    {
+      "id": "rate.varispeed",
+      "title": "Varispeed",
+      "category": "Time and rate",
+      "class": "canonical",
+      "contract": "Change pitch and duration by reciprocal declared factors.",
+      "sources": ["sox", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "composed", "sox": "native", "pedalboard": "composed", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "composed" }
+    },
+    {
+      "id": "rate.stretch",
+      "title": "Time stretch",
+      "category": "Time and rate",
+      "class": "specialized",
+      "contract": "Change duration while preserving pitch within declared quality bounds.",
+      "sources": ["librosa", "audacity", "sox", "pedalboard"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "native", "audacity": "native", "webaudio": "absent", "libsamplerate": "na" }
+    },
+    {
+      "id": "rate.pitch",
+      "title": "Pitch shift",
+      "category": "Time and rate",
+      "class": "specialized",
+      "contract": "Change fundamental pitch while preserving duration within declared quality bounds.",
+      "sources": ["librosa", "audacity", "sox", "pedalboard"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "native", "audacity": "native", "webaudio": "absent", "libsamplerate": "na" }
+    },
+    {
+      "id": "filter.biquad",
+      "title": "Biquad filters",
+      "category": "Filters",
+      "class": "canonical",
+      "contract": "Lowpass, highpass, bandpass, notch, allpass and shelf responses meet declared frequency and gain tolerances.",
+      "sources": ["wpt", "pedalboard", "fate", "sox"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "filter.eq",
+      "title": "Parametric EQ",
+      "category": "Filters",
+      "class": "canonical",
+      "contract": "Peak and shelf bands meet center-frequency, gain, Q and far-field tolerances.",
+      "sources": ["wpt", "fate", "sox", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "dynamics.compressor",
+      "title": "Compressor",
+      "category": "Dynamics",
+      "class": "specialized",
+      "contract": "Static curve, attack, release, latency and channel linking match declared behavior.",
+      "sources": ["wpt", "pedalboard", "fate", "sox", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "dynamics.limiter",
+      "title": "Limiter",
+      "category": "Dynamics",
+      "class": "specialized",
+      "contract": "Output respects the declared ceiling and reports lookahead latency.",
+      "sources": ["pedalboard", "fate", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "composed", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "dynamics.gate",
+      "title": "Noise gate",
+      "category": "Dynamics",
+      "class": "specialized",
+      "contract": "Threshold, ratio, range, attack, hold and release follow the declared envelope.",
+      "sources": ["fate", "sox", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "composed", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "effect.delay",
+      "title": "Delay and echo",
+      "category": "Effects",
+      "class": "canonical",
+      "contract": "Copies appear at declared sample offsets, gains and feedback count without drift.",
+      "sources": ["fate", "sox", "pedalboard", "wpt", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "native", "librosa": "composed", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "effect.convolution",
+      "title": "Convolution",
+      "category": "Effects",
+      "class": "canonical",
+      "contract": "Impulse response convolution preserves alignment, channel routing and declared tail length.",
+      "sources": ["wpt", "pedalboard", "fate"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "composed", "pedalboard": "native", "librosa": "composed", "audacity": "partial", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "restoration.dither",
+      "title": "Dither",
+      "category": "Restoration",
+      "class": "specialized",
+      "contract": "Quantization error distribution, noise floor and channel independence meet the declared dither mode.",
+      "sources": ["sox", "audacity"],
+      "support": { "audio": "native", "ffmpeg": "composed", "sox": "native", "pedalboard": "absent", "librosa": "composed", "audacity": "native", "webaudio": "absent", "libsamplerate": "na" }
+    },
+    {
+      "id": "restoration.denoise",
+      "title": "Noise reduction",
+      "category": "Restoration",
+      "class": "specialized",
+      "contract": "Noise reduction improves declared metrics without excessive speech or transient damage.",
+      "sources": ["sox", "audacity", "fate"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "absent", "librosa": "composed", "audacity": "native", "webaudio": "absent", "libsamplerate": "na" }
+    },
+    {
+      "id": "analysis.level",
+      "title": "Peak, RMS and DC",
+      "category": "Analysis",
+      "class": "canonical",
+      "contract": "Peak, RMS, clipping and DC offset match their mathematical definitions.",
+      "sources": ["fate", "sox", "librosa"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "composed", "librosa": "native", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "analysis.loudness",
+      "title": "Integrated loudness",
+      "category": "Analysis",
+      "class": "standard",
+      "contract": "Integrated loudness and gating pass the EBU test vectors within their stated tolerance.",
+      "sources": ["bs1770", "ebu"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "absent", "pedalboard": "absent", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "analysis.true-peak",
+      "title": "True peak",
+      "category": "Analysis",
+      "class": "standard",
+      "contract": "True-peak measurement passes BS.1770 Annex 2 vectors within the stated tolerance.",
+      "sources": ["bs1770", "ebu"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "absent", "pedalboard": "absent", "librosa": "composed", "audacity": "native", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "analysis.spectrum",
+      "title": "Spectrum",
+      "category": "Analysis",
+      "class": "canonical",
+      "contract": "FFT bin frequency, amplitude, window gain and channel behavior match declared definitions.",
+      "sources": ["sox", "librosa"],
+      "support": { "audio": "native", "ffmpeg": "native", "sox": "native", "pedalboard": "composed", "librosa": "native", "audacity": "native", "webaudio": "native", "libsamplerate": "na" }
+    },
+    {
+      "id": "analysis.pitch",
+      "title": "Fundamental pitch",
+      "category": "Analysis",
+      "class": "specialized",
+      "contract": "Voiced frequency and voicing decisions meet declared synthetic and corpus tolerances.",
+      "sources": ["librosa"],
+      "support": { "audio": "native", "ffmpeg": "absent", "sox": "absent", "pedalboard": "absent", "librosa": "native", "audacity": "partial", "webaudio": "composed", "libsamplerate": "na" }
+    },
+    {
+      "id": "analysis.onset-tempo",
+      "title": "Onset and tempo",
+      "category": "Analysis",
+      "class": "specialized",
+      "contract": "Onset and tempo estimates meet declared synthetic and MIREX-style timing tolerances.",
+      "sources": ["librosa"],
+      "support": { "audio": "native", "ffmpeg": "absent", "sox": "absent", "pedalboard": "absent", "librosa": "native", "audacity": "partial", "webaudio": "composed", "libsamplerate": "na" }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+# Tested direct dependencies; full environment captured by pip freeze in CI artifacts.
+numpy==2.3.4
+librosa==0.11.0
+pedalboard==0.9.25
+soundfile==0.13.1
+scipy==1.17.0
+soxr==1.0.0
+samplerate==0.2.3
+pyloudnorm==0.1.1

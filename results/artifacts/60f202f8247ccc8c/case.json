@@ -1,0 +1,49 @@
+{
+  "adapter": "audacity",
+  "version": "3.4.2+dfsg-1build4",
+  "metadata": {
+    "mode": "isolated mod-script-pipe; float32 WAV export",
+    "mapping": "native edit/effect commands and linear fades; gains beyond +/-50 dB use multiple Amplify calls; final resampling uses project-rate export, not the interactive Resample menu; Export2 preserves native export boundaries",
+    "python": "/usr/bin/python3",
+    "pythonVersion": "3.12.3",
+    "numpyVersion": "1.26.4",
+    "soundfileVersion": "0.12.1",
+    "libsndfileVersion": "1.2.2",
+    "experimental": true,
+    "source": "https://manual.audacityteam.org/man/scripting_reference.html"
+  },
+  "test": {
+    "id": "rate.varispeed.duration-pitch",
+    "feature": "rate.varispeed",
+    "title": "Speed 1.25× changes duration and pitch",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 48000,
+      "signal": "sine",
+      "frequency": 440
+    },
+    "steps": [
+      {
+        "op": "speed",
+        "factor": 1.25
+      }
+    ],
+    "oracle": {
+      "type": "tone",
+      "lengthFactor": 0.8,
+      "frequency": 550
+    }
+  },
+  "result": {
+    "id": "rate.varispeed.duration-pitch",
+    "feature": "rate.varispeed",
+    "oracle": "tone",
+    "level": "conformance",
+    "status": "error",
+    "durationMs": 96.40137499943376,
+    "error": "Error: Traceback (most recent call last):\n  File \"/workspace/adapters/audacity.py\", line 92, in <module>\n    elif op == 'speed': command(f'ChangeSpeed: Percentage={(s[\"factor\"]-1)*100}')\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/adapters/audacity.py\", line 23, in command\n    if 'BatchCommand finished: OK' not in reply: raise RuntimeError(text+': '+reply)\n                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: ChangeSpeed: Percentage=25.0: \nYour batch command of ChangeSpeed was not recognized.\nBatchCommand finished: Failed!\n\n\n    at Interface.<anonymous> (file:///workspace/adapters/python.js:60:29)\n    at Interface.emit (node:events:517:28)\n    at [_onLine] [as _onLine] (node:internal/readline/interface:423:12)\n    at [_normalWrite] [as _normalWrite] (node:internal/readline/interface:617:22)\n    at Socket.ondata (node:internal/readline/interface:250:23)\n    at Socket.emit (node:events:517:28)\n    at addChunk (node:internal/streams/readable:368:12)\n    at readableAddChunk (node:internal/streams/readable:341:9)\n    at Readable.push (node:internal/streams/readable:278:10)\n    at Pipe.onStreamRead (node:internal/stream_base_commons:190:23)"
+  }
+}

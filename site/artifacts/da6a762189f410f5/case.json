@@ -1,0 +1,54 @@
+{
+  "adapter": "sox",
+  "version": "sox:      SoX v",
+  "metadata": {
+    "build": "sox:      SoX v\n",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "mode": "subprocess with float WAV I/O"
+  },
+  "test": {
+    "id": "edit.trim.half-open",
+    "feature": "edit.trim",
+    "title": "Trim selects an exact half-open frame interval",
+    "status": "active",
+    "tier": "smoke",
+    "fixture": {
+      "signal": "sample-id",
+      "frames": 37,
+      "channels": 2,
+      "sampleRate": 48000
+    },
+    "steps": [
+      {
+        "op": "trim",
+        "start": 5,
+        "length": 17
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0
+    }
+  },
+  "result": {
+    "id": "edit.trim.half-open",
+    "feature": "edit.trim",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 7.337457999998151,
+    "metrics": {
+      "channels": 2,
+      "expectedChannels": 2,
+      "lengthDelta": [
+        0,
+        0
+      ],
+      "maxAbsError": 2.9802322387695312e-8,
+      "rmsError": 2.1223002813209712e-8,
+      "pass": false,
+      "reason": "samples",
+      "inputUnchanged": true
+    }
+  }
+}

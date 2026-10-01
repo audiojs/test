@@ -1,0 +1,53 @@
+{
+  "adapter": "webaudio",
+  "version": "chromium 153.0.8010.12",
+  "metadata": {
+    "engine": "chromium",
+    "mode": "OfflineAudioContext in a persistent browser; base64 float32 PCM crosses Playwright",
+    "source": "https://www.w3.org/TR/webaudio-1.0/"
+  },
+  "test": {
+    "id": "edit.pad.1023f.1ch",
+    "feature": "edit.pad",
+    "title": "edit · pad · 1023f · 1ch",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 1023,
+      "signal": "sample-id"
+    },
+    "steps": [
+      {
+        "op": "pad",
+        "before": 7,
+        "after": 13
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "edit.pad.1023f.1ch",
+    "feature": "edit.pad",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 1.312207999995735,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        0
+      ],
+      "maxAbsError": 0.1988011598587036,
+      "rmsError": 0.006155690268822947,
+      "pass": false,
+      "reason": "samples",
+      "inputUnchanged": true
+    }
+  }
+}

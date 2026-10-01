@@ -1,0 +1,297 @@
+{
+  "schema": 1,
+  "contenders": [
+    {
+      "id": "audio",
+      "name": "audio",
+      "kind": "JavaScript library",
+      "url": "https://github.com/audiojs/audio",
+      "adapter": "active"
+    },
+    {
+      "id": "ffmpeg",
+      "name": "FFmpeg",
+      "kind": "native CLI",
+      "url": "https://ffmpeg.org/ffmpeg-filters.html",
+      "evidence": "https://www.ffmpeg.org/fate.html",
+      "adapter": "active"
+    },
+    {
+      "id": "sox",
+      "name": "SoX",
+      "kind": "native CLI",
+      "url": "https://sox.sourceforge.net/sox.html",
+      "evidence": "https://github.com/chirlu/sox/blob/master/test/README",
+      "adapter": "active"
+    },
+    {
+      "id": "pedalboard",
+      "name": "Pedalboard",
+      "kind": "Python library",
+      "url": "https://github.com/spotify/pedalboard",
+      "evidence": "https://github.com/spotify/pedalboard/tree/master/tests",
+      "adapter": "active"
+    },
+    {
+      "id": "librosa",
+      "name": "librosa",
+      "kind": "Python library",
+      "url": "https://librosa.org/doc/latest/",
+      "evidence": "https://github.com/librosa/librosa/tree/main/tests",
+      "adapter": "active"
+    },
+    {
+      "id": "audacity",
+      "name": "Audacity",
+      "kind": "desktop editor",
+      "url": "https://www.audacityteam.org/",
+      "evidence": "https://github.com/audacity/audacity/tree/master/src/trackedit/tests",
+      "adapter": "active",
+      "execution": "disposable Linux container; Audacity 3.x mod-script-pipe"
+    },
+    {
+      "id": "webaudio",
+      "name": "Web Audio \u00b7 Chromium",
+      "kind": "browser engine",
+      "url": "https://www.w3.org/TR/webaudio-1.0/",
+      "evidence": "https://github.com/web-platform-tests/wpt/tree/master/webaudio",
+      "adapter": "active"
+    },
+    {
+      "id": "libsamplerate",
+      "name": "libsamplerate",
+      "kind": "native library / Python binding",
+      "url": "https://libsndfile.github.io/libsamplerate/",
+      "evidence": "https://github.com/libsndfile/libsamplerate/tree/master/tests",
+      "adapter": "active",
+      "binding": "https://python-samplerate.readthedocs.io/en/latest/"
+    },
+    {
+      "id": "webaudio-firefox",
+      "name": "Web Audio \u00b7 Firefox",
+      "kind": "browser engine",
+      "url": "https://www.w3.org/TR/webaudio-1.0/",
+      "adapter": "active"
+    },
+    {
+      "id": "webaudio-webkit",
+      "name": "Web Audio \u00b7 WebKit",
+      "kind": "browser engine",
+      "url": "https://www.w3.org/TR/webaudio-1.0/",
+      "adapter": "active"
+    },
+    {
+      "id": "scipy",
+      "name": "SciPy",
+      "kind": "Python library",
+      "url": "https://docs.scipy.org/doc/scipy/reference/signal.html",
+      "adapter": "active"
+    },
+    {
+      "id": "soxr",
+      "name": "SoXR",
+      "kind": "native library / Python binding",
+      "url": "https://python-soxr.readthedocs.io/en/latest/soxr.html",
+      "adapter": "active"
+    },
+    {
+      "id": "pyloudnorm",
+      "name": "pyloudnorm",
+      "kind": "Python library",
+      "url": "https://github.com/csteinmetz1/pyloudnorm",
+      "adapter": "active"
+    },
+    {
+      "id": "rubberband",
+      "name": "Rubber Band",
+      "kind": "native CLI",
+      "url": "https://breakfastquay.com/rubberband/",
+      "adapter": "active"
+    },
+    {
+      "id": "reaper",
+      "name": "REAPER",
+      "kind": "desktop DAW",
+      "url": "https://www.reaper.fm/sdk/reascript/reascript.php",
+      "adapter": "planned",
+      "reason": "ReaScript actions and API; needs a disposable profile/project and export adapter."
+    },
+    {
+      "id": "ardour",
+      "name": "Ardour",
+      "kind": "desktop DAW",
+      "url": "https://manual.ardour.org/lua-scripting/",
+      "adapter": "planned",
+      "reason": "Lua session API; needs an installed version and session/render adapter."
+    },
+    {
+      "id": "lmms",
+      "name": "LMMS",
+      "kind": "desktop DAW",
+      "url": "https://github.com/LMMS/lmms/blob/master/src/core/main.cpp",
+      "adapter": "planned",
+      "reason": "Headless render and float output exist; needs generated project fixtures and render-length mapping."
+    },
+    {
+      "id": "waveform",
+      "name": "Waveform",
+      "kind": "desktop DAW",
+      "url": "https://www.tracktion.com/products/waveform-free",
+      "adapter": "planned",
+      "reason": "Desktop product not run; Tracktion Engine needs a separate adapter."
+    },
+    {
+      "id": "protools",
+      "name": "Pro Tools",
+      "kind": "desktop DAW",
+      "url": "https://developer.avid.com/scripting/",
+      "adapter": "planned",
+      "reason": "Scripting SDK download requires an account and its terms; SDK/application adapter absent."
+    },
+    {
+      "id": "ableton",
+      "name": "Ableton Live",
+      "kind": "desktop DAW",
+      "url": "https://www.ableton.com/en/live-manual/12/max-for-live/",
+      "adapter": "planned",
+      "reason": "Live Object Model through Max for Live; suitable licensed installation and export adapter missing."
+    },
+    {
+      "id": "logic",
+      "name": "Logic Pro",
+      "kind": "desktop DAW",
+      "url": "https://support.apple.com/guide/logicpro/use-scripter-lgce728c68f6/mac",
+      "adapter": "planned",
+      "reason": "Scripter is MIDI processing, not an audio render API; licensed app/project automation needed."
+    },
+    {
+      "id": "flstudio",
+      "name": "FL Studio",
+      "kind": "desktop DAW",
+      "url": "https://www.image-line.com/fl-studio-learning-content/fl-studio-online-manual/html/midi_scripting.htm",
+      "adapter": "planned",
+      "reason": "Documented scripting targets MIDI controllers; fixture/export route unverified."
+    },
+    {
+      "id": "cubase",
+      "name": "Cubase / Nuendo",
+      "kind": "desktop DAW",
+      "url": "https://www.steinberg.help/r/cubase-pro/15.0/en/cubase_nuendo/topics/export_audio_mixdown/export_audio_mixdown_r.html",
+      "adapter": "planned",
+      "reason": "Licensed installation and repeatable project/mixdown automation needed."
+    },
+    {
+      "id": "studiopro",
+      "name": "Fender Studio Pro / Studio One",
+      "kind": "desktop DAW",
+      "url": "https://www.fender.com/products/fender-studio-pro",
+      "adapter": "planned",
+      "reason": "Licensed installation and verified automation route missing."
+    },
+    {
+      "id": "bitwig",
+      "name": "Bitwig Studio",
+      "kind": "desktop DAW",
+      "url": "https://www.bitwig.com/userguide/latest/exporting_audio/",
+      "adapter": "planned",
+      "reason": "Offline export documented; installed application and fixture/render adapter missing."
+    },
+    {
+      "id": "audition",
+      "name": "Adobe Audition",
+      "kind": "desktop editor",
+      "url": "https://helpx.adobe.com/archive/en/audition/cc/2015/audition_reference.pdf",
+      "adapter": "planned",
+      "reason": "Archived official batch-processing documentation; current installed application and automation unverified."
+    },
+    {
+      "id": "wavelab",
+      "name": "WaveLab",
+      "kind": "desktop editor",
+      "url": "https://www.steinberg.net/wavelab/",
+      "adapter": "planned",
+      "reason": "Licensed installation and automated fixture/export route missing."
+    },
+    {
+      "id": "ocenaudio",
+      "name": "ocenaudio",
+      "kind": "desktop editor",
+      "url": "https://www.ocenaudio.com/features",
+      "adapter": "planned",
+      "reason": "Documented desktop features; external command bridge unverified."
+    },
+    {
+      "id": "soundtouch",
+      "name": "SoundTouch",
+      "kind": "native library / CLI",
+      "url": "https://www.surina.net/soundtouch/",
+      "adapter": "active"
+    },
+    {
+      "id": "aubio",
+      "name": "aubio",
+      "kind": "native library / Python binding",
+      "url": "https://aubio.org/",
+      "adapter": "planned",
+      "reason": "Public pitch/onset/tempo APIs; no compatible Python wheel installed in this run."
+    },
+    {
+      "id": "essentia",
+      "name": "Essentia",
+      "kind": "native library / Python binding",
+      "url": "https://essentia.upf.edu/algorithms_reference.html",
+      "adapter": "planned",
+      "reason": "Public analysis APIs; pinned installation and algorithm contracts needed."
+    },
+    {
+      "id": "juce",
+      "name": "JUCE DSP",
+      "kind": "C++ library",
+      "url": "https://docs.juce.com/master/group__juce__dsp.html",
+      "adapter": "planned",
+      "reason": "Public DSP classes; build and PCM adapter needed."
+    },
+    {
+      "id": "miniaudio",
+      "name": "miniaudio",
+      "kind": "C library",
+      "url": "https://miniaud.io/docs/manual/index.html",
+      "adapter": "planned",
+      "reason": "Public filters/conversion APIs; build and PCM adapter needed."
+    },
+    {
+      "id": "tracktion",
+      "name": "Tracktion Engine",
+      "kind": "C++ engine",
+      "url": "https://tracktion.github.io/tracktion_engine/structengine_1_1Renderer_1_1Parameters.html",
+      "adapter": "planned",
+      "reason": "Public render API; build and project adapter needed. Does not establish Waveform UI behavior."
+    },
+    {
+      "id": "tone",
+      "name": "Tone.js",
+      "kind": "JavaScript library",
+      "url": "https://tonejs.github.io/examples/offline",
+      "adapter": "planned",
+      "reason": "Offline rendering API; separate adapter needed beyond browser-native nodes."
+    },
+    {
+      "id": "supercollider",
+      "name": "SuperCollider",
+      "kind": "audio language / server",
+      "url": "https://doc.sccode.org/Guides/Non-Realtime-Synthesis.html",
+      "adapter": "planned",
+      "reason": "Non-realtime synthesis documented; score generation and PCM adapter needed."
+    },
+    {
+      "id": "faust",
+      "name": "Faust",
+      "kind": "DSP language / compiler",
+      "url": "https://faustdoc.grame.fr/manual/quick-start/",
+      "adapter": "planned",
+      "reason": "Compiler and audio architectures; select concrete programs and build adapter first."
+    }
+  ],
+  "reviewedAt": "2026-09-30",
+  "scope": "Bounded market survey. Active means a callable adapter exists; only result files record measured coverage."
+}

@@ -1,0 +1,32 @@
+
+> @audio/reverb@1.0.2 test:all
+> npm test --workspaces --if-present && npm test
+
+
+> @audio/reverb@1.0.2 test
+> node test.js
+
+✔ freeverb factory — only known dry settings remove the tail (0.698709ms)
+✔ reverb — produces wet signal without NaN (3.937958ms)
+✔ reverb — mix=0 is passthrough (0.160917ms)
+✔ reverb — decays over time (3.56225ms)
+✔ freeverb — impulse produces a decaying tail, no NaN (6.675959ms)
+✔ freeverb — mix=0 is passthrough; larger room → longer tail (2.657542ms)
+✔ freeverb — stereo channels decorrelate (2.358ms)
+✔ dattorro — impulse produces a long decaying stereo tail, no NaN (14.182708ms)
+✔ dattorro — decay parameter extends the tail; mono works (20.200333ms)
+✔ convolve — delta IR is identity, delayed delta shifts, mix blends (1.177208ms)
+✔ fdn — measured T60 (Schroeder EDC) matches configured within 30% (9.753542ms)
+✔ fdn — stereo decorrelation, decay control, finite (9.433208ms)
+✔ spring — tail, decay control, mix=0 passthrough, finite (11.076625ms)
+✔ shimmer — octave-up content appears in the tail (25.429375ms)
+✔ shimmer — the tail decays at any setting (feedback loop gain < 1) (54.275792ms)
+✔ convolution — partitioned FFT path matches direct within 1e-6 (275.268166ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 447.227084

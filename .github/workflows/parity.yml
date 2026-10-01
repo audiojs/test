@@ -1,0 +1,153 @@
+name: Processing parity
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '23 4 * * 1'
+permissions:
+  contents: read
+concurrency:
+  group: parity-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: contenders/requirements.txt
+      - run: npm ci
+      - run: node scripts/prepare-ci.js
+      - run: npm ci --prefix contenders/npm --ignore-scripts
+      - run: pip install -r contenders/requirements.txt
+      - run: sudo apt-get update && sudo apt-get install --yes ffmpeg sox rubberband-cli soundstretch
+      - run: npx playwright install --with-deps chromium firefox webkit
+      - name: Test harness and installed adapters
+        run: npm test
+        env:
+          AUDIO_MODULE: ${{ github.workspace }}/contenders/npm/node_modules/audio/audio.js
+          AUDIO_TEST_PYTHON: python3
+          AUDIO_TEST_BROWSERS: '1'
+          AUDIO_TEST_NATIVE: '1'
+      - name: Record installed contenders
+        run: |
+          pip freeze > results/python-environment.txt
+          dpkg-query -W ffmpeg sox rubberband-cli soundstretch > results/native-environment.txt
+      - name: Measure quality and integrity
+        id: parity
+        continue-on-error: true
+        run: npm run parity
+        env:
+          AUDIO_MODULE: ${{ github.workspace }}/contenders/npm/node_modules/audio/audio.js
+      - name: Benchmark validated operations
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        run: npm run bench
+        env:
+          AUDIO_MODULE: ${{ github.workspace }}/contenders/npm/node_modules/audio/audio.js
+      - name: Generate report even when contenders fail
+        if: always() && steps.parity.outcome != 'skipped'
+        run: npm run report
+      - name: Browser checks
+        if: always() && steps.parity.outcome != 'skipped'
+        run: |
+          npm run test:site
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: parity-report
+          path: |
+            results/
+            site/
+            README.md
+          retention-days: 30
+  audacity:
+    name: Audacity isolated editor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install numpy==2.3.4 soundfile==0.13.1
+      - run: node scripts/prepare-ci.js
+      - run: sudo apt-get update && sudo apt-get install --yes audacity xvfb
+      - run: python3 scripts/test-audacity.py
+      - name: Run against a disposable desktop profile
+        id: run
+        continue-on-error: true
+        run: node scripts/audacity-ci.js ${{ github.event_name != 'pull_request' && '--bench' || '' }}
+        env:
+          AUDACITY_BENCH_REPEATS: '7'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audacity-parity
+          path: |
+            results/audacity.json
+            results/audacity-benchmarks.json
+            results/artifacts/
+      - name: Fail on adapter errors
+        if: steps.run.outcome == 'failure'
+        run: exit 1
+  report:
+    needs: [measure, audacity]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: node scripts/prepare-ci.js
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-report
+          path: ci-results/primary
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: audacity-parity
+          path: ci-results/audacity/results
+      - run: node scripts/ci-report.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: combined-parity-report
+          path: |
+            results/
+            site/
+            README.md
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: site
+      - name: Gate merged discrepancies, adapter errors and lost coverage
+        run: npm run gate
+  deploy:
+    needs: [report]
+    if: always() && needs.report.result == 'success' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.ENABLE_PAGES == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

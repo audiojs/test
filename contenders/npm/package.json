@@ -1,0 +1,6 @@
+{
+  "name": "audio-test-contenders",
+  "private": true,
+  "type": "module",
+  "dependencies": { "audio": "2.9.0", "@audio/neural-denoise": "0.1.0" }
+}

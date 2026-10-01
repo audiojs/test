@@ -1,0 +1,71 @@
+{
+  "adapter": "ffmpeg",
+  "version": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers",
+  "metadata": {
+    "build": "ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers\nbuilt with Apple clang version 17.0.0 (clang-1700.6.3.2)\nconfiguration: --prefix=/opt/homebrew/Cellar/ffmpeg/8.0.1_4 --enable-shared --enable-pthreads --enable-version3 --cc=clang --host-cflags= --host-ldflags= --enable-ffplay --enable-gpl --enable-libsvtav1 --enable-libopus --enable-libx264 --enable-libmp3lame --enable-libdav1d --enable-libvpx --enable-libx265 --enable-openssl --enable-videotoolbox --enable-audiotoolbox --enable-neon\nlibavutil      60.  8.100 / 60.  8.100\nlibavcodec     62. 11.100 / 62. 11.100\nlibavformat    62.  3.100 / 62.  3.100\nlibavdevice    62.  1.100 / 62.  1.100\nlibavfilter    11.  4.100 / 11.  4.100\nlibswscale      9.  1.100 /  9.  1.100\nlibswresample   6.  1.100 /  6.  1.100\n\nExiting with exit code 0\n",
+    "executableSha256": "feaee5cd168960437853cdacabe314b08c8498600177301687b9ef2ff76abc28",
+    "mode": "subprocess with float WAV I/O",
+    "measurementPrecision": "Statistics use the CLI text precision; derived energy inherits rounded RMS error."
+  },
+  "test": {
+    "id": "rate.stretch.duration-pitch-transient",
+    "feature": "rate.stretch",
+    "title": "Stretch a tone and a separated transient",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 144000,
+      "signal": "segments",
+      "segments": [
+        {
+          "signal": "sine",
+          "frequency": 440,
+          "amplitude": 0.1,
+          "frames": 48000
+        },
+        {
+          "signal": "silence",
+          "frames": 24000
+        },
+        {
+          "signal": "impulse",
+          "at": 0,
+          "amplitude": 1,
+          "frames": 72000
+        }
+      ]
+    },
+    "steps": [
+      {
+        "op": "stretch",
+        "factor": 1.5
+      }
+    ],
+    "oracle": {
+      "type": "stretch-transient",
+      "factor": 1.5,
+      "toneSeconds": 0.8,
+      "frequency": 440,
+      "searchStart": 1.2,
+      "transientTime": 1.5,
+      "timeTolerance": 0.04
+    }
+  },
+  "result": {
+    "id": "rate.stretch.duration-pitch-transient",
+    "feature": "rate.stretch",
+    "oracle": "stretch-transient",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 36.12062499999956,
+    "metrics": {
+      "pass": false,
+      "frequency": 440.0080041097984,
+      "lengthError": -2026,
+      "timeError": -0.014854166666666835,
+      "inputUnchanged": true
+    }
+  }
+}

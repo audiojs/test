@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "cases": [
+    {
+      "id": "execution.identity.impulse",
+      "feature": "execution.identity",
+      "title": "Identity preserves a stereo impulse",
+      "status": "active",
+      "tier": "smoke",
+      "fixture": {
+        "signal": "impulse",
+        "frames": 31,
+        "channels": 2,
+        "sampleRate": 48000
+      },
+      "steps": [],
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "execution.channel-independence.reverse",
+      "feature": "execution.channel-independence",
+      "title": "Reverse keeps independent stereo channels aligned",
+      "status": "active",
+      "tier": "smoke",
+      "fixture": {
+        "signal": "sample-id",
+        "frames": 33,
+        "channels": 2,
+        "sampleRate": 44100
+      },
+      "steps": [
+        {
+          "op": "reverse"
+        }
+      ],
+      "oracle": {
+        "type": "exact",
+        "atol": 0.000001
+      }
+    },
+    {
+      "id": "edit.trim.half-open",
+      "feature": "edit.trim",
+      "title": "Trim selects an exact half-open frame interval",
+      "status": "active",
+      "tier": "smoke",
+      "fixture": {
+        "signal": "sample-id",
+        "frames": 37,
+        "channels": 2,
+        "sampleRate": 48000
+      },
+      "steps": [
+        {
+          "op": "trim",
+          "start": 5,
+          "length": 17
+        }
+      ],
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "edit.reverse.sample-exact",
+      "feature": "edit.reverse",
+      "title": "Reverse is sample-exact",
+      "status": "active",
+      "tier": "smoke",
+      "fixture": {
+        "signal": "sample-id",
+        "frames": 65,
+        "channels": 1,
+        "sampleRate": 48000
+      },
+      "steps": [
+        {
+          "op": "reverse"
+        }
+      ],
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "edit.reverse.involution",
+      "feature": "edit.reverse",
+      "title": "Reversing twice is identity",
+      "status": "active",
+      "tier": "core",
+      "fixture": {
+        "signal": "sample-id",
+        "frames": 257,
+        "channels": 2,
+        "sampleRate": 48000
+      },
+      "steps": [
+        {
+          "op": "reverse"
+        },
+        {
+          "op": "reverse"
+        }
+      ],
+      "oracle": {
+        "type": "exact",
+        "atol": 0.000001
+      }
+    },
+    {
+      "id": "edit.reverse.block-plus-one",
+      "feature": "execution.block-invariance",
+      "title": "Reverse crosses a 1024-frame boundary",
+      "status": "active",
+      "tier": "core",
+      "fixture": {
+        "signal": "sample-id",
+        "frames": 1025,
+        "channels": 2,
+        "sampleRate": 48000
+      },
+      "steps": [
+        {
+          "op": "reverse"
+        }
+      ],
+      "oracle": {
+        "type": "exact",
+        "atol": 0.000001
+      }
+    },
+    {
+      "id": "level.gain.minus-six-db",
+      "feature": "level.gain",
+      "title": "Minus 6.0206 dB halves every sample",
+      "status": "active",
+      "tier": "smoke",
+      "fixture": {
+        "signal": "sine",
+        "frames": 480,
+        "channels": 2,
+        "sampleRate": 48000,
+        "frequency": 997,
+        "amplitude": 0.5
+      },
+      "steps": [
+        {
+          "op": "gain-db",
+          "db": -6.020599913279624
+        }
+      ],
+      "oracle": {
+        "type": "exact",
+        "atol": 0.000001
+      }
+    },
+    {
+      "id": "editor.fragment-isolation.reverse",
+      "feature": "editor.fragment-isolation",
+      "title": "Reversing a clipped fragment leaves its source unchanged",
+      "status": "active",
+      "tier": "core",
+      "fixture": {
+        "signal": "sample-id",
+        "frames": 1025,
+        "channels": 2,
+        "sampleRate": 48000
+      },
+      "workflow": {
+        "op": "clip-reverse",
+        "start": 127,
+        "length": 769
+      },
+      "oracle": {
+        "type": "exact-with-source",
+        "atol": 0
+      },
+      "adapters": [
+        "reference",
+        "audio"
+      ]
+    }
+  ]
+}

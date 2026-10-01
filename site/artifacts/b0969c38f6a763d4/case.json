@@ -1,0 +1,53 @@
+{
+  "adapter": "audacity",
+  "version": "3.4.2+dfsg-1build4",
+  "metadata": {
+    "mode": "isolated mod-script-pipe; float32 WAV export",
+    "experimental": true,
+    "source": "https://manual.audacityteam.org/man/scripting_reference.html"
+  },
+  "test": {
+    "id": "edit.reverse-range.1f.1ch",
+    "feature": "edit.reverse-range",
+    "title": "edit · reverse-range · 1f · 1ch",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 1,
+      "signal": "sample-id"
+    },
+    "steps": [
+      {
+        "op": "reverse-range",
+        "start": 0,
+        "length": 1
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "edit.reverse-range.1f.1ch",
+    "feature": "edit.reverse-range",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 125.81087500043213,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        -1
+      ],
+      "maxAbsError": 0,
+      "rmsError": 0,
+      "pass": false,
+      "reason": "length",
+      "inputUnchanged": true
+    }
+  }
+}

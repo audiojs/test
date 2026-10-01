@@ -1,0 +1,139 @@
+{
+  "adapter": "webaudio-webkit",
+  "version": "webkit 26.6",
+  "metadata": {
+    "engine": "webkit",
+    "mode": "OfflineAudioContext in a persistent browser; PCM crosses Playwright",
+    "source": "https://www.w3.org/TR/webaudio-1.0/"
+  },
+  "test": {
+    "id": "dynamics.compressor.envelope",
+    "feature": "dynamics.compressor",
+    "title": "Compressor transfer, attack settling and release recovery",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 96000,
+      "signal": "segments",
+      "segments": [
+        {
+          "signal": "dc",
+          "value": 0.03,
+          "frames": 24000
+        },
+        {
+          "signal": "dc",
+          "value": 0.5,
+          "frames": 48000
+        },
+        {
+          "signal": "dc",
+          "value": 0.03,
+          "frames": 24000
+        }
+      ]
+    },
+    "steps": [
+      {
+        "op": "compressor",
+        "threshold": -18,
+        "ratio": 4,
+        "knee": 0,
+        "attack": 0.01,
+        "release": 0.1,
+        "makeup": 0
+      }
+    ],
+    "oracle": {
+      "type": "dynamics",
+      "windows": [
+        {
+          "start": 0.3,
+          "end": 0.45,
+          "minDb": -0.1,
+          "maxDb": 0.1
+        },
+        {
+          "start": 0.501,
+          "end": 0.503,
+          "minDb": -8,
+          "maxDb": 0
+        },
+        {
+          "start": 0.9,
+          "end": 1.3,
+          "minDb": -9.2,
+          "maxDb": -8.7
+        },
+        {
+          "start": 1.501,
+          "end": 1.505,
+          "minDb": -10,
+          "maxDb": -2
+        },
+        {
+          "start": 1.9,
+          "end": 1.99,
+          "minDb": -0.5,
+          "maxDb": 0.1
+        }
+      ]
+    }
+  },
+  "result": {
+    "id": "dynamics.compressor.envelope",
+    "feature": "dynamics.compressor",
+    "oracle": "dynamics",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 356.2459579999995,
+    "metrics": {
+      "pass": false,
+      "windows": [
+        {
+          "start": 0.3,
+          "end": 0.45,
+          "minDb": -0.1,
+          "maxDb": 0.1,
+          "gainDb": 8.099868178153084,
+          "pass": false
+        },
+        {
+          "start": 0.501,
+          "end": 0.503,
+          "minDb": -8,
+          "maxDb": 0,
+          "gainDb": -17.466542619842727,
+          "pass": false
+        },
+        {
+          "start": 0.9,
+          "end": 1.3,
+          "minDb": -9.2,
+          "maxDb": -8.7,
+          "gainDb": -0.8845160221234201,
+          "pass": false
+        },
+        {
+          "start": 1.501,
+          "end": 1.505,
+          "minDb": -10,
+          "maxDb": -2,
+          "gainDb": 23.732232762236364,
+          "pass": false
+        },
+        {
+          "start": 1.9,
+          "end": 1.99,
+          "minDb": -0.5,
+          "maxDb": 0.1,
+          "gainDb": 8.099868178153137,
+          "pass": false
+        }
+      ],
+      "inputUnchanged": true
+    }
+  }
+}

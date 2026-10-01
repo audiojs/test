@@ -1,0 +1,52 @@
+{
+  "adapter": "sox",
+  "version": "SoX 14.4.2_6 (Homebrew package)",
+  "metadata": {
+    "version": "SoX 14.4.2_6 (Homebrew package)",
+    "build": "sox:      SoX v\n",
+    "executable": "/opt/homebrew/Cellar/sox/14.4.2_6/bin/sox",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "packageVersion": "14.4.2_6",
+    "versionSource": "resolved Homebrew installation path; binary omits version",
+    "mode": "subprocess with float WAV I/O",
+    "measurementPrecision": "Statistics use the CLI text precision; derived energy inherits rounded RMS error."
+  },
+  "test": {
+    "id": "analysis.energy.impulse",
+    "feature": "analysis.energy",
+    "title": "analysis · energy · impulse",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 4800,
+      "signal": "impulse"
+    },
+    "steps": [
+      {
+        "op": "analyze",
+        "name": "energy"
+      }
+    ],
+    "oracle": {
+      "type": "scalar",
+      "atol": 0.00001
+    }
+  },
+  "result": {
+    "id": "analysis.energy.impulse",
+    "feature": "analysis.energy",
+    "oracle": "scalar",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 6.845459000003757,
+    "metrics": {
+      "pass": false,
+      "actual": 0.5624669999999999,
+      "expected": 0.5625,
+      "absoluteError": 0.00003300000000006076,
+      "inputUnchanged": true
+    }
+  }
+}

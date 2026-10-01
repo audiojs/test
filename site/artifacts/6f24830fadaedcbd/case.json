@@ -1,0 +1,52 @@
+{
+  "adapter": "sox",
+  "version": "sox:      SoX v",
+  "metadata": {
+    "build": "sox:      SoX v\n",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "mode": "subprocess with float WAV I/O"
+  },
+  "test": {
+    "id": "effect.convolution.impulse",
+    "feature": "effect.convolution",
+    "title": "Convolution yields a literal impulse response and full tail",
+    "status": "active",
+    "tier": "core",
+    "fixture": {
+      "sampleRate": 48000,
+      "channels": 1,
+      "frames": 4,
+      "signal": "array",
+      "values": [
+        1,
+        0,
+        0,
+        0.5
+      ]
+    },
+    "steps": [
+      {
+        "op": "convolve",
+        "impulse": [
+          1,
+          0.5,
+          -0.25
+        ],
+        "tail": true
+      }
+    ],
+    "oracle": {
+      "type": "exact",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "effect.convolution.impulse",
+    "feature": "effect.convolution",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "error",
+    "durationMs": 7.95537499999773,
+    "error": "Error: Command failed: sox -D /var/folders/3t/xg6gkls520sbqc17r99qzmdw0000gn/T/audio-test-pUAE7R/input.wav -t wav -e floating-point -b 32 /var/folders/3t/xg6gkls520sbqc17r99qzmdw0000gn/T/audio-test-pUAE7R/output.wav fir 1 0.5 -0.25\nsox WARN wav: wave header missing extended part of fmt chunk\nsox FAIL fir: couldn't open file 1 0.5 -0.25: No such file or directory\n\n    at genericNodeError (node:internal/errors:998:15)\n    at wrappedFn (node:internal/errors:543:14)\n    at ChildProcess.exithandler (node:child_process:417:12)\n    at ChildProcess.emit (node:events:509:20)\n    at maybeClose (node:internal/child_process:1108:16)\n    at Socket.<anonymous> (node:internal/child_process:480:11)\n    at Socket.emit (node:events:509:20)\n    at Pipe.<anonymous> (node:net:350:12)"
+  }
+}

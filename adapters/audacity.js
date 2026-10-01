@@ -1,0 +1,4 @@
+import { python } from './python.js'
+const bridge=python('audacity')
+const ops=new Set(['reverse','reverse-range','remove','trim','gain','gain-db','normalize','repeat','speed','stretch','pitch'])
+export default {...bridge,supports:t=>t.workflow?t.workflow.op==='copy-reverse':t.steps.every((s,i)=>ops.has(s.op)||s.op==='fade'&&(!s.curve||s.curve==='linear')||s.op==='resample'&&i===t.steps.length-1),metadata:async()=>({...await bridge.metadata(),mode:'isolated mod-script-pipe; float32 WAV export',mapping:'native edit/effect commands and linear fades; gains beyond +/-50 dB use multiple Amplify calls; final resampling uses project-rate export, not the interactive Resample menu; Export2 preserves native export boundaries',experimental:true,source:'https://manual.audacityteam.org/man/scripting_reference.html'})}
