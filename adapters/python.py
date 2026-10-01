@@ -5,6 +5,8 @@ import importlib
 import importlib.metadata
 import math
 import traceback
+import base64
+import io
 import numpy as np
 
 name = sys.argv[1]
@@ -23,6 +25,27 @@ def spectrum(values, frequencies, frames, window_gain):
 
 def librosa_step(y, sr, s):
     op = s['op']
+    if op == 'processor':
+        op, p = s['name'], s.get('params', {})
+        if op == 'pitch-shift':
+            return lib.effects.pitch_shift(y, sr=sr, n_steps=p.get('semitones', 0)), sr
+        if op == 'stretch-pvoc':
+            return lib.effects.time_stretch(y, rate=1 / p.get('factor', 1)), sr
+    else:
+        p = {}
+    if op in ['emphasis', 'derivative', 'deemphasis', 'integral']:
+        coefficient = p.get('leak', 1) if op == 'integral' else 1 if op == 'derivative' else p.get('alpha', .97)
+        effect = lib.effects.preemphasis if op in ['emphasis', 'derivative'] else lib.effects.deemphasis
+        return effect(y.astype(np.float64), coef=coefficient, zi=np.zeros((y.shape[0], 1))), sr
+    if op in ['trim', 'remove', 'repeat']:
+        frames = y.shape[-1]
+        if op == 'repeat':
+            intervals = [(0, frames)] * s['count'] or [(0, 0)]
+        else:
+            start = min(max(s['start'], 0), frames)
+            end = min(start + s['length'], frames)
+            intervals = [(start, end)] if op == 'trim' else [(0, start), (end, frames)]
+        return lib.effects.remix(y, intervals, align_zeros=False), sr
     if op == 'resample':
         return lib.resample(y, orig_sr=sr, target_sr=s['to'], res_type='soxr_hq'), s['to']
     if op == 'stretch':
@@ -84,7 +107,9 @@ def pedalboard_step(y, sr, s):
     elif op == 'compressor':
         effect = lib.Pedalboard([lib.Compressor(threshold_db=s['threshold'], ratio=s['ratio'], attack_ms=s['attack'] * 1000, release_ms=s['release'] * 1000), lib.Gain(gain_db=s.get('makeup', 0))])
     elif op == 'limiter':
-        effect = lib.Limiter(threshold_db=s['ceiling'], release_ms=s['release'] * 1000)
+        lookahead = s.get('lookahead', 0)
+        effect = (lib.BrickwallLimiter(ceiling_db=s['ceiling'], release_ms=s['release'] * 1000, lookahead_ms=lookahead * 1000)
+                  if lookahead else lib.Limiter(threshold_db=s['ceiling'], release_ms=s['release'] * 1000))
     elif op == 'gate':
         effect = lib.NoiseGate(threshold_db=s['threshold'], ratio=100, attack_ms=s['attack'] * 1000, release_ms=s['release'] * 1000)
     elif op == 'delay':
@@ -95,27 +120,54 @@ def pedalboard_step(y, sr, s):
             y = np.pad(y, ((0, 0), (0, len(s['impulse']) - 1)))
     elif op == 'processor':
         params = s.get('params', {})
-        constructors = {'compressor': lib.Compressor, 'limiter': lib.Limiter, 'gate': lib.NoiseGate,
-                        'delay': lib.Delay, 'chorus': lib.Chorus, 'phaser': lib.Phaser,
-                        'distortion': lib.Distortion, 'bitcrusher': lib.Bitcrush, 'freeverb': lib.Reverb}
-        if s['name'] == 'compressor' and params:
-            effect = lib.Pedalboard([lib.Compressor(ratio=params.get('ratio', 1)), lib.Gain(gain_db=params.get('makeup', 0))])
-        elif s['name'] == 'delay' and params:
-            effect = lib.Delay(mix=params['mix'])
-        elif s['name'] == 'freeverb' and params:
+        constructors = {
+            'compressor': (lib.Compressor, {'threshold': 'threshold_db', 'ratio': 'ratio', 'attack': 'attack_ms', 'release': 'release_ms'}),
+            'limiter': (lib.BrickwallLimiter, {'ceiling': 'ceiling_db', 'release': 'release_ms', 'lookahead': 'lookahead_ms'}),
+            'gate': (lib.NoiseGate, {'threshold': 'threshold_db', 'attack': 'attack_ms', 'release': 'release_ms'}),
+            'delay': (lib.Delay, {'time': 'delay_seconds', 'feedback': 'feedback', 'mix': 'mix'}),
+            'chorus': (lib.Chorus, {'rate': 'rate_hz', 'depth': 'depth', 'delay': 'centre_delay_ms'}),
+            'phaser': (lib.Phaser, {'rate': 'rate_hz', 'depth': 'depth', 'feedback': 'feedback', 'fc': 'centre_frequency_hz'}),
+            'distortion': (lib.Distortion, {}), 'bitcrusher': (lib.Bitcrush, {'bits': 'bit_depth'}),
+            'freeverb': (lib.Reverb, {'room': 'room_size', 'damp': 'damping'}),
+            'moog': (lib.LadderFilter, {'fc': 'cutoff_hz', 'resonance': 'resonance', 'drive': 'drive'}),
+            'pitch-shift': (lib.PitchShift, {'semitones': 'semitones'})}
+        constructor, keys = constructors[s['name']]
+        if s['name'] == 'limiter' and params.get('lookahead') == 0:
+            constructor, keys = lib.Limiter, {'ceiling': 'threshold_db', 'release': 'release_ms'}
+        options = {target: params[source] for source, target in keys.items() if source in params}
+        if s['name'] == 'chorus' and 'delay' in params:
+            options['centre_delay_ms'] *= 1000
+        if s['name'] == 'moog':
+            options['mode'] = lib.LadderFilter.Mode.LPF24
+        if s['name'] == 'freeverb' and 'mix' in params:
             # JUCE Reverb::setParameters scales wetLevel by 3 and dryLevel by 2.
             # Translate linear wet/dry weights, rather than doubling dry audio.
-            effect = lib.Reverb(wet_level=params['mix'] / 3, dry_level=(1 - params['mix']) / 2)
-        else:
-            effect = constructors[s['name']]()
+            options.update(wet_level=params['mix'] / 3, dry_level=(1 - params['mix']) / 2)
+        effect = constructor(**options)
+        if s['name'] == 'compressor' and params.get('makeup', 0):
+            effect = lib.Pedalboard([effect, lib.Gain(gain_db=params['makeup'])])
     else:
         raise ValueError('Unsupported Pedalboard operation: ' + op)
+    if 0 < y.shape[-1] <= y.shape[0]:
+        # Native effects infer the channel axis from shape. Establish it with
+        # no audio before inputs as short as their channel count.
+        effect(np.empty((y.shape[0], 0), dtype=np.float32), sr)
     return effect(y, sr), sr
 
 
 def scipy_step(y, sr, s):
     from scipy import signal, fft
     op = s['op']
+    if op == 'processor':
+        op, p = s['name'], s.get('params', {})
+    else:
+        p = {}
+    if op == 'emphasis':
+        return signal.lfilter([1, -p.get('alpha', .97)], [1], y, axis=-1), sr
+    if op == 'deemphasis':
+        return signal.lfilter([1], [1, -p.get('alpha', .97)], y, axis=-1), sr
+    if op == 'dcblocker':
+        return signal.lfilter([1, -1], [1, -p.get('R', .995)], y, axis=-1), sr
     if op in ['lowpass', 'highpass']:
         sos = signal.butter(s.get('order', 2), s['freq'], btype=op, fs=sr, output='sos')
         return signal.sosfilt(sos, y, axis=-1), sr
@@ -132,7 +184,7 @@ def scipy_step(y, sr, s):
     if op == 'derivative':
         return signal.lfilter([1, -1], [1], y, axis=-1), sr
     if op == 'integral':
-        return signal.lfilter([1], [1, -1], y, axis=-1), sr
+        return signal.lfilter([1], [1, -p.get('leak', 1)], y, axis=-1), sr
     if op == 'measure' and s['name'] == 'spectrum':
         n = s.get('size', y.shape[-1])
         window = signal.get_window(s.get('window', 'boxcar'), n, fftbins=True)
@@ -191,7 +243,26 @@ def run(request):
     test, sr = request['test'], request['sampleRate']
     y = np.asarray(request['input'], dtype=np.float32)
     if test.get('workflow'):
-        return stream_resample(y, sr, test['workflow'])
+        workflow = test['workflow']
+        if workflow['op'] == 'resample-chunks':
+            return stream_resample(y, sr, workflow)
+        if name == 'pedalboard' and workflow['op'] == 'codec-roundtrip':
+            from pedalboard.io import AudioFile
+            buffer = io.BytesIO()
+            with AudioFile(buffer, 'w', samplerate=sr, num_channels=y.shape[0],
+                           bit_depth=workflow.get('bitDepth', 16), format=workflow['format']) as writer:
+                # A zero-frame write declares the planar layout before square
+                # inputs (e.g. two stereo frames), without adding audio frames.
+                writer.write(np.empty((y.shape[0], 0), dtype=np.float32))
+                writer.write(y)
+            encoded = buffer.getvalue()
+            with AudioFile(io.BytesIO(encoded), 'r') as reader:
+                # read(0) means unbounded read in AudioFile and is rejected.
+                output, rate = reader.read(max(1, reader.frames)), reader.samplerate
+            return {'channels': output.tolist(), 'sampleRate': rate,
+                    'observations': {'sourceAfter': y.tolist()},
+                    'encoded': base64.b64encode(encoded).decode('ascii')}
+        raise ValueError('Unsupported workflow: ' + workflow['op'])
     for step in test['steps']:
         if name == 'librosa':
             result = librosa_step(y, sr, step)

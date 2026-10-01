@@ -1,0 +1,84 @@
+{
+  "adapter": "sox",
+  "version": "SoX 14.4.2_6 (Homebrew package)",
+  "metadata": {
+    "version": "SoX 14.4.2_6 (Homebrew package)",
+    "build": "sox:      SoX v\n",
+    "executable": "/opt/homebrew/Cellar/sox/14.4.2_6/bin/sox",
+    "executableSha256": "02f140d42379d582c63c98077be62fcb6130e316bececbaa0c6fbcec102a6e6f",
+    "packageVersion": "14.4.2_6",
+    "versionSource": "resolved Homebrew installation path; binary omits version",
+    "mode": "subprocess with float WAV I/O",
+    "measurementPrecision": "Statistics use the CLI text precision; derived energy inherits rounded RMS error."
+  },
+  "test": {
+    "id": "codec.wav.32bit.17f.1ch",
+    "feature": "codec.wav",
+    "title": "WAV 32-bit: 17 frames, 1 channels",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 44100,
+      "channels": 1,
+      "frames": 17,
+      "signal": "array",
+      "samples": [
+        [
+          0.1,
+          -0.3,
+          8.271806125530277e-25,
+          -8.470329472543003e-22,
+          0.75,
+          -0.875,
+          1.25,
+          -1.125,
+          0.1,
+          -0.3,
+          8.271806125530277e-25,
+          -8.470329472543003e-22,
+          0.75,
+          -0.875,
+          1.25,
+          -1.125,
+          0.1
+        ]
+      ]
+    },
+    "steps": [],
+    "oracle": {
+      "type": "exact",
+      "atol": 0
+    },
+    "workflow": {
+      "op": "codec-roundtrip",
+      "format": "wav",
+      "bitDepth": 32
+    }
+  },
+  "result": {
+    "id": "codec.wav.32bit.17f.1ch",
+    "feature": "codec.wav",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 14.027750000001106,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        0
+      ],
+      "maxAbsError": 0.25,
+      "rmsError": 0.09587062360592177,
+      "pass": false,
+      "reason": "samples",
+      "sourceUnchanged": true,
+      "sourceMaxAbsError": 0,
+      "sampleRate": 44100,
+      "encodedBytes": 126,
+      "bitDepth": 32,
+      "sampleFormat": "float",
+      "inputUnchanged": true
+    }
+  }
+}

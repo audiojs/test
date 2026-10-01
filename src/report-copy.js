@@ -19,7 +19,7 @@ function title(test) {
  const signal = ({ sine: finite(f.frequency) ? `a ${number(f.frequency)} Hz tone` : 'a sine wave', silence: 'silence', impulse: 'an impulse', dc: 'a constant level', 'sample-id': 'a sample pattern', array: 'a sample sequence', segments: 'changing signal levels', 'tone-noise': 'a tone with steady noise', clicks: 'isolated clicks' })[f.signal] || (finite(f.frequency) ? `a ${number(f.frequency)} Hz tone` : 'audio')
  const clip = [finite(f.frames) && `${sampleCount(f.frames)}${f.channels > 1 ? ' per channel' : ''}`, channels(f.channels)].filter(Boolean).join(', ')
  const withClip = text => `${capital(text)}${clip ? ', ' + clip : ''}`
- if (w.op === 'codec-roundtrip') return withClip(`${String(w.format || 'audio').toUpperCase()} saving and reopening${w.split ? ', split at the first and last byte' : ''}`)
+ if (w.op === 'codec-roundtrip') return withClip(`${String(w.format || 'audio').toUpperCase()} ${w.bitDepth??16}-bit saving and reopening${w.split ? ', split at the first and last byte' : ''}`)
  if (w.op === 'resample-chunks') return `Resample ${number(f.sampleRate)} to ${number(w.to)} Hz in uneven chunks`
  if (w.op) return withClip(({ 'copy-reverse': 'Reverse a copy and check the original', 'clip-reverse': 'Reverse a selected clip and check the original', 'clone-reverse': 'Reverse a clone and check the original', undo: 'Edit, then undo', 'undo-redo': 'Edit, undo and redo', stream: 'Compare streamed and returned audio' })[w.op] || words(w.op))
  if (s.op === 'processor') {
@@ -101,8 +101,10 @@ function summary(test, result) {
  const expectedRate = m.expectedRate ?? o.to ?? (test.workflow?.op === 'codec-roundtrip' ? test.fixture?.sampleRate : undefined)
  if (finite(expectedRate) && m.sampleRate !== undefined && m.sampleRate !== expectedRate) notes.push(`Output sample rate: ${measured(m.sampleRate, 'Hz')}; expected ${measured(expectedRate, 'Hz')}.`)
  if (test.workflow?.op === 'codec-roundtrip' && status === 'fail') {
+  const depth=test.workflow.bitDepth??16,format=depth===32?'float':'integer'
   if (m.encodedBytes === 0) notes.push('Saving produced no encoded audio.')
-  if (m.bitDepth !== 16) notes.push(`Saved bit depth: ${number(m.bitDepth)}; expected 16 bits.`)
+  if (m.bitDepth !== depth) notes.push(`Saved bit depth: ${number(m.bitDepth)}; expected ${depth} bits.`)
+  if (m.sampleFormat!==undefined&&m.sampleFormat!==format) notes.push(`Saved sample format: ${m.sampleFormat}; expected ${format}.`)
  }
  if (o.type === 'integrity' || test.level === 'integrity') return notes.join(' ') || (status === 'pass' ? 'Output was nonempty and contained valid samples. Effect quality was not tested.' : m.frames === 0 ? 'The operation returned empty audio.' : 'The output failed basic validity checks; effect quality was not tested.')
  const failedChannel = Array.isArray(m.perChannel) ? m.perChannel.findIndex(channel => channel?.pass === false) : -1
@@ -121,6 +123,7 @@ function summary(test, result) {
  }
  if (o.type === 'scalar-range') detail = `${measureName(test)}: ${measured(m.actual, measureUnit(test))}; required ${range(m.min ?? o.min, m.max ?? o.max, measureUnit(test))}.`
  if (['response', 'resample'].includes(o.type) && finite(p.gainDb) && (status === 'pass' || p.gainDb < (m.min ?? o.min) || p.gainDb > (m.max ?? o.max))) detail = `Tone level changed by ${number(p.gainDb)} dB; expected ${range(m.min ?? o.min, m.max ?? o.max, 'dB')}.`
+ if (o.type === 'phase') detail = `Phase differs from the expected shift by ${number(p.phaseError)}°; allowed ${o.phaseTolerance}°. Level changed by ${number(p.gainDb)} dB; allowed ±${o.gainTolerance} dB.`
  if (o.type === 'resample' && finite(o.frequency) && (status === 'pass' || !finite(p.frequency) || Math.abs(p.frequency / o.frequency - 1) >= .01)) detail += `${detail ? ' ' : ''}Pitch: ${measured(p.frequency, 'Hz')}; expected ${number(o.frequency)} Hz within 1%.`
  if (['tone', 'stretch-transient', 'chunk-equivalence'].includes(o.type)) {
   const expected = m.expectedFrequency ?? o.frequency ?? test.fixture?.frequency
@@ -203,6 +206,10 @@ const purposes = {
  chorus: 'Layer slightly delayed and detuned copies to thicken the sound.',
  autopan: 'Move the sound left and right in a repeating pattern.',
  surround: 'Create a 5.1-channel mix from stereo audio.',
+ binaural: 'Position sound around the listener using differences in timing and level between the ears.',
+ fm: 'Create tones by using one oscillator to modulate another, from mellow sounds to metallic ones.',
+ emphasis: 'Boost higher frequencies before further processing.',
+ deemphasis: 'Reduce higher frequencies to undo pre-emphasis.',
  tune: 'Move detected notes towards the notes of a chosen musical scale.',
  variable: 'Change the width of the frequency band allowed through.',
  dcblocker: 'Remove a constant offset from the waveform.',
@@ -280,9 +287,9 @@ export function featureCopy(feature = {}) {
  if (family === 'neutral') return { description: description || packagePurpose(feature) || feature.contract || '', checks: 'Checks that neutral settings leave every sample unchanged.' }
  if (family === 'filter') {
   if (method === 'biquad') description = 'A two-pole low-pass filter reduces frequencies above its cutoff.'
-  checks = method === 'biquad' ? 'Checks a tone at the cutoff for a 3.01 dB reduction.' : method === 'allpass' ? 'Checks that tone levels stay unchanged; phase response is not tested.' : 'Checks tone levels below, at and above the cutoff or selected frequency.'
+  checks = method === 'biquad' ? 'Checks a tone at the cutoff for a 3.01 dB reduction.' : method === 'allpass' ? 'Checks unchanged tone levels and the expected phase shift below, at and above the selected frequency, in both channels.' : 'Checks tone levels below, at and above the cutoff or selected frequency.'
  }
- if (family === 'codec') return { description: ({wav:'Save uncompressed audio samples in a WAV file.',flac:'Compress audio without losing any sample data.'})[method] || `Save audio as ${method.toUpperCase()} and read it back.`, checks: 'Checks that 16-bit samples, channels and sample rate survive unchanged, including reading the file in chunks.' }
+ if (family === 'codec') return { description: ({wav:'Save uncompressed audio samples in a WAV file.',flac:'Compress audio without losing any sample data.'})[method] || `Save audio as ${method.toUpperCase()} and read it back.`, checks: `Checks that 16-bit and 24-bit samples${method==='wav'?', plus 32-bit floating point':''}, channels and sample rate survive unchanged, including reading the file in chunks.` }
  if (family === 'editor' && ['copy-reverse', 'clip-reverse', 'clone-reverse'].includes(method)) return { description: `Reverse ${method === 'clip-reverse' ? 'a selected clip' : method === 'clone-reverse' ? 'a clone' : 'a copy'} without changing the original audio.`, checks: '' }
  if (id === 'editor.undo') return { description: 'Return the audio to its state before an edit.', checks: '' }
  if (id === 'editor.stream') return { description: 'Read the audio in successive chunks.', checks: 'Checks that the streamed samples match the complete returned clip.' }

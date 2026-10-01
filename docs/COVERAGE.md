@@ -1,6 +1,6 @@
 # What this comparison covers
 
-The catalogue contains **79 behavior features with 493 cases**, plus **122 basic checks with 604 cases**. All 1,097 cases are executable. That does not make this a complete test of audio software: a finite-output check for a reverb says much less than a measured impulse response.
+The catalogue contains **79 behavior features with 523 cases**, plus **122 basic checks with 604 cases**. All 1,127 cases are executable. That does not make this a complete test of audio software: a finite-output check for a reverb says much less than a measured impulse response.
 
 The report keeps those two kinds of evidence separate. A fully passing feature has passed every active case assigned to it. A partial feature has untested cases, even when every result that exists passes. A skip means this adapter cannot execute the declared contract; it does not prove that the application lacks the general capability.
 
@@ -8,13 +8,21 @@ Specialists should be compared on their work. SoXR and libsamplerate are resampl
 
 ## Coverage added in this review
 
+The latest expansion adds **30 test definitions**: 21 file-format cases and nine stereo all-pass phase cases. Alongside new connections to native operations, these produce **622 additional tool/case comparisons**. There are now results in 393 of 1,185 behavior cells and 186 of 1,830 basic-check cells across the full 15-tool matrix. These denominators include operations outside specialist libraries' purpose; they are coverage counts, not capability scores.
+
+- SoX adds native range editing, mixing, insertion and crossfades, including tiny overlaps; librosa adds its native remix edits.
+- FFmpeg, SoX, librosa, SciPy, Pedalboard and the three browser engines run additional processor checks with explicit parameter translations. Unsupported controls still skip. These basic checks do not establish effect quality.
+- All-pass tests now verify phase within 0.1° and level within 0.05 dB below, at and above the selected frequency, in both channels at three sample rates. Expectations follow the [W3C Audio EQ Cookbook](https://www.w3.org/TR/audio-eq-cookbook/). Bypass, lost frames, a wrong output rate or a broken right channel cannot pass.
+- Fifteen file round-trip workloads bring the speed catalogue to 158. Every timing requires exact decoded samples and the requested encoded format.
+
+
 | Area | New evidence |
 | --- | --- |
 | Streaming resampling | audio's public pushed-stream API now runs the same irregular-chunk contract as SoXR and libsamplerate. Separate regressions cover empty and one-frame input, final flush boundaries, repeated A/A/B inputs, and recovery after invalid requests. |
 | Peak normalization | FFmpeg now uses its native peak measurement and volume filter with a shared gain across channels; silence remains finite. |
 | Derivative and integral | SoX's native FIR and biquad filters now run these cases. Its internal range limit remains visible: outputs above full scale differ from the unrestricted float contract. |
 | Neutral effects | Pedalboard now tests native mute, ratio-one compression, dry delay and dry reverb. Requested controls are translated into native API units; unsupported controls still skip. |
-| File round trips | Public WAV16 and FLAC16 encode/decode paths now test one-frame, short and block-boundary mono/stereo inputs. audio also tests byte-stream boundaries, including empty writes. These lossless fixtures do not establish lossy-codec quality. |
+| File round trips | WAV16/WAV24/WAV32-float and FLAC16/FLAC24 paths test one-frame, short and block-boundary mono/stereo inputs. Headers must confirm the requested bit depth and integer/float format. audio also tests byte-stream boundaries, including empty writes. Pedalboard AudioFile joins the native file comparisons. These fixtures do not establish lossy-codec quality. |
 | Channel independence | Quality checks now inspect every output channel. Regressions deliberately mute, bypass, retune or delay only the right channel. Chunk tests also reject a broken right channel when both batch and streaming output share the same fault. |
 | Long convolution | An independent running-sum expectation checks every sample of constant-input convolution, including the complete tail. Dense 1,024- and 48,000-tap benchmark fixtures avoid relying on the contender as its own reference. SoX reads long kernels from a coefficient file. |
 
@@ -22,7 +30,7 @@ The tests preserve actual differences. There is no rescaling of a failed result,
 
 ## What audio still needs
 
-The current run has **1,077 passes, one failure, no errors and 19 skips** for audio across all 1,097 cases. The failure is profiled denoising; the skips are 18 one-pole filter cases and arbitrary-IR convolution. These results describe the tested local source trees, not a registry release. The earlier [source-fix run](../results/audio-fixes/results.json) and [discrepancy review](TRIAGE.md#review-evidence) record the source changes and reproducible checks.
+The current run has **1,107 passes, one failure, no errors and 19 skips** for audio across all 1,127 cases. The failure is profiled denoising; the skips are 18 one-pole filter cases and arbitrary-IR convolution. These results describe the tested local source trees, not a registry release. The earlier [source-fix run](../results/audio-fixes/results.json) and [discrepancy review](TRIAGE.md#review-evidence) record the source changes and reproducible checks.
 
 1. **Preserve the wanted signal during denoising.** The profiled synthetic test loses roughly 12 dB of tone level and gets worse waveform SNR. This is a concrete failure of the declared tone-plus-stationary-noise contract. It does not establish performance on speech or music, and passing a finite-output check cannot resolve it.
 2. **Preserve the requested delay in frames.** The 5 ms feedback-delay benchmark requests 240 frames at 48 kHz. The public parameter reaches `@audio/effect-delay/delay.js` as Float32: `0.005` becomes `0.004999999888241291`, and `Math.floor(time * fs)` selects 239 frames. An impulse produces echoes at 239, 478, 717 and 956 instead of 240, 480, 720 and 960. This is a measured parameter-precision and frame-conversion defect. The 50 ms correctness case passes, so that case alone does not cover the boundary.
@@ -48,7 +56,7 @@ Some differences concern a real processing limit; others concern API or output c
 
 - SoX can clip derivative/integral results beyond full scale, and its float transport is not bit-exact in two strict preservation cases.
 - FFmpeg's crossfade endpoint convention and stretched output length differ in specific fixtures. Tight energy checks can also expose rounded CLI measurement text in FFmpeg and SoX; that is not evidence of incorrect PCM.
-- Pedalboard's limiter adds gain and its convolution normalizes the impulse response. Those behaviors differ from the requested ceiling and unnormalized-kernel contracts.
+- Pedalboard's zero-lookahead Limiter adds gain and its convolution normalizes the impulse response. Those behaviors differ from the requested ceiling and unnormalized-kernel contracts.
 - SciPy's tested default resampling filter misses the declared 70 dB waveform-SNR target. This is one filter configuration, not a limit on every SciPy design.
 - librosa's configured YIN estimator misses the 110 Hz test's 10-cent tolerance. That single synthetic tone cannot rank general pitch tracking.
 - Native browser playback resamplers and compressors have their own quality and automatic-gain behavior. An OfflineAudioContext result describes that native path, not every algorithm that could run in a browser.
@@ -57,19 +65,25 @@ See [the measured differences](TRIAGE.md#newly-measured-differences) for the ori
 
 ## Current failure review
 
-The reviewed 1,097-case runs across 15 tools contain **88 failures and no adapter errors**. These are retained differences from the declared contracts, not 88 confirmed engine bugs. The regression baseline records these reviewed discrepancies. They remain failures in the report; new discrepancies, adapter errors and lost coverage still fail the gate.
+The reviewed 1,127-case runs across 15 tools contain **136 failures and no adapter errors**. These are retained differences from the declared contracts, not 136 confirmed engine bugs. The regression baseline records these reviewed discrepancies. They remain failures in the report; new discrepancies, adapter errors and lost coverage still fail the gate.
 
 | Tool | Failed cases | Grouped cause or observation |
 | --- | ---: | --- |
 | audio | 1 | Profiled denoising attenuates the wanted tone. |
 | FFmpeg | 22 | Crossfade endpoints (7), integral precision (8), rounded energy measurements (2), one-pole response (1), output duration (3), dither statistics (1). |
-| SoX | 18 | Strict float preservation (2), derivative/integral clipping (12), rounded energy measurements (2), one-pole response (1), limiter ceiling (1). |
+| SoX | 24 | Strict float preservation (2), floating-point WAV round trips (6), derivative/integral clipping (12), rounded energy measurements (2), one-pole response (1), limiter ceiling (1). |
 | librosa | 1 | The configured YIN estimate misses the 110 Hz tolerance. |
-| Pedalboard | 2 | Limiter gain and impulse-response normalization differ from the contracts. |
+| Pedalboard | 26 | Integer WAV/FLAC round trips differ by up to one sample step (24); zero-lookahead limiter gain and impulse-response normalization differ from the contracts (2). |
 | SciPy | 1 | Default resampling misses the 70 dB SNR threshold on both channels. |
-| Chromium / Firefox / WebKit | 9 / 2 / 5 | Chromium pad/repeat boundaries (4); Chromium/WebKit alias rejection (4); SNR (3), compressor behavior (3), feedback-delay timing (2). |
+| Chromium / Firefox / WebKit | 15 / 8 / 11 | Neutral compressors change samples (6 per engine); Chromium pad/repeat boundaries (4); Chromium/WebKit alias rejection (4); SNR (3), compressor behavior (3), feedback-delay timing (2). |
 | Audacity | 27 | One-frame exports (14), 17-frame selection reversals (2), fade endpoints (11). |
 | SoXR, libsamplerate, pyloudnorm, Rubber Band, SoundTouch | 0 | No failures in their mapped cases; skips remain untested. |
+
+Newly exposed differences are retained:
+
+- SoX's floating-point WAV path changes tiny or above-full-scale sample values; six new strict round-trip cases fail.
+- Pedalboard AudioFile's native integer normalization changes some samples by up to one integer step in WAV16/WAV24/FLAC16/FLAC24. Its float WAV path preserves the tested samples. No rescaling or relaxed tolerance is applied.
+- Every tested browser changes the output of its native compressor at ratio one; six neutral-setting cases fail per engine. The adapter does not replace the compressor with a bypass to pass the identity contract.
 
 Two observations were missing from the earlier triage notes:
 
@@ -80,11 +94,15 @@ FFmpeg's seven crossfade differences include six linear cases and the equal-powe
 
 The earlier long-stereo audio energy benchmark misses an absolute tolerance by **0.0000157359 on a result near 4,800**, a relative difference of approximately **3.28 × 10⁻⁹**. Treat this as a precision-contract limitation. It is not evidence of audible corruption, and its rejected timing remains withheld. Correctness cases and benchmark validation use different fixture sizes; their verdicts should not be conflated.
 
+The fresh speed run records **812 passing comparisons, 82 rejected outputs and no execution errors** across 158 workloads and 15 tools. Unmapped comparisons remain skipped. The new file workloads reject SoX's three floating-point WAV outputs and Pedalboard's twelve integer WAV/FLAC outputs under the exact-sample contract.
+
+WebKit also failed stereo padding and long-clip resampling in this timing run, although earlier runs passed the same fixtures. A [follow-up A/A/B probe](../results/webkit-render-review.json) passed all 18 existing output checks, but two of nine resampling renders differed from the earlier output at 128-frame boundaries. The cause is unproven. These speed checks measure rate, length, level and pitch; they can miss a waveform discontinuity. The separate correctness suite checks waveform SNR on a different resampling fixture. The original failed timings remain withheld; broader repeated-render waveform checks are still needed.
+
 ## Evidence still missing
 
 The loudness and true-peak cases use published synthetic signal definitions and independent calculations. They are not the full official EBU/ITU programme and burst-vector suites. The official asset download was unavailable during this run; no substituted files are described as official vectors.
 
-Speech and music corpora, listening studies, denoising artifacts, stereo image preservation on programme material, automation under live playback, and hardware latency remain outside these bounded tests. WAV16/FLAC16 round trips do not cover every container, bit depth, codec, metadata field or corrupt-file path.
+Speech and music corpora, listening studies, denoising artifacts, stereo image preservation on programme material, automation under live playback, and hardware latency remain outside these bounded tests. The tested WAV and FLAC round trips do not cover other containers, lossy codecs, metadata fields or corrupt-file decoding paths.
 
 The speed comparison measures complete adapter calls. Native process launches and WAV I/O, Python messages, and browser transfers are included; initial driver/library startup and oracle validation are excluded. Separate FFmpeg overhead measurements help explain short-call costs without subtracting them from workload scores. See [benchmark scope](BENCHMARKS.md).
 

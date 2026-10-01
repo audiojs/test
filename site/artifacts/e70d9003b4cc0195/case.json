@@ -1,0 +1,118 @@
+{
+  "adapter": "pedalboard",
+  "version": "0.9.25",
+  "metadata": {
+    "mode": "persistent Python worker; planar float32 PCM",
+    "mapping": "Pedalboard native effects; BrickwallLimiter for positive lookahead, Limiter for zero lookahead (native makeup retained); LadderFilter LPF24 for Moog; AudioFile WAV/FLAC; step seconds converted to milliseconds, processor units retained; first-order low/high-pass only; Convolution retains native IR normalization",
+    "python": "/private/tmp/audio-comparison-python/bin/python",
+    "pythonVersion": "3.13.12 (main, Feb  3 2026, 17:53:27) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "packages": {
+      "audioread": "3.1.0",
+      "scikit-learn": "1.9.1",
+      "cloudpickle": "3.1.2",
+      "standard-sunau": "3.13.0",
+      "packaging": "26.3",
+      "joblib": "1.6.0",
+      "numpy": "2.3.4",
+      "platformdirs": "4.12.2",
+      "soxr": "1.0.0",
+      "standard-chunk": "3.13.0",
+      "requests": "2.34.2",
+      "future": "1.0.0",
+      "librosa": "0.11.0",
+      "msgpack": "1.2.3",
+      "lazy-loader": "0.6",
+      "pooch": "1.9.0",
+      "pedalboard": "0.9.25",
+      "urllib3": "2.8.0",
+      "pycparser": "3.0",
+      "standard-aifc": "3.13.0",
+      "cffi": "2.1.1",
+      "llvmlite": "0.50.0",
+      "samplerate": "0.2.3",
+      "certifi": "2026.7.22",
+      "soundfile": "0.13.1",
+      "threadpoolctl": "3.7.0",
+      "numba": "0.68.0",
+      "pyloudnorm": "0.1.1",
+      "typing_extensions": "4.16.0",
+      "decorator": "5.3.1",
+      "audioop-lts": "0.2.2",
+      "charset-normalizer": "3.5.2",
+      "scipy": "1.17.0",
+      "pip": "26.0",
+      "narwhals": "2.26.0",
+      "idna": "3.20"
+    }
+  },
+  "test": {
+    "id": "codec.wav.17f.1ch",
+    "feature": "codec.wav",
+    "title": "WAV 16-bit: 17 frames, 1 channels",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 44100,
+      "channels": 1,
+      "frames": 17,
+      "signal": "array",
+      "samples": [
+        [
+          -1,
+          -0.999969482421875,
+          -0.000030517578125,
+          0,
+          0.000030517578125,
+          0.999969482421875,
+          0.5,
+          -0.25,
+          -1,
+          -0.999969482421875,
+          -0.000030517578125,
+          0,
+          0.000030517578125,
+          0.999969482421875,
+          0.5,
+          -0.25,
+          -1
+        ]
+      ]
+    },
+    "steps": [],
+    "oracle": {
+      "type": "exact",
+      "atol": 0
+    },
+    "workflow": {
+      "op": "codec-roundtrip",
+      "format": "wav",
+      "bitDepth": 16
+    }
+  },
+  "result": {
+    "id": "codec.wav.17f.1ch",
+    "feature": "codec.wav",
+    "oracle": "exact",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 0.7848749999993743,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        0
+      ],
+      "maxAbsError": 0.000030517578125,
+      "rmsError": 0.000017554435480529958,
+      "pass": false,
+      "reason": "samples",
+      "sourceUnchanged": true,
+      "sourceMaxAbsError": 0,
+      "sampleRate": 44100,
+      "encodedBytes": 138,
+      "bitDepth": 16,
+      "sampleFormat": "integer",
+      "inputUnchanged": true
+    }
+  }
+}

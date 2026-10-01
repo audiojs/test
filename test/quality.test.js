@@ -16,6 +16,30 @@ const evaluate = (t, actual) => {
  return judge(t, actual, expected(t, input), input, t.fixture.sampleRate)
 }
 
+test('all-pass phase checks reject bypass, silent or mistimed channels despite unchanged levels',()=>{
+ const t={fixture:{signal:'sine',frames:16,channels:2,sampleRate:8000,frequency:1000,amplitude:.2},steps:[{op:'allpass',freq:1000,Q:Math.SQRT1_2}],oracle:{type:'phase',phaseDegrees:-180,phaseTolerance:.1,gainTolerance:.05}}
+ const input=makeSignal(t.fixture).channels,shifted=input.map(ch=>Float32Array.from(ch,x=>-x)),check=channels=>judge(t,{channels},null,input,8000)
+ assert.equal(check(shifted).pass,true,'a half-cycle shift is ±180 degrees in either channel')
+ assert.equal(judge({...t,oracle:{...t.oracle,phaseDegrees:180}},{channels:shifted},null,input,8000).pass,true,'phase wraps at the same boundary')
+ assert.equal(check(input).pass,false,'unity amplitude alone does not prove an all-pass filter ran')
+ assert.equal(check([shifted[0],input[1]]).pass,false,'bypassing only the right channel fails')
+ assert.equal(check([shifted[0],new Float32Array(16)]).pass,false,'silencing only the right channel fails')
+ assert.equal(check(shifted.map(ch=>ch.slice(0,-1))).pass,false,'missing a final frame fails')
+ assert.equal(check([new Float32Array(),new Float32Array()]).pass,false)
+ assert.equal(check(null).pass,false)
+ const delayed=shifted.map(ch=>Float32Array.from(ch,(_,i)=>ch[(i+15)%16]))
+ assert.equal(check(delayed).pass,false,'an extra sample of delay fails phase while preserving amplitude')
+ for(const sampleRate of [0,null,4000])assert.equal(judge(t,{channels:shifted,sampleRate},null,input,8000).pass,false,'an incorrect recorded rate cannot pass phase')
+ const longer=shifted.map(ch=>Float32Array.from([...ch,...ch])),mismatch=check(longer)
+ assert.equal(mismatch.pass,false)
+ assert.deepEqual(mismatch.lengthDelta,[16,16])
+ assert.equal(mismatch.channels,2)
+ assert.equal(mismatch.expectedRate,8000)
+ const specs=spec.cases.filter(c=>c.oracle.type==='phase')
+ assert.equal(specs.length,9)
+ assert(specs.every(c=>c.fixture.channels===2&&c.oracle.phaseTolerance===.1))
+})
+
 test('scalar expectations process long stereo signals without argument spreading', () => {
  const channels = [new Float32Array(480000).fill(.25), new Float32Array(480000).fill(-.5)]
  const values = statistics(channels)
@@ -36,6 +60,19 @@ test('synthetic fixtures are reproducible and reject inconsistent segment length
  assert.notDeepEqual(makeSignal(t.fixture).channels, makeSignal({ ...t.fixture, seed: t.fixture.seed + 1 }).channels)
  assert.throws(() => makeSignal({ signal: 'segments', frames: 4, segments: [{ signal: 'silence', frames: 3 }] }), /fill/)
  assert.throws(() => makeSignal({ signal: 'array', frames: 4, values: [1] }), /length/)
+})
+
+test('codec benchmark signals occupy the requested integer grid without changing layout',()=>{
+ for(const bitDepth of [16,24]){
+  const scale=2**(bitDepth-1),f={signal:'array',frames:6,channels:2,sampleRate:44100,values:[-2,-1,-.1,0,.1,2],bitDepth}
+  const out=makeSignal(f)
+  assert.equal(out.sampleRate,44100)
+  assert.equal(out.channels.length,2)
+  const expected=[-1,-1,Math.round(Math.fround(-.1)*scale)/scale,0,Math.round(Math.fround(.1)*scale)/scale,(scale-1)/scale]
+  assert.deepEqual(Array.from(out.channels[0]),expected)
+  assert.deepEqual(out.channels[0],out.channels[1])
+ }
+ assert.throws(()=>makeSignal({signal:'silence',frames:1,bitDepth:20}),/bit depth/)
 })
 
 test('equal-power crossfade raises identical signals at the midpoint', () => {

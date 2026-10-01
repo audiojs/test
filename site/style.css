@@ -72,6 +72,7 @@ li { overflow-wrap: anywhere; }
 .matrix thead small { display: block; margin-top: 3px; font-size: 11px; font-weight: 400; }
 .matrix tbody th { position: sticky; left: 0; z-index: 1; background: var(--paper); text-align: left; font-weight: 450; }
 .matrix tbody th > a { display: block; padding: 10px 14px; color: var(--ink); text-decoration: none; }
+.matrix tbody th > a[data-popover="info"] { text-decoration: underline; text-decoration-color: var(--line); }
 .matrix tbody th > a:hover { color: var(--link); text-decoration: underline; }
 .matrix tbody td { text-align: center; font-variant-numeric: tabular-nums; }
 .matrix .group-row th { z-index: 2; padding: 7px 14px; background: var(--soft); color: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: .035em; text-transform: uppercase; }
@@ -102,6 +103,7 @@ li { overflow-wrap: anywhere; }
 .popover-body p { margin: 0 0 12px; }
 .popover-body > :last-child { margin-bottom: 0; }
 .feature-checks { color: var(--muted); font-size: 12px; }
+.feature-diagram { display: block; width: 100%; max-width: 320px; height: auto; margin: 12px 0; }
 .result-summary { margin-bottom: 10px; font-size: 15px; font-weight: 550; font-variant-numeric: tabular-nums; }
 .result-summary .fail, .result-summary .error { color: #a43b34; }
 .result-summary .skip { color: var(--muted); }

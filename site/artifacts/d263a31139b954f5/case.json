@@ -41,7 +41,7 @@
     "oracle": "tone",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 26.51995900000111,
+    "durationMs": 24.96579099999508,
     "metrics": {
       "pass": false,
       "frequency": 880.1425521315576,

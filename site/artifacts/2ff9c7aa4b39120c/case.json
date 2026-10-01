@@ -39,7 +39,7 @@
     "oracle": "exact",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 7.253415999999561,
+    "durationMs": 7.471165999995719,
     "metrics": {
       "channels": 2,
       "expectedChannels": 2,

@@ -1,13 +1,13 @@
 {
   "schema": 2,
-  "specSha256": "6973c15a6feb63251872e797c221a61a20e603ecaf025b5f692ad7358dfe92f8",
+  "specSha256": "58ef5b42b8f0b62eaf868f76584c6b7ef3902e2c3948d5f383695a43943a65de",
   "catalog": {
     "features": 201,
     "packages": 362,
-    "active": 1097,
+    "active": 1127,
     "planned": 0
   },
-  "generatedAt": "2026-10-01T02:59:39.041Z",
+  "generatedAt": "2026-10-01T17:43:03.433Z",
   "tier": "research",
   "command": "audio-test run --adapter audacity --tier research",
   "runs": [
@@ -25,7 +25,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 102.16700099408627,
+          "durationMs": 98.68449999392033,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -45,7 +45,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 134.62279199808836,
+          "durationMs": 160.40983299911022,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -65,7 +65,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 132.38291700184345,
+          "durationMs": 127.8035000115633,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -85,7 +85,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 151.72504099458456,
+          "durationMs": 137.4453340023756,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -104,7 +104,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 167.81112500280142,
+          "durationMs": 138.688540995121,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -124,7 +124,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 178.95833399891853,
+          "durationMs": 149.8219590038061,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -144,7 +144,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 204.43062499910593,
+          "durationMs": 142.32045800983906,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -508,7 +508,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 173.16829200088978,
+          "durationMs": 127.20783300697803,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -529,7 +529,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 162.4704999998212,
+          "durationMs": 120.9294999986887,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -551,7 +551,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 164.75950100272894,
+          "durationMs": 131.93424999713898,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -570,7 +570,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 175.32424999773502,
+          "durationMs": 124.9998340010643,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -590,7 +590,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 184.18720799684525,
+          "durationMs": 134.37166699767113,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -609,7 +609,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 163.48270799964666,
+          "durationMs": 121.6406660079956,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -629,7 +629,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 164.6504170000553,
+          "durationMs": 130.01575000584126,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -648,7 +648,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 145.9781670048833,
+          "durationMs": 127.95483399927616,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -668,7 +668,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 147.52604199945927,
+          "durationMs": 145.98216700553894,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -687,7 +687,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 148.69624999910593,
+          "durationMs": 137.3851249963045,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -707,7 +707,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 183.4103339985013,
+          "durationMs": 163.2597499936819,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -726,7 +726,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 259.78949999809265,
+          "durationMs": 210.99766600131989,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -746,7 +746,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 134.95158299803734,
+          "durationMs": 129.8200010061264,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -767,7 +767,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 137.95320799946785,
+          "durationMs": 137.02666699886322,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -789,7 +789,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 166.09512499719858,
+          "durationMs": 149.2180410027504,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -810,7 +810,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 174.673666998744,
+          "durationMs": 130.2256249934435,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -832,7 +832,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 184.2207079976797,
+          "durationMs": 144.9060830026865,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -851,7 +851,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 155.28108299523592,
+          "durationMs": 145.31100100278854,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -871,7 +871,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 162.160499997437,
+          "durationMs": 144.16295801103115,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -890,7 +890,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 154.77562499791384,
+          "durationMs": 130.48620799183846,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -910,7 +910,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 157.8514170050621,
+          "durationMs": 141.88604199886322,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -929,7 +929,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 150.5639160051942,
+          "durationMs": 148.48620900511742,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -949,7 +949,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 195.1915839985013,
+          "durationMs": 188.3652079999447,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -968,7 +968,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 226.72241699695587,
+          "durationMs": 235.48100000619888,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -988,7 +988,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 168.34004199504852,
+          "durationMs": 141.82891699671745,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1007,7 +1007,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 138.37487499415874,
+          "durationMs": 134.0143339931965,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1027,7 +1027,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 167.3986250013113,
+          "durationMs": 138.69754199683666,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1046,7 +1046,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 163.37949999421835,
+          "durationMs": 132.89370800554752,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1066,7 +1066,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 147.5106249973178,
+          "durationMs": 132.927208006382,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1085,7 +1085,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 134.21054100245237,
+          "durationMs": 130.7057919949293,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1105,7 +1105,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 148.72108399868011,
+          "durationMs": 138.72199998795986,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1124,7 +1124,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 138.94004200398922,
+          "durationMs": 132.80787600576878,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1144,7 +1144,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 152.80145800113678,
+          "durationMs": 137.09629200398922,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1163,7 +1163,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 139.57116699963808,
+          "durationMs": 126.73158299922943,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1183,7 +1183,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 193.87779200077057,
+          "durationMs": 142.21899999678135,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1202,7 +1202,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 162.85216699540615,
+          "durationMs": 160.30095900595188,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1222,7 +1222,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 139.5857499986887,
+          "durationMs": 140.9152919948101,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1241,7 +1241,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 131.89500000327826,
+          "durationMs": 125.9231249988079,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1261,7 +1261,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 149.08762499690056,
+          "durationMs": 136.83825001120567,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1280,7 +1280,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 150.9655830040574,
+          "durationMs": 131.95958299934864,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1300,7 +1300,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 150.82729200273752,
+          "durationMs": 136.14054200053215,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1319,7 +1319,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 156.26799999922514,
+          "durationMs": 127.05633300542831,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1339,7 +1339,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 238.33700000494719,
+          "durationMs": 167.0381249934435,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1358,7 +1358,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 149.9650420024991,
+          "durationMs": 200.79433301091194,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1378,7 +1378,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 314.18029200285673,
+          "durationMs": 138.78033301234245,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1397,7 +1397,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 290.7540419995785,
+          "durationMs": 133.9231249988079,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1417,7 +1417,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 207.8801669999957,
+          "durationMs": 172.11854200065136,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1436,7 +1436,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 254.91420900076628,
+          "durationMs": 214.58795799314976,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1552,7 +1552,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 183.11804100126028,
+          "durationMs": 120.17554099857807,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1573,7 +1573,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 160.58924999833107,
+          "durationMs": 125.47679100930691,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1595,7 +1595,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 325.0535000041127,
+          "durationMs": 138.39641699194908,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1614,7 +1614,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 170.2395419999957,
+          "durationMs": 131.6354159861803,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1634,7 +1634,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 155.6894589960575,
+          "durationMs": 138.6896249949932,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1653,7 +1653,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 407.65762500464916,
+          "durationMs": 130.41525000333786,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1673,7 +1673,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 186.19416600465775,
+          "durationMs": 134.00791600346565,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1692,7 +1692,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 139.9011250063777,
+          "durationMs": 134.0675010085106,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1712,7 +1712,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 305.2065420001745,
+          "durationMs": 139.83920900523663,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1731,7 +1731,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 194.52137500047684,
+          "durationMs": 132.2823750078678,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1751,7 +1751,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 255.08270899951458,
+          "durationMs": 201.7094999998808,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1770,7 +1770,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 433.9499579966068,
+          "durationMs": 311.22900000214577,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1790,7 +1790,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 206.0187909975648,
+          "durationMs": 120.53683300316334,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1811,7 +1811,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 172.13575000315905,
+          "durationMs": 126.61354199051857,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1833,7 +1833,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 185.88733299821615,
+          "durationMs": 131.80954198539257,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1852,7 +1852,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 160.41145800054073,
+          "durationMs": 131.80845800042152,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1872,7 +1872,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 196.92575000226498,
+          "durationMs": 138.53283400833607,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1891,7 +1891,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 218.08033400028944,
+          "durationMs": 132.53329199552536,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1911,7 +1911,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 235.11724999547005,
+          "durationMs": 133.0691250115633,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1930,7 +1930,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 134.13754200190306,
+          "durationMs": 126.38104200363159,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1950,7 +1950,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 154.18524999916553,
+          "durationMs": 138.44004100561142,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -1969,7 +1969,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 139.5042920038104,
+          "durationMs": 143.96829199790955,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -1989,7 +1989,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 172.74358399957418,
+          "durationMs": 160.2821660041809,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2008,7 +2008,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 273.28341699391603,
+          "durationMs": 208.51129101216793,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2028,7 +2028,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 153.65175100415945,
+          "durationMs": 117.43566599488258,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2049,7 +2049,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 153.69170899689198,
+          "durationMs": 176.68175099790096,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2071,7 +2071,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 200.58670800179243,
+          "durationMs": 152.77770799398422,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2090,7 +2090,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 219.50879199802876,
+          "durationMs": 131.28987500071526,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2110,7 +2110,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 235.88133399933577,
+          "durationMs": 134.57424999773502,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2129,7 +2129,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 173.41379199922085,
+          "durationMs": 139.4670000076294,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2149,7 +2149,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 190.46800000220537,
+          "durationMs": 137.5231260061264,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2168,7 +2168,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 188.4016249999404,
+          "durationMs": 126.52920800447464,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2188,7 +2188,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 180.5417500063777,
+          "durationMs": 138.94820800423622,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2207,7 +2207,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 165.95566700398922,
+          "durationMs": 131.59741599857807,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2227,7 +2227,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 202.29995899647474,
+          "durationMs": 154.83916600048542,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2246,7 +2246,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 189.94737499952316,
+          "durationMs": 177.96312500536442,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2266,7 +2266,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 162.83962500095367,
+          "durationMs": 121.41899999976158,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2287,7 +2287,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 169.5413750037551,
+          "durationMs": 125.44204200804234,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2309,7 +2309,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 245.3336250036955,
+          "durationMs": 141.33829198777676,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2328,7 +2328,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 203.5324999988079,
+          "durationMs": 139.05987499654293,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2348,7 +2348,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 178.33154100179672,
+          "durationMs": 134.02000001072884,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2367,7 +2367,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 168.90758399665356,
+          "durationMs": 131.61062501370907,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2387,7 +2387,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 157.9193750023842,
+          "durationMs": 143.66483299434185,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2406,7 +2406,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 158.0316260010004,
+          "durationMs": 138.44158400595188,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2426,7 +2426,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 186.68829200416803,
+          "durationMs": 136.2024590075016,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2445,7 +2445,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 156.9408750012517,
+          "durationMs": 130.70924998819828,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2465,7 +2465,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 186.41525000333786,
+          "durationMs": 161.4469590038061,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2484,7 +2484,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 302.24599999934435,
+          "durationMs": 217.58441700041294,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2504,7 +2504,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 194.02608400583267,
+          "durationMs": 120.84129199385643,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2525,7 +2525,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 214.1697500050068,
+          "durationMs": 129.19579200446606,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2547,7 +2547,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 177.66183300316334,
+          "durationMs": 132.57412600517273,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2566,7 +2566,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 151.56470800191164,
+          "durationMs": 127.38291700184345,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2586,7 +2586,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 178.87258300185204,
+          "durationMs": 134.47208300232887,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2605,7 +2605,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 207.84633300453424,
+          "durationMs": 129.05654099583626,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2625,7 +2625,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 166.1702909991145,
+          "durationMs": 135.7885420024395,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2644,7 +2644,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 181.18737499415874,
+          "durationMs": 136.3620419949293,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2664,7 +2664,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 171.2967080026865,
+          "durationMs": 147.48995900154114,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2683,7 +2683,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 186.58245799690485,
+          "durationMs": 149.18850000202656,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2703,7 +2703,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 189.0555840060115,
+          "durationMs": 160.48462499678135,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2722,7 +2722,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 329.71033299714327,
+          "durationMs": 220.65241698920727,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2742,7 +2742,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 157.0708329975605,
+          "durationMs": 133.06204099953175,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2761,7 +2761,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 256.8263339996338,
+          "durationMs": 145.99562500417233,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2781,7 +2781,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 190.64037500321865,
+          "durationMs": 161.0720829963684,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2800,7 +2800,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 182.1450840011239,
+          "durationMs": 143.370707988739,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2820,7 +2820,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 170.32612499594688,
+          "durationMs": 147.35304199159145,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2839,7 +2839,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 167.69916699826717,
+          "durationMs": 142.57133400440216,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2859,7 +2859,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 205.70254199951887,
+          "durationMs": 148.85591700673103,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2878,7 +2878,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 162.0901669934392,
+          "durationMs": 141.13637499511242,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2898,7 +2898,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 207.0872080028057,
+          "durationMs": 176.80908299982548,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2917,7 +2917,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 275.95233300328255,
+          "durationMs": 228.43325100839138,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2937,7 +2937,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 148.16204100102186,
+          "durationMs": 135.10849998891354,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -2958,7 +2958,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 160.23075100034475,
+          "durationMs": 138.048333004117,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -2980,7 +2980,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 159.3914999961853,
+          "durationMs": 151.71725000441074,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3001,7 +3001,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 240.82074999809265,
+          "durationMs": 146.5953750014305,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3023,7 +3023,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 182.08600000292063,
+          "durationMs": 149.99012500047684,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3044,7 +3044,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 156.44733300060034,
+          "durationMs": 141.72991700470448,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3066,7 +3066,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 184.86550000309944,
+          "durationMs": 153.02224999666214,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3087,7 +3087,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 178.41295900195837,
+          "durationMs": 145.79237499833107,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3109,7 +3109,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 195.8830000013113,
+          "durationMs": 170.84383299946785,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3130,7 +3130,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 249.554000005126,
+          "durationMs": 224.52687500417233,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3344,7 +3344,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 195.08799999952316,
+          "durationMs": 158.00104200839996,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3363,7 +3363,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 161.25150000303984,
+          "durationMs": 146.63308399915695,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3382,7 +3382,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 165.2578340023756,
+          "durationMs": 146.88612501323223,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3401,7 +3401,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 142.2547919973731,
+          "durationMs": 134.76204100251198,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3420,7 +3420,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 225.3073330000043,
+          "durationMs": 133.11950001120567,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3439,7 +3439,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 135.36570799350739,
+          "durationMs": 129.41683399677277,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3458,7 +3458,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 209.48300000280142,
+          "durationMs": 122.22008299827576,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3477,7 +3477,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 195.19749999791384,
+          "durationMs": 122.8684169948101,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3496,7 +3496,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 145.11312499642372,
+          "durationMs": 122.1789579987526,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3515,7 +3515,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 169.36841700226068,
+          "durationMs": 137.37300001084805,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3534,7 +3534,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 140.69537599384785,
+          "durationMs": 127.6870000064373,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3553,7 +3553,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 144.993958003819,
+          "durationMs": 124.65441599488258,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3572,7 +3572,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 159.58116699755192,
+          "durationMs": 144.5005840063095,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3591,7 +3591,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "fail",
-          "durationMs": 172.8588330000639,
+          "durationMs": 135.79470799863338,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -3772,7 +3772,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 157.85433300584555,
+          "durationMs": 135.18991699814796,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3792,7 +3792,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 187.3229580000043,
+          "durationMs": 146.48054100573063,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3812,7 +3812,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 154.20049999654293,
+          "durationMs": 145.81541699171066,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3832,7 +3832,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 172.57674999535084,
+          "durationMs": 152.3495829999447,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3852,7 +3852,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 169.64162500202656,
+          "durationMs": 146.41820800304413,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3872,7 +3872,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 229.83004199713469,
+          "durationMs": 156.9153330028057,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3892,7 +3892,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 227.45233299583197,
+          "durationMs": 150.25579099357128,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3912,7 +3912,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 191.46904099732637,
+          "durationMs": 139.64695899188519,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -3932,7 +3932,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 253.60212499648333,
+          "durationMs": 150.555374994874,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -4891,6 +4891,78 @@
           "reason": "adapter has no equivalent mapping"
         },
         {
+          "id": "filter.allpass.phase.16000.0.5",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.16000.1",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.16000.2",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.48000.0.5",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.48000.1",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.48000.2",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.96000.0.5",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.96000.1",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "filter.allpass.phase.96000.2",
+          "feature": "filter.allpass",
+          "oracle": "phase",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
           "id": "neutral.compressor.16000.1",
           "feature": "neutral.compressor",
           "oracle": "neutral",
@@ -5136,7 +5208,7 @@
           "oracle": "resample",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 214.6757499948144,
+          "durationMs": 161.64779199659824,
           "metrics": {
             "pass": true,
             "gainDb": -5.316935801007423e-8,
@@ -5160,7 +5232,7 @@
           "oracle": "resample",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 141.2127090021968,
+          "durationMs": 131.62345799803734,
           "metrics": {
             "pass": true,
             "gainDb": -0.0000026747626428041807,
@@ -5184,7 +5256,7 @@
           "oracle": "resample",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 152.00579200685024,
+          "durationMs": 130.38533399999142,
           "metrics": {
             "pass": true,
             "gainDb": -62.87562548970854,
@@ -5208,7 +5280,7 @@
           "oracle": "resample",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 230.39591600000858,
+          "durationMs": 124.48958300054073,
           "metrics": {
             "pass": true,
             "gainDb": -0.0000016620822703868588,
@@ -5232,7 +5304,7 @@
           "oracle": "resample",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 294.30154100060463,
+          "durationMs": 157.19229100644588,
           "metrics": {
             "pass": true,
             "gainDb": -1.2557367923564492e-7,
@@ -5256,7 +5328,7 @@
           "oracle": "resample",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 202.0635830014944,
+          "durationMs": 154.9527499973774,
           "metrics": {
             "pass": true,
             "gainDb": -68.25709283319073,
@@ -5280,7 +5352,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 174.33108399808407,
+          "durationMs": 142.21525000035763,
           "metrics": {
             "pass": true,
             "frequency": 440.08724300668695,
@@ -5303,7 +5375,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 176.65316699445248,
+          "durationMs": 151.8568750023842,
           "metrics": {
             "pass": true,
             "frequency": 329.95741942680013,
@@ -5326,7 +5398,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 156.95354200154543,
+          "durationMs": 140.0241670012474,
           "metrics": {
             "pass": true,
             "frequency": 440.0388174767124,
@@ -5349,7 +5421,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 212.89708400517702,
+          "durationMs": 139.31095799803734,
           "metrics": {
             "pass": true,
             "frequency": 440.0388174767124,
@@ -5372,7 +5444,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 197.97162500023842,
+          "durationMs": 158.18545900285244,
           "metrics": {
             "pass": true,
             "frequency": 440.0210022494111,
@@ -5395,7 +5467,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 145.97774999588728,
+          "durationMs": 139.572791993618,
           "metrics": {
             "pass": true,
             "frequency": 659.9148528374218,
@@ -5418,7 +5490,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 169.77229099720716,
+          "durationMs": 149.6255830079317,
           "metrics": {
             "pass": true,
             "frequency": 293.686586011505,
@@ -5441,7 +5513,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 163.41766699403524,
+          "durationMs": 133.7780840098858,
           "metrics": {
             "pass": true,
             "frequency": 440.0388174767124,
@@ -5464,7 +5536,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 266.7613329961896,
+          "durationMs": 149.7489160001278,
           "metrics": {
             "pass": true,
             "frequency": 659.2668191180496,
@@ -5487,7 +5559,7 @@
           "oracle": "workflow",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 195.4946249946952,
+          "durationMs": 147.83616699278355,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5509,7 +5581,7 @@
           "oracle": "workflow",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 224.9744589999318,
+          "durationMs": 192.53245900571346,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5531,7 +5603,7 @@
           "oracle": "workflow",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 407.80545800179243,
+          "durationMs": 331.54933300614357,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5649,7 +5721,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 198.9064169973135,
+          "durationMs": 158.58195900917053,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5669,7 +5741,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 409.3915409967303,
+          "durationMs": 283.3135419934988,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5689,7 +5761,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 719.2267920002341,
+          "durationMs": 644.8791250139475,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5760,6 +5832,118 @@
           "reason": "adapter has no equivalent mapping"
         },
         {
+          "id": "codec.wav.24bit.1f.1ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.24bit.1f.2ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.24bit.17f.1ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.24bit.17f.2ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.24bit.1025f.1ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.24bit.1025f.2ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.24bit.byte-boundaries",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.32bit.1f.1ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.32bit.1f.2ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.32bit.17f.1ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.32bit.17f.2ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.32bit.1025f.1ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.32bit.1025f.2ch",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.wav.32bit.byte-boundaries",
+          "feature": "codec.wav",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
           "id": "codec.flac.1f.1ch",
           "feature": "codec.flac",
           "oracle": "exact",
@@ -5816,12 +6000,68 @@
           "reason": "adapter has no equivalent mapping"
         },
         {
+          "id": "codec.flac.24bit.1f.1ch",
+          "feature": "codec.flac",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.flac.24bit.1f.2ch",
+          "feature": "codec.flac",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.flac.24bit.17f.1ch",
+          "feature": "codec.flac",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.flac.24bit.17f.2ch",
+          "feature": "codec.flac",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.flac.24bit.1025f.1ch",
+          "feature": "codec.flac",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.flac.24bit.1025f.2ch",
+          "feature": "codec.flac",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
+          "id": "codec.flac.24bit.byte-boundaries",
+          "feature": "codec.flac",
+          "oracle": "exact",
+          "level": "conformance",
+          "status": "skip",
+          "reason": "adapter has no equivalent mapping"
+        },
+        {
           "id": "editor.copy-reverse-source-isolation",
           "feature": "editor.fragment-isolation",
           "oracle": "workflow",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 335.29433300346136,
+          "durationMs": 245.86037500202656,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5851,7 +6091,7 @@
           "oracle": "seams",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 217.67833299934864,
+          "durationMs": 163.83366599678993,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -5896,7 +6136,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 182.30858400464058,
+          "durationMs": 152.6635420024395,
           "metrics": {
             "channels": 1,
             "expectedChannels": 1,
@@ -5923,7 +6163,7 @@
           "oracle": "exact",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 184.04612600058317,
+          "durationMs": 137.5608749985695,
           "metrics": {
             "channels": 2,
             "expectedChannels": 2,
@@ -6031,7 +6271,7 @@
           "oracle": "resample-snr",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 231.6392080038786,
+          "durationMs": 190.5841249972582,
           "metrics": {
             "snrDb": 153.16656055475764,
             "pass": true,
@@ -6064,7 +6304,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 189.62950000166893,
+          "durationMs": 148.49770899116993,
           "metrics": {
             "pass": true,
             "frequency": 549.953612319392,
@@ -6087,7 +6327,7 @@
           "oracle": "tone",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 210.40945799648762,
+          "durationMs": 147.22299998998642,
           "metrics": {
             "pass": true,
             "frequency": 879.9629523418006,
@@ -6110,7 +6350,7 @@
           "oracle": "stretch-transient",
           "level": "conformance",
           "status": "pass",
-          "durationMs": 276.57095800340176,
+          "durationMs": 199.3274580091238,
           "metrics": {
             "pass": true,
             "frequency": 440.0230610965239,
@@ -11118,7 +11358,7 @@
         "pass": 160,
         "fail": 27,
         "error": 0,
-        "skip": 910
+        "skip": 940
       },
       "host": {
         "platform": "linux",

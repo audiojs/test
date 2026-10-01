@@ -4,6 +4,7 @@ import { loadSpec } from './spec.js'
 import { caseCopy, featureCopy } from './report-copy.js'
 import { caseVisual } from './report-visual.js'
 import { renderMetrics } from './report-graphics.js'
+import { featureDiagram } from './report-diagram.js'
 
 export const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])
 const cell = v => String(v ?? '').replaceAll('|','\\|').replaceAll('\n',' ')
@@ -76,24 +77,28 @@ export async function generateReport(results, options={}) {
  }))).filter(Boolean))
  const featureCases = f => spec.cases.filter(c=>c.feature===f.id)
  const isBasic = f => {const active=featureCases(f).filter(c=>c.status==='active');return active.length>0&&active.every(c=>c.level==='integrity')}
+ const basicRuns=runs.filter(r=>r.cases.some(c=>c.level==='integrity'&&c.status!=='skip'))
  const measured=spec.features.features.filter(f=>featureCases(f).some(c=>c.status==='active'))
  const planned=spec.features.features.filter(f=>!measured.includes(f))
  const groups=[...new Set(measured.map(f=>f.category))].sort((a,b)=>categoryOrder.indexOf(a)-categoryOrder.indexOf(b))
  const tableHead = (first='Feature',columns=runs) => `<colgroup><col class="feature-col">${columns.map(r=>`<col data-tool="${esc(r.adapter)}">`).join('')}</colgroup><thead><tr><th scope="col">${first}</th>${columns.map(r=>`<th scope="col" data-tool="${esc(r.adapter)}"><a href="${esc(spec.contenders.contenders.find(c=>c.id===r.adapter)?.url||'#methodology')}">${esc(name(r.adapter))}</a><small>${esc(shortVersion(r))}</small>${r.environmentLabel?`<small class="environment">${esc(r.environmentLabel)}</small>`:''}</th>`).join('')}</tr></thead>`
- const featureRows=basic=>runs.length?groups.map(category=>{
+ const featureRows=basic=>{
+  const columns=basic?basicRuns:runs
+  return columns.length?groups.map(category=>{
    const fs=measured.filter(f=>f.category===category&&isBasic(f)===basic)
    if(!fs.length)return ''
-   return `<tr class="group-row" data-group="${esc(category)}"><th colspan="${runs.length+1}" scope="rowgroup"><span class="group-label">${esc(categoryName(category))}</span></th></tr>`+fs.map(f=>{
+   return `<tr class="group-row" data-group="${esc(category)}"><th colspan="${columns.length+1}" scope="rowgroup"><span class="group-label">${esc(categoryName(category))}</span></th></tr>`+fs.map(f=>{
      const cs=featureCases(f).filter(c=>c.status==='active')
-     const reported=runs.map(r=>r.cases.filter(c=>c.feature===f.id))
+     const reported=columns.map(r=>r.cases.filter(c=>c.feature===f.id))
      const values=reported.map(cases=>{
        const [pass,fail,error]=counts(cases)
        return {...featureResult(cases,cs.length,basic),counts:[pass,fail,error,Math.max(cs.length,cases.length)-pass-fail-error]}
      })
      const statuses=[...new Set([...values.map(v=>v.state),...reported.flat().filter(c=>['fail','error'].includes(c.status)).map(c=>c.status)])]
-     return `<tr class="feature-row" data-feature="${esc(f.id)}" data-scope="${basic?'integrity':'behavior'}" data-status="${statuses.join(' ')}"><th scope="row"><a data-popover="info" href="#info-${esc(f.id)}">${esc(featureName(f))}</a></th>${values.map((v,i)=>`<td class="${v.state}" data-tool="${esc(runs[i].adapter)}"><a class="result" data-popover="feature" data-counts="${v.counts.join(',')}" data-description="${esc(v.description)}" href="#${esc(f.id)}" aria-label="${esc(`${name(runs[i].adapter)}, ${featureName(f)}: ${v.description}`)}">${v.label}</a></td>`).join('')}</tr>`
+     return `<tr class="feature-row" data-feature="${esc(f.id)}" data-scope="${basic?'integrity':'behavior'}" data-status="${statuses.join(' ')}"><th scope="row"><a data-popover="info" href="#info-${esc(f.id)}">${esc(featureName(f))}</a></th>${values.map((v,i)=>`<td class="${v.state}" data-tool="${esc(columns[i].adapter)}"><a class="result" data-popover="feature" data-counts="${v.counts.join(',')}" data-description="${esc(v.description)}" href="#${esc(f.id)}" aria-label="${esc(`${name(columns[i].adapter)}, ${featureName(f)}: ${v.description}`)}">${v.label}</a></td>`).join('')}</tr>`
    }).join('')
  }).join(''):''
+ }
  // Inert markup keeps closed results out of the rendered DOM. Values are HTML-escaped before templating.
  const visualTemplate = html => `<script type="text/html" class="visual-template">${html}</script>`
  const caseEvidence = test => {
@@ -115,7 +120,7 @@ export async function generateReport(results, options={}) {
  const featureInfo = f => {
    const description=spec.ecosystem.packages.find(p=>p.name===f.package)?.description
    const copy=featureCopy({...f,description})
-   return `<details id="info-${esc(f.id)}" class="feature-info"><summary>${esc(featureName(f))}</summary><p>${esc(copy.description)}</p>${copy.checks&&copy.checks!==copy.description?`<p class="feature-checks">${esc(copy.checks)}</p>`:''}</details>`
+   return `<details id="info-${esc(f.id)}" class="feature-info"><summary>${esc(featureName(f))}</summary><p>${esc(copy.description)}</p>${featureDiagram(f)}${copy.checks&&copy.checks!==copy.description?`<p class="feature-checks">${esc(copy.checks)}</p>`:''}</details>`
  }
  const contract = f => {
    const cs=featureCases(f),method=cs.find(c=>c.steps?.length)?.steps[0]?.op
@@ -217,7 +222,7 @@ export async function generateReport(results, options={}) {
    return `<details class="overhead"><summary>${esc(name(run.adapter))} call overhead</summary><p>Each call starts a process and exchanges WAV files. An unchanged clip measures that round trip.</p><ul>${measured.map(result=>`<li>${esc(result.title)}${result.profileTitle?`, ${esc(result.profileTitle.replaceAll(' · ', ', '))}`:''}: <strong>${esc(milliseconds(result.medianMs))} ms</strong></li>`).join('')}</ul><p>Separate measurements; nothing is subtracted from the operation timings. <a href="benchmarks.json">Samples and environment</a></p></details>`
  }).join('')
  const rankable=[...comparisons.values()].some(c=>c.ranked)
- const benchHtml=benchCases.length?`<p class="note">Median milliseconds for the whole adapter call; lower is faster.</p><p class="note speed-scale">Green → yellow → red: fastest, 4× as long, 16× or more. Colors compare the same clip, host and run.</p>${mixedEnvironments?'<p class="note environment-note">Runs use different environments; compare timings within one environment.</p>':''}<div class="table-wrap"><table class="matrix speed-matrix" aria-label="Speed comparison" data-rankable="${rankable}" style="--tool-count:${benchRuns.length}">${tableHead('Operation / clip',benchRuns)}<tbody>${benchGroups.map(group=>{
+ const benchHtml=benchCases.length?`<p class="note">Time per operation in milliseconds, including transfers and program launches where used. Lower is faster.</p><p class="note speed-scale">Green → yellow → red: fastest, 4× as long, 16× or more. Colors compare the same clip, host and run.</p>${mixedEnvironments?'<p class="note environment-note">Runs use different environments; compare timings within one environment.</p>':''}<div class="table-wrap"><table class="matrix speed-matrix" aria-label="Speed comparison" data-rankable="${rankable}" style="--tool-count:${benchRuns.length}">${tableHead('Operation / clip',benchRuns)}<tbody>${benchGroups.map(group=>{
    const groupCases=benchCases.filter(c=>c.group===group)
    const cases=[...new Set(groupCases.map(c=>c.title))].flatMap(title=>groupCases.filter(c=>c.title===title))
    return `<tr class="group-row" data-group="${esc(group)}"><th colspan="${benchRuns.length+1}" scope="rowgroup"><span class="group-label">${esc(group)}</span></th></tr>`+cases.map(c=>{
@@ -227,15 +232,15 @@ export async function generateReport(results, options={}) {
  }).join('')}</tbody></table></div><p class="note">Includes native command launches and WAV I/O where used. <a href="#benchmark-method">How it was measured</a></p>${overheadHtml}`:'<p>No speed measurements yet.</p>'
  const date=new Date(results.generatedAt)
  const dateLabel=Number.isNaN(date.valueOf())?results.generatedAt:date.toLocaleDateString('en',{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'})
- const featureCount=runs.length?measured.filter(f=>!isBasic(f)).length:0,basicCount=runs.length?measured.length-featureCount:0
+ const featureCount=runs.length?measured.filter(f=>!isBasic(f)).length:0,basicCount=basicRuns.length?measured.length-featureCount:0
  const html=`<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Audio tools, compared — @audio/test</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="speed.css"></head>
 <body><a class="skip-link" href="#features">Skip to comparison</a><main>
 <header><div class="masthead"><a class="brand" href="#features">@audio/test</a><nav aria-label="Report links"><a href="results.json">Results JSON</a><a href="https://github.com/audiojs/test">GitHub</a></nav></div><div class="intro"><h1>Audio tools, compared.</h1><p class="run-date">${esc(dateLabel)}</p></div></header>
 <nav class="contents" aria-label="On this page"><a href="#features">Features</a><a href="#speed">Speed</a><a href="#basic-checks">Basic checks</a></nav>
-<section id="features" class="comparison" tabindex="-1" aria-labelledby="features-title"><h2 id="features-title">Features <small>${featureCount}</small></h2><div id="feature-panel"><p class="legend"><span class="pass-key">✓ Passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not compared</span></p><p class="note">— means no comparable result, usually because the adapter has no equivalent mapping. It does not mean a missing feature.</p>${runs.length?`<div class="table-wrap"><table class="matrix" aria-label="Feature comparison" style="--tool-count:${runs.length}">${tableHead()}<tbody id="feature-rows">${featureRows(false)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
+<section id="features" class="comparison" tabindex="-1" aria-labelledby="features-title"><h2 id="features-title">Features <small>${featureCount}</small></h2><div id="feature-panel"><p class="legend"><span class="pass-key">✓ Passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not tested</span></p><p class="note">Not tested: the tool may support it; we haven’t compared it.</p>${runs.length?`<div class="table-wrap"><table class="matrix" aria-label="Feature comparison" style="--tool-count:${runs.length}">${tableHead()}<tbody id="feature-rows">${featureRows(false)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
 <section id="speed" class="comparison" tabindex="-1" aria-labelledby="speed-title"><h2 id="speed-title">Speed <small>${benchCases.length}</small></h2><div id="speed-panel">${benchHtml}</div></section>
-<section id="basic-checks" class="comparison" tabindex="-1" aria-labelledby="basic-title"><h2 id="basic-title">Basic checks <small>${basicCount}</small></h2><div id="basic-panel"><p id="basic-note" class="note">Checks for valid output and unchanged input. Effect quality is not tested.</p><p class="legend"><span class="basic-key">○ Basic checks passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not compared</span></p>${runs.length?`<div class="table-wrap"><table class="matrix basic-matrix" aria-label="Basic checks comparison" style="--tool-count:${runs.length}">${tableHead()}<tbody id="basic-rows">${featureRows(true)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
+<section id="basic-checks" class="comparison" tabindex="-1" aria-labelledby="basic-title"><h2 id="basic-title">Basic checks <small>${basicCount}</small></h2><div id="basic-panel"><p id="basic-note" class="note">Checks for valid output and unchanged input. Effect quality is not tested.</p><p class="legend"><span class="basic-key">○ Basic checks passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not tested</span></p>${basicRuns.length?`<div class="table-wrap"><table class="matrix basic-matrix" aria-label="Basic checks comparison" style="--tool-count:${basicRuns.length}">${tableHead('Feature',basicRuns)}<tbody id="basic-rows">${featureRows(true)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
 <div id="feature-info" class="cell-details">${measured.map(featureInfo).join('')}</div>
 <div id="evidence" class="cell-details">${measured.map(contract).join('')}</div>
 ${benchEvidence?`<div id="speed-evidence" class="cell-details">${benchEvidence}</div>`:''}

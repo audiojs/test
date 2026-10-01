@@ -1,0 +1,57 @@
+{
+  "adapter": "webaudio",
+  "version": "chromium 153.0.8010.12",
+  "metadata": {
+    "engine": "chromium",
+    "mode": "OfflineAudioContext in a persistent browser; base64 float32 PCM crosses Playwright",
+    "source": "https://www.w3.org/TR/webaudio-1.0/"
+  },
+  "test": {
+    "id": "neutral.compressor.96000.1",
+    "feature": "neutral.compressor",
+    "title": "neutral · compressor · 96000 · 1",
+    "status": "active",
+    "tier": "quality",
+    "fixture": {
+      "sampleRate": 96000,
+      "channels": 1,
+      "frames": 4097,
+      "signal": "sample-id"
+    },
+    "steps": [
+      {
+        "op": "processor",
+        "name": "compressor",
+        "params": {
+          "ratio": 1,
+          "upRatio": 1,
+          "makeup": 0
+        }
+      }
+    ],
+    "oracle": {
+      "type": "neutral",
+      "atol": 0.000001
+    }
+  },
+  "result": {
+    "id": "neutral.compressor.96000.1",
+    "feature": "neutral.compressor",
+    "oracle": "neutral",
+    "level": "conformance",
+    "status": "fail",
+    "durationMs": 2.8410000000003492,
+    "metrics": {
+      "channels": 1,
+      "expectedChannels": 1,
+      "lengthDelta": [
+        0
+      ],
+      "maxAbsError": 0.9160852134227753,
+      "rmsError": 0.4180861531876369,
+      "pass": false,
+      "reason": "samples",
+      "inputUnchanged": true
+    }
+  }
+}

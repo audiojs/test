@@ -37,27 +37,27 @@ node bin/audio-test.js run --adapter ./my-adapter.js --tier quality
 ## Results
 
 <!-- results:start -->
-201 features, 493 behavior tests, 604 basic checks, 362 packages
+201 features, 523 behavior tests, 604 basic checks, 362 packages
 
-Measured 2026-10-01T03:03:48.839Z. Spec SHA-256: `6973c15a6feb63251872e797c221a61a20e603ecaf025b5f692ad7358dfe92f8`.
+Measured 2026-10-01T17:17:58.023Z. Spec SHA-256: `58ef5b42b8f0b62eaf868f76584c6b7ef3902e2c3948d5f383695a43943a65de`.
 
 | Contender | Version | Conformance pass / run | Integrity pass / run | Fail | Error | Unmapped |
 |---|---|---:|---:|---:|---:|---:|
-| audio | 2.9.0 | 473 / 474 | 604 / 604 | 1 | 0 | 19 |
-| ffmpeg | ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers | 411 / 433 | 0 / 0 | 22 | 0 | 664 |
-| sox | SoX 14.4.2_6 (Homebrew package) | 325 / 343 | 0 / 0 | 18 | 0 | 754 |
-| librosa | 0.11.0 | 41 / 42 | 0 / 0 | 1 | 0 | 1055 |
-| pedalboard | 0.9.25 | 136 / 138 | 27 / 27 | 2 | 0 | 932 |
-| scipy | 1.17.0 | 87 / 88 | 0 / 0 | 1 | 0 | 1009 |
-| soxr | 1.0.0 | 8 / 8 | 0 / 0 | 0 | 0 | 1089 |
-| libsamplerate | 0.2.3 | 8 / 8 | 0 / 0 | 0 | 0 | 1089 |
-| pyloudnorm | 0.1.1 | 6 / 6 | 0 / 0 | 0 | 0 | 1091 |
-| rubberband | 4.0.0 | 8 / 8 | 0 / 0 | 0 | 0 | 1089 |
-| soundtouch | 2.4.1 | 12 / 12 | 0 / 0 | 0 | 0 | 1085 |
-| webaudio | chromium 153.0.8010.12 | 265 / 274 | 0 / 0 | 9 | 0 | 823 |
-| webaudio-firefox | firefox 155.0 | 272 / 274 | 0 / 0 | 2 | 0 | 823 |
-| webaudio-webkit | webkit 26.6 | 269 / 274 | 0 / 0 | 5 | 0 | 823 |
-| audacity | 3.4.2+dfsg-1build4 | 160 / 187 | 0 / 0 | 27 | 0 | 910 |
+| audio | 2.9.0 | 503 / 504 | 604 / 604 | 1 | 0 | 19 |
+| ffmpeg | ffmpeg version 8.0.1 Copyright (c) 2000-2025 the FFmpeg developers | 450 / 472 | 47 / 47 | 22 | 0 | 608 |
+| sox | SoX 14.4.2_6 (Homebrew package) | 423 / 447 | 38 / 38 | 24 | 0 | 642 |
+| librosa | 0.11.0 | 102 / 103 | 28 / 28 | 1 | 0 | 996 |
+| pedalboard | 0.9.25 | 143 / 169 | 53 / 53 | 26 | 0 | 905 |
+| scipy | 1.17.0 | 87 / 88 | 23 / 23 | 1 | 0 | 1016 |
+| soxr | 1.0.0 | 8 / 8 | 0 / 0 | 0 | 0 | 1119 |
+| libsamplerate | 0.2.3 | 8 / 8 | 0 / 0 | 0 | 0 | 1119 |
+| pyloudnorm | 0.1.1 | 6 / 6 | 0 / 0 | 0 | 0 | 1121 |
+| rubberband | 4.0.0 | 8 / 8 | 0 / 0 | 0 | 0 | 1119 |
+| soundtouch | 2.4.1 | 12 / 12 | 0 / 0 | 0 | 0 | 1115 |
+| webaudio | chromium 153.0.8010.12 | 286 / 301 | 38 / 38 | 15 | 0 | 788 |
+| webaudio-firefox | firefox 155.0 | 293 / 301 | 38 / 38 | 8 | 0 | 788 |
+| webaudio-webkit | webkit 26.6 | 290 / 301 | 38 / 38 | 11 | 0 | 788 |
+| audacity | 3.4.2+dfsg-1build4 | 160 / 187 | 0 / 0 | 27 | 0 | 940 |
 
 Failures are contract discrepancies pending triage, not automatically engine bugs. Unmapped is not unsupported. See [findings](results/FINDINGS.md) and [full report](site/index.html).
 <!-- results:end -->
@@ -73,10 +73,10 @@ Failures are contract discrepancies pending triage, not automatically engine bug
 | Volume | 3 | 24 | 0 |
 | Channels | 4 | 14 | 0 |
 | Analysis | 13 | 45 | 0 |
-| Filters | 11 | 92 | 0 |
+| Filters | 11 | 101 | 0 |
 | Bypass behavior | 5 | 30 | 0 |
 | Time & pitch | 4 | 19 | 0 |
-| Codecs | 2 | 14 | 0 |
+| Codecs | 2 | 35 | 0 |
 | Dynamics | 3 | 5 | 0 |
 | Effects | 2 | 2 | 0 |
 | Restoration | 2 | 2 | 0 |
@@ -86,7 +86,7 @@ Failures are contract discrepancies pending triage, not automatically engine bug
 - **Conformance:** editing goldens, statistics, filter response, alias rejection, pitch/duration, neutral-setting invariants, copy/history and stream/read observations.
 - **Integrity only:** every discovered processor receives silence, impulse, sine and a declared parameter's extrema when suitable. Passing means nonempty finite PCM and unchanged input—not correct DSP.
 - **DSP checks:** standards-based synthesized loudness and true-peak signals, compressor/gate/limiter response, delay and convolution, noise reduction, spectrum, onsets, tempo and streaming resampling. These exercise stated tolerances; they do not establish perceptual quality.
-- **Still unmeasured:** the complete official conformance vector sets, codecs beyond the tested WAV16/FLAC16 paths, corrupt files, perceptual quality, real-time safety, total process-tree memory and delivery size. See the [coverage assessment](docs/COVERAGE.md).
+- **Still unmeasured:** the complete official conformance vector sets, codecs beyond the tested integer/float WAV and integer FLAC paths, corrupt files, perceptual quality, real-time safety, total process-tree memory and delivery size. See the [coverage assessment](docs/COVERAGE.md).
 - **Inventory:** `spec/ecosystem.json` covers local umbrella/atom packages and proposed tests. `spec/competitors.json` inventories CLI/API/manual features. Neither count is test coverage. Both are exposed in the webpage.
 
 Refresh the local inventory deliberately: `node scripts/inventory.js /path/to/audio /path/to/@audio`. `node scripts/contenders.js` inventories installed tools and fetches Audacity's official scripting manual. The package scan excludes dependency trees.

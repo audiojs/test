@@ -1,6 +1,6 @@
 # Benchmarks
 
-`npm run bench` measures 143 workloads: editing, channels, filters, analysis, time/pitch, dynamics and effects. Most operations run on three inputs: 0.1-second mono, 1-second stereo and 10-second stereo, all at 48 kHz. Integrated loudness and noise removal use the longer stereo inputs.
+`npm run bench` measures 158 workloads: editing, channels, filters, analysis, time/pitch, dynamics, effects and file round trips. Most operations run on three inputs: 0.1-second mono, 1-second stereo and 10-second stereo, all at 48 kHz. Integrated loudness and noise removal use the longer stereo inputs.
 
 Each contender/case gets a fresh Node driver, two warmups and seven timed repetitions. Every output is checked against the declared oracle; failed checks receive no timing score. `results/benchmarks.json` contains the fixture, individual durations, median, p95, validation and build identity. `--repeats 3` is the minimum; `--case resample` and `--profile long-stereo` select smaller runs.
 
@@ -17,6 +17,8 @@ Runs that include FFmpeg also record separate overhead diagnostics in `benchmark
 The workloads include 3-, 1,024- and 48,000-tap convolution responses, FFTs of 4,096/32,768/262,144 samples, and noise removal after learning a half-second noise region. Long convolution uses dense, deterministic Float32 responses and a constant input: a prefix-sum oracle checks every output sample and the full tail without performing another expensive convolution. FFTs use a bin-centered tone and check peak frequency and amplitude. Noise removal checks output length, noise reduction, signal preservation and SNR improvement. These synthetic fixtures expose processing cost and selected errors; they do not establish performance on every recording.
 
 Other correctness gates use exact PCM, analytic statistics, steady-state filter/dynamics response, or output rate/duration/pitch. Passing one timed workload does not replace the broader correctness suite.
+
+File workloads save and reopen WAV16, WAV24, floating-point WAV32, FLAC16 and FLAC24 at all three clip sizes. Integer fixtures are quantized before timing so the comparison checks exact preservation rather than a particular rounding convention. Every call verifies the actual encoded bit depth and sample format, decoded samples, sample rate, channel count and unchanged source. The timer includes both encoding and decoding.
 
 Driver high-water RSS comes from `process.resourceUsage().maxRSS`. It includes fixtures and validation but excludes child-process/browser memory. It cannot rank total memory consumption. Process-tree peak memory, leaks, cold startup, compressed browser bundles and installed dependency size remain unmeasured.
 

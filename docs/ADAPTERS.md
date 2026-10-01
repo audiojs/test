@@ -37,20 +37,24 @@ For a separately provisioned disposable session, set `AUDIO_TEST_AUDACITY_ISOLAT
 
 ## Reproduction
 
-`--case` matches case-ID substrings. Each failure's `case.json` stores fixture parameters, steps, oracle and metrics. Sibling WAVs contain input, actual and exact expected PCM; `diff.wav` exists only when shapes match. Full run JSON contains source/environment identity. Close adapters after direct programmatic use; the CLI handles this.
+`--case` matches case-ID substrings. Each failure's `case.json` stores fixture parameters, steps, oracle and metrics. Sibling WAVs contain the input, plus actual and expected PCM when those are available; metric-only expectations have no expected WAV. `diff.wav` exists only when both outputs have matching shapes. Full run JSON contains source/environment identity. Close adapters after direct programmatic use; the CLI handles this.
 
 ## Expanded engines
 
 `--adapter all` runs audio, FFmpeg, SoX, librosa, Pedalboard, SciPy, SoXR, libsamplerate, pyloudnorm, Rubber Band, SoundTouch and Web Audio in Chromium, Firefox and WebKit. Provision Python with `contenders/requirements.txt`; set `AUDIO_TEST_PYTHON` to its interpreter. Install browser engines with `npx playwright install chromium firefox webkit`. Audacity needs its separate isolated launcher. The [market inventory](MARKET.md) distinguishes callable engines from DAWs that still need project/render automation.
 
-- SciPy calls `scipy.signal` filters, resample_poly and FFT convolution, plus `scipy.fft`; it supplies no synthetic editing implementation.
+- SciPy calls `scipy.signal` filters, resample_poly and FFT convolution, plus `scipy.fft`. Its `lfilter` also implements the declared DC-blocker, derivative, leaky integral and pre/de-emphasis equations; it supplies no synthetic editing implementation.
+- librosa uses its native `effects.remix` for trimming, removing and repeating samples, and its public pre/de-emphasis functions for those first-order filters. The adapter disables automatic zero-crossing alignment so explicit frame positions are preserved.
+- SoX selection edits compose native trim, reverse and concatenation; mixing uses explicit unity input gains. Crossfades compose native fade and mix to preserve tiny overlaps that `splice` would enlarge. CLI processor mappings reject controls outside each engine's supported range.
 - SoXR and libsamplerate exercise both batch conversion and native streaming state, including final drain.
 - pyloudnorm supplies integrated loudness and normalization. Its normalization ceiling checks sample peaks; the independent oracle also checks reconstructed peaks.
 - Rubber Band uses the native R3 offline CLI for stretch and pitch. SoundTouch uses SoundStretch for tempo, pitch and playback rate with its default music/anti-alias settings.
-- Browser adapters render native `OfflineAudioContext` graphs. Gain automation, filters, resampling, delay and convolution are performed by the browser. PCM copies only cross the automation boundary. Native compressor makeup and feedback-cycle latency can differ from the shared contract.
-- Pedalboard convolution retains its own impulse-response normalization. Its limiter, compressor and gate only claim settings the API exposes.
+- Browser adapters render native `OfflineAudioContext` graphs. Gain automation, filters, resampling, delay and convolution are performed by the browser. Basic processors also use oscillator-driven tremolo and native `IIRFilterNode` recurrences. PCM copies only cross the automation boundary. Native compressor makeup and feedback-cycle latency can differ from the shared contract, including at nominally neutral settings.
+- Pedalboard convolution retains its own impulse-response normalization. Positive-lookahead limiter tests use its named `BrickwallLimiter`; zero-lookahead uses the original `Limiter`, including its native makeup behavior. The compressor and gate only claim settings the API exposes.
 - audio undo/redo composes the public `undo()` and `run()` edit-list APIs; it does not invent a `redo()` method.
 
 Analysis results can return `{values:{peak,rms,dc}}`, `{spectrum:{frequencies,magnitudes}}` or `{events:[seconds]}`. Spectrum magnitudes use linear peak amplitude after Hann coherent-gain correction. Chunked resampling returns `{channels,sampleRate,observations:{batch}}`. Undo/redo records the intermediate `undone` PCM as well as final output and untouched source.
+
+File round trips return `{channels,sampleRate,encodedBytes,bitDepth,sampleFormat,observations:{sourceAfter}}`. `sampleFormat` is `integer` or `float`, read from the encoded file header rather than inferred from requested options. WAV covers 16-/24-bit integer and 32-bit float; FLAC covers 16-/24-bit integer. audio also reads byte-split input. FFmpeg, SoX and Pedalboard AudioFile use complete files; their adapters do not claim incremental decoding. Native integer scaling and floating-point transport differences remain visible in exact-sample tests.
 
 Run optional integration checks with `AUDIO_TEST_PYTHON=/path/to/python AUDIO_TEST_BROWSERS=1 AUDIO_TEST_NATIVE=1 npm test`. Set `AUDIO_MODULE` to include the audio API checks. The full comparison always reports selected unavailable engines as errors, even when optional unit checks are disabled.

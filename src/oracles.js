@@ -102,6 +102,21 @@ export function judge(test,actual,wanted,input,sr){
   const rectangular=Array.isArray(channels)&&channels.length>0&&channels.every(x=>x!=null&&typeof x.length==='number'&&x.length===channels[0].length)
   const finite=rectangular&&channels.every(x=>Array.from(x).every(Number.isFinite))
   if(!rectangular||!finite)return {pass:false,reason:!rectangular?'invalid-channel-shape':'non-finite'}
+  if(o.type==='phase'){
+    const frequency=test.fixture.frequency,start=Math.floor(input[0].length/2),omega=2*Math.PI*frequency/sr
+    const components=x=>{
+      let sine=0,cosine=0
+      for(let i=start;i<x.length;i++){sine+=x[i]*Math.sin(omega*i);cosine+=x[i]*Math.cos(omega*i)}
+      return {angle:Math.atan2(cosine,sine),amplitude:2*Math.hypot(sine,cosine)/(x.length-start)}
+    }
+    const measured=checkChannels(channels,input,(x,ref)=>{
+      const output=components(x),source=components(ref),phaseDegrees=(output.angle-source.angle)*180/Math.PI
+      const delta=(phaseDegrees-o.phaseDegrees)*Math.PI/180,phaseError=Math.abs(Math.atan2(Math.sin(delta),Math.cos(delta))*180/Math.PI)
+      const gainDb=20*Math.log10(output.amplitude/source.amplitude)
+      return {phaseDegrees,phaseError,gainDb,pass:Number.isFinite(gainDb)&&Math.abs(gainDb)<=o.gainTolerance&&phaseError<=o.phaseTolerance}
+    })
+    return {...measured,channels:channels.length,expectedChannels:input.length,lengthDelta:input.map((ch,c)=>(channels[c]?.length??0)-ch.length),sampleRate:actual.sampleRate,expectedRate:sr,pass:sameShape(channels,input)&&measured.pass&&(actual.sampleRate===undefined||actual.sampleRate===sr)}
+  }
   if(o.type==='convolution-dc'){
     const step=test.steps[0],impulse=step?.impulse,n=input[0].length,level=Math.fround(test.fixture.value??.25)
     if(test.fixture.signal!=='dc'||step?.op!=='convolve'||test.steps.length!==1||!impulse?.length)throw new Error('convolution-dc requires one convolution of a constant fixture')
@@ -118,7 +133,11 @@ export function judge(test,actual,wanted,input,sr){
   if(['exact','exact-with-source','workflow','neutral'].includes(o.type)){
     const metrics=compareChannels(channels,wanted.channels,o.atol??0)
     if(test.workflow){const source=compareChannels(actual.observations?.sourceAfter,wanted.observations.sourceAfter,0);metrics.sourceUnchanged=source.pass;metrics.sourceMaxAbsError=source.maxAbsError;metrics.pass&&=source.pass}
-    if(test.workflow?.op==='codec-roundtrip'){metrics.sampleRate=actual.sampleRate;metrics.encodedBytes=actual.encodedBytes;metrics.bitDepth=actual.bitDepth;metrics.pass&&=actual.sampleRate===sr&&actual.encodedBytes>0&&actual.bitDepth===16}
+    if(test.workflow?.op==='codec-roundtrip'){
+      const depth=test.workflow.bitDepth??16,format=depth===32?'float':'integer'
+      metrics.sampleRate=actual.sampleRate;metrics.encodedBytes=actual.encodedBytes;metrics.bitDepth=actual.bitDepth;metrics.sampleFormat=actual.sampleFormat
+      metrics.pass&&=actual.sampleRate===sr&&actual.encodedBytes>0&&actual.bitDepth===depth&&actual.sampleFormat===format
+    }
     if(test.workflow?.op==='stream'){const stream=compareChannels(actual.observations?.stream,channels,0);metrics.streamEqual=stream.pass;metrics.pass&&=stream.pass}
     if(test.workflow?.op==='undo-redo'){const undone=compareChannels(actual.observations?.undone,wanted.observations.undone,0);metrics.undoEqual=undone.pass;metrics.pass&&=undone.pass}
     return metrics

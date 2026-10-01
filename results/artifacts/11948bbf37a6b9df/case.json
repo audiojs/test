@@ -44,7 +44,7 @@
     "oracle": "response",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 23.895833999999013,
+    "durationMs": 20.8651250000039,
     "metrics": {
       "pass": false,
       "gainDb": -11.399962510251328,

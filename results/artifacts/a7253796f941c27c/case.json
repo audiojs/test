@@ -88,7 +88,7 @@
     "oracle": "dynamics",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 31.671834000000672,
+    "durationMs": 26.255417000000307,
     "metrics": {
       "pass": false,
       "windows": [

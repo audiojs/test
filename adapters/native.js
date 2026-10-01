@@ -7,6 +7,87 @@ import { join } from 'node:path'
 import { hash } from '../src/provenance.js'
 import { nativeMeasure } from './native-measure.js'
 import { nativeCodec, codecSupported } from './codecs.js'
+import { encodeWav, decodeWav } from '../src/wav.js'
+
+const processorDefaults={
+ compressor:{threshold:-20,ratio:4,knee:6,makeup:0,attack:5,release:100,upRatio:1},
+ limiter:{ceiling:-.3,lookahead:5,release:50},
+ tremolo:{rate:5,depth:.5},vibrato:{rate:5,depth:.5},
+ softclip:{curve:'tanh',drive:1,ceiling:1,oversample:1},
+ dcblocker:{R:.995},derivative:{},integral:{leak:1},emphasis:{alpha:.97},deemphasis:{alpha:.97}
+}
+
+// Processor controls use milliseconds; the behavioral dynamics cases use seconds.
+// Unknown controls are rejected rather than silently replaced by engine defaults.
+export function nativeProcessor(id,{name,params={}}){
+ const defaults=processorDefaults[name]
+ if(!defaults||Object.keys(params).some(k=>!(k in defaults)))return null
+ const p={...defaults,...params},map=id==='ffmpeg'?ffmpegMap:soxMap
+ if(Object.entries(p).some(([key,value])=>key!=='curve'&&!Number.isFinite(value)))return null
+ const biquad=(b0,b1,a1)=>id==='ffmpeg'?`biquad=b0=${b0}:b1=${b1}:b2=0:a0=1:a1=${a1}:a2=0:precision=f64`:['biquad',String(b0),String(b1),'0','1',String(a1),'0']
+ if(name==='compressor'){
+  if(p.upRatio!==1||p.ratio<1||p.ratio>20||p.attack<.01||p.release<.01||p.threshold>0)return null
+  if(id==='ffmpeg'&&(10**(p.threshold/20)<.000976563||p.knee<0||10**(p.knee/20)>8||p.makeup<0||10**(p.makeup/20)>64||p.attack>2000||p.release>9000))return null
+  return map.compressor({...p,attack:p.attack/1000,release:p.release/1000})
+ }
+ if(name==='limiter'){
+  if(p.ceiling>0||p.lookahead<0||p.release<1)return null
+  if(id==='ffmpeg'&&(10**(p.ceiling/20)<.0625||p.lookahead<.1||p.lookahead>80||p.release>8000))return null
+  return map.limiter({...p,lookahead:p.lookahead/1000,release:p.release/1000})
+ }
+ if(name==='tremolo'||name==='vibrato'){
+  if(p.rate<.1||p.rate>20000||p.depth<0||p.depth>1)return null
+  if(id==='sox'&&p.depth===0)return null
+  return id==='ffmpeg'?`${name}=f=${p.rate}:d=${p.depth}`:name==='tremolo'?['tremolo',String(p.rate),String(p.depth*100)]:null
+ }
+ if(name==='softclip'){
+  if(id!=='ffmpeg'||!['tanh','hard'].includes(p.curve)||p.drive<=0||p.ceiling<.000001||p.ceiling>1||!Number.isInteger(p.oversample)||p.oversample<1||p.oversample>64)return null
+  return `volume=${p.drive}:precision=double,asoftclip=type=${p.curve}:threshold=${p.curve==='hard'?p.ceiling:1}:output=${p.curve==='hard'?1:p.ceiling}:oversample=${p.oversample}`
+ }
+ if(name==='dcblocker')return p.R>=0&&p.R<1?biquad(1,-1,-p.R):null
+ if(name==='derivative')return map.derivative()
+ if(name==='integral')return p.leak>=0&&p.leak<=1?biquad(1,0,-p.leak):null
+ if(name==='emphasis'||name==='deemphasis')return p.alpha>=0&&p.alpha<1?biquad(1,name==='emphasis'?-p.alpha:0,name==='deemphasis'?-p.alpha:0):null
+ return null
+}
+
+const soxEdits=['mix','insert','crossfade','reverse-range','remove']
+async function soxEdit(step,input,sr){
+ const dir=await mkdtemp(join(tmpdir(),'audio-sox-edit-')),source=join(dir,'input.wav'),target=join(dir,'output.wav'),frames=input[0].length
+ try{
+  await writeFile(source,encodeWav(input,sr))
+  const output=file=>['-t','wav','-e','floating-point','-b','32',file]
+  const run=args=>execute('sox',['-D',...args],{timeout:30000,maxBuffer:8*1024*1024})
+  let count=0
+  const part=async(start,length,reverse=false)=>{
+   if(!length)return null
+   const file=join(dir,`part-${count++}.wav`)
+   await run([source,...output(file),'trim',`${start}s`,`${length}s`,...(reverse?['reverse']:[])])
+   return file
+  }
+  let other
+  if(step.other){other=join(dir,'other.wav');await writeFile(other,encodeWav(makeSignal(step.other).channels,sr))}
+  if(step.op==='mix'){
+   const delayed=join(dir,'delayed.wav')
+   await run([other,...output(delayed),'pad',`${step.at}s`,'0s'])
+   // Explicit input gains disable SoX's automatic 1/N attenuation.
+   await run(['--combine','mix','-v','1',source,'-v','1',delayed,...output(target),'trim','0s',`${frames}s`])
+  }else if(step.op==='crossfade'){
+   // splice enforces a minimum overlap. Native fade + mix also handles tiny
+   // overlaps without alignment search or changing the requested duration.
+   const a=join(dir,'fade-out.wav'),b=join(dir,'fade-in.wav'),curve=step.curve==='equal-power'?'q':'t'
+   await run([source,...output(a),'fade',curve,'0s',`${frames}s`,`${step.length}s`])
+   await run([other,...output(b),'fade',curve,`${step.length}s`,'pad',`${frames-step.length}s`,'0s'])
+   await run(['--combine','mix','-v','1',a,'-v','1',b,...output(target)])
+  }else{
+   const start=step.op==='insert'?step.at:step.start,end=step.op==='insert'?start:start+step.length
+   const parts=[await part(0,start),step.op==='insert'?other:step.op==='reverse-range'?await part(start,step.length,true):null,await part(end,frames-end)].filter(Boolean)
+   await run(parts.length?[...parts,...output(target)]:[source,...output(target),'trim','0s','0s'])
+  }
+  const result=decodeWav(await readFile(target))
+  return {channels:result.channels,sampleRate:result.sampleRate}
+ }finally{await rm(dir,{recursive:true,force:true})}
+}
 
 export const ffmpegMap={
  reverse:()=> 'areverse',trim:s=>`atrim=start_sample=${s.start}:end_sample=${s.start+s.length},asetpts=PTS-STARTPTS`,
@@ -39,7 +120,7 @@ export const ffmpegMap={
 export const soxMap={
  reverse:()=>['reverse'],trim:s=>['trim',`${s.start}s`,`${s.length}s`],gain:s=>['vol',String(s.value)],'gain-db':s=>['gain',String(s.db)],
  pad:s=>['pad',`${s.before}s`,`${s.after}s`],repeat:s=>['repeat',String(s.count-1)],
- fade:(s,t)=>['fade','t',`${s.direction==='in'?s.length:0}s`,`${t.fixture.frames}s`,`${s.direction==='out'?s.length:0}s`],
+ fade:(s,t)=>['fade',s.curve==='cos'?'h':'t',`${s.direction==='in'?s.length:0}s`,`${t.fixture.frames}s`,`${s.direction==='out'?s.length:0}s`],
  derivative:()=>['fir','1','-1'],integral:()=>['biquad','1','0','0','1','-1','0'],
  swap:()=>['remix','2','1'],mono:()=>['remix','1v0.5,2v0.5'],duplicate:()=>['remix','1','1'],balance:s=>['remix',`1v${Math.min(1,1-s.value)}`,`2v${Math.min(1,1+s.value)}`],normalize:s=>['norm',String(s.db)],
  lowpass:s=>['lowpass',`-${s.order||2}`,String(s.freq),...(s.order===1?[]:[`${s.Q}q`])],highpass:s=>['highpass',`-${s.order||2}`,String(s.freq),...(s.order===1?[]:[`${s.Q}q`])],
@@ -80,6 +161,7 @@ export function native(id){
   async metadata(){return {...await info(),mode:'subprocess with float WAV I/O',measurementPrecision:'Statistics use the CLI text precision; derived energy inherits rounded RMS error.'}},
   supports(t){
    if(t.workflow)return codecSupported(t)&&!t.workflow.split
+   if(t.steps.some(s=>s.op==='processor'))return t.steps.length===1&&nativeProcessor(id,t.steps[0])!==null
    if(t.steps.some(s=>['analyze','measure'].includes(s.op)))return t.steps.length===1&&(['min','max','peak','rms','dc','energy','levels',...(id==='ffmpeg'?['zcr','loudness','true-peak']:[])].includes(t.steps[0].name))
    if(t.steps.some(s=>s.op==='delay'&&s.feedback!==0||s.op==='dither'&&(s.bits!==16||s.distribution!=null&&s.distribution!=='tpdf')))return false
    if(t.steps.some(s=>s.op==='gate'&&s.hold>0))return false
@@ -88,12 +170,18 @@ export function native(id){
    if(id==='ffmpeg'&&t.steps.length>1&&t.steps.some(s=>s.op==='normalize'))return false
    if(t.steps.slice(0,-1).some(s=>['trim','pad','repeat','resample','speed','stretch'].includes(s.op)))return false
    if(t.steps.some(s=>s.other||['reverse-range','remove','convolve','delay','denoise'].includes(s.op))&&t.steps.length!==1)return false
-   return t.steps.every(s=>(!!map[s.op]||id==='ffmpeg'&&['mix','insert','crossfade','reverse-range','remove','convolve','pitch'].includes(s.op))&&!(id==='sox'&&s.op==='fade'&&s.curve&&s.curve!=='linear'))
+   return t.steps.every(s=>(!!map[s.op]||id==='sox'&&soxEdits.includes(s.op)||id==='ffmpeg'&&['mix','insert','crossfade','reverse-range','remove','convolve','pitch'].includes(s.op))&&!(id==='sox'&&s.op==='fade'&&s.curve&&!['linear','cos'].includes(s.curve)))
   },
   async run(t,input,sr){
    if(codecSupported(t))return nativeCodec(id,t,input,sr)
    const s=t.steps[0]
    if(['analyze','measure'].includes(s?.op))return nativeMeasure(id,s,input,sr)
+   if(s?.op==='processor'){
+    const effect=nativeProcessor(id,s)
+    if(effect===null)throw new RangeError(`Unsupported ${id} processor controls: ${s.name}`)
+    return wavProcess(id,(source,target)=>id==='ffmpeg'?['-nostdin','-v','error','-y','-i',source,'-af',effect,'-c:a','pcm_f32le',target]:['-D',source,'-t','wav','-e','floating-point','-b','32',target,...effect],input,sr)
+   }
+   if(id==='sox'&&soxEdits.includes(s?.op))return soxEdit(s,input,sr)
    if(id==='ffmpeg'){
     if(s?.op==='normalize'){
       const {scalar:peak}=await nativeMeasure(id,{name:'peak'},input,sr)

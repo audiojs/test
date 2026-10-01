@@ -79,6 +79,13 @@ test('the matrix preserves partial results and keeps plans in their own details'
   assert(info, 'row descriptions have a separate target from recorded results')
   assert.match(info, /<p>[^<]+<\/p>/)
   assert.doesNotMatch(info, /case-output|case-result|<pre|<code|data-counts|<details/,'feature descriptions contain no run logs or raw records')
+  assert.match(info, /<svg[^>]*class="feature-diagram"[^>]*role="img"[^>]*aria-label="[^"]+"/)
+  assert.match(info, /<title>[^<]+<\/title><desc>[^<]+<\/desc>/)
+  assert.match(info, />Example<\/text>/, 'illustrations are labelled as examples, not measured evidence')
+  assert.doesNotMatch(matrix, /<svg/, 'illustrations do not add noise to the comparison table')
+  const resultSources = html.split('<div id="evidence" class="cell-details">')[1]
+  assert.doesNotMatch(resultSources, /<svg[^>]*class="feature-diagram"/, 'feature illustrations never appear in result records')
+  assert.doesNotMatch(html, /<details\b[^>]*\sopen(?:\s|>|=)/, 'all cases and evidence start collapsed, including failures')
   assert.match(html, /id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-tool cell-popover-title"/)
   assert.equal((html.match(/id="cell-popover"/g)||[]).length,1)
   assert.match(html, /<div id="evidence" class="cell-details">/)
@@ -129,7 +136,9 @@ test('npm file origins and workspace builds remain distinct in both comparisons'
   const out = await generateReport(input, { root: dir })
   const html = await readFile(out.site, 'utf8')
   const tables = [...html.matchAll(/<table\b[^>]*class="[^"]*\bmatrix\b[^"]*"[^>]*>([\s\S]*?)<\/table>/g)].map(m => m[1])
-  assert.equal(tables.length, 3)
+  assert.equal(tables.length, 2, 'tools without basic results do not create an empty basic table')
+  assert.doesNotMatch(html, /<tbody id="basic-rows">/)
+  assert.match(html, /Basic checks <small>0<\/small>/, 'the basic count follows the visible rows')
   for (const table of tables) {
    const headers = [...table.matchAll(/<th\b[^>]*scope="col"[^>]*>([\s\S]*?)<\/th>/g)].map(m => m[1])
    const registry = headers.find(header => header.includes('registry-audio'))
@@ -144,6 +153,40 @@ test('npm file origins and workspace builds remain distinct in both comparisons'
  } finally {
   await rm(dir, { recursive: true, force: true })
  }
+})
+
+test('basic comparison keeps tested tools and all their outcomes while omitting untested columns', async () => {
+ const dir = await mkdtemp(join(tmpdir(), 'audio-test-basic-columns-'))
+ try {
+  const spec = await loadSpec(), basic = spec.cases.filter(c => c.status === 'active' && c.level === 'integrity')
+  const first = basic[0], other = basic.find(c => c.feature !== first.feature)
+  const runs = [
+   { adapter: 'unmapped', cases: [{ ...first, status: 'skip', reason: 'No equivalent adapter mapping' }] },
+   { adapter: 'passed', cases: [{ ...first, status: 'pass' }, { ...other, status: 'skip' }] },
+   { adapter: 'behavior-only', cases: [{ ...spec.cases.find(c => c.status === 'active' && c.level !== 'integrity'), status: 'pass' }] },
+   { adapter: 'failed', cases: [{ ...first, status: 'fail', metrics: { inputUnchanged: false } }] },
+   { adapter: 'errored', cases: [{ ...other, status: 'error', error: 'Processing stopped' }] },
+   { adapter: 'empty', cases: [] }
+  ].map(run => ({ ...run, version: '1.0.0', summary: Object.fromEntries(['pass', 'fail', 'error', 'skip'].map(status => [status, run.cases.filter(c => c.status === status).length])) }))
+  const input = { generatedAt: '2026-10-01T00:00:00Z', specSha256: 'test', runs }
+  await writeFile(join(dir, 'README.md'), '<!-- results:start --><!-- results:end -->\n<!-- features:start --><!-- features:end -->')
+  const out = await generateReport(input, { root: dir }), html = await readFile(out.site, 'utf8')
+  const table = id => html.match(new RegExp(`<div id="${id}"[\\s\\S]*?<table[^>]*>([\\s\\S]*?)<\\/table>`))[1]
+  const columns = html => [...html.matchAll(/<th scope="col" data-tool="([^"]+)"/g)].map(match => match[1])
+  assert.deepEqual(columns(table('feature-panel')), runs.map(run => run.adapter), 'behavior comparison keeps its complete tool list')
+  const matrix = table('basic-panel')
+  assert.deepEqual(columns(matrix), ['passed', 'failed', 'errored'], 'pass, fail and error results all retain their columns in run order')
+  const rows = [...matrix.matchAll(/<tr class="feature-row"[^>]*>[\s\S]*?<\/tr>/g)].map(match => match[0])
+  assert.equal(rows.length, new Set(basic.map(c => c.feature)).size, 'compacting columns does not remove basic feature rows')
+  assert(rows.every(row => [...row.matchAll(/<td\b/g)].length === 3))
+  assert.match(rows.find(row => row.includes(`data-feature="${first.feature}"`)), /<td class="fail" data-tool="failed"/)
+  const second = rows.find(row => row.includes(`data-feature="${other.feature}"`))
+  assert.match(second, /<td class="error" data-tool="errored"/)
+  assert.match(second, /<td class="skip" data-tool="passed"/, 'skipped cells remain visible within a tool that has basic results')
+  assert.match(html, /Not tested: unmapped\./, 'omitted tools retain their recorded skips in evidence')
+  assert.deepEqual(JSON.parse(await readFile(join(dir, 'site/results.json'), 'utf8')), input, 'downloaded records remain complete')
+  assert.doesNotMatch(html, /<details\b[^>]*\sopen(?:\s|>|=)/)
+ } finally { await rm(dir, { recursive: true, force: true }) }
 })
 
 test('speed results keep their own contenders and versions', async () => {

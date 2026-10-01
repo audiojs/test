@@ -1,0 +1,1567 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-10-01T17:47:42.460Z",
+  "purpose": "Correctness-only investigation of two changed WebKit benchmark verdicts; this does not replace or amend the original benchmark records.",
+  "reproduction": {
+    "adapter": "webaudio-webkit",
+    "sequence": [
+      "A",
+      "A",
+      "B",
+      "A",
+      "A",
+      "B",
+      "A",
+      "A",
+      "B"
+    ],
+    "A": "makeSignal(recorded fixture), cloned for each render",
+    "B": "The same fixture with every sample multiplied by -1 before rendering",
+    "session": "Fresh browser per workload; the same page serves all nine sequential renders. A new OfflineAudioContext is created by the adapter for every render.",
+    "validation": "Unchanged recorded workload oracle on each render; A/A/B consistency is compared separately with the first A output at 1e-6 tolerance."
+  },
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "os": "25.5.0",
+    "node": "v25.9.0",
+    "cpu": "Apple M4 Max",
+    "logicalCpus": 14,
+    "totalMemoryBytes": 38654705664,
+    "revision": "b2ab3866bac1cd63f85ca37c0465dff8d0a92725",
+    "dirty": true,
+    "lockSha256": "9efc73ea6b405f3b80a1eb3de22439706a75e65b993c14b001803fc52ddd77b5"
+  },
+  "sourceSha256": {
+    "adapters/webaudio.js": "fe31dc1baf70da74858876edcd676e374b80de8831bb034787aca614260fc2c5",
+    "scripts/bench-worker.js": "b0aaeb75878534077ecbf7ca729032e6dce700a74555354ff1819cc0123ecaf2",
+    "src/oracles.js": "4e675ddf6d93b80c722885202847ea869ed152eef7b38dbf9936c2aef7ab2d91",
+    "src/signals.js": "08146db346d8d08fb3e2d8ef1d5623e5874165f65be383e536a1458fbe1c9ab8"
+  },
+  "cases": [
+    {
+      "id": "pad-stereo",
+      "fixture": {
+        "id": "pad-stereo",
+        "title": "Add silence",
+        "group": "Editing",
+        "profile": "stereo",
+        "profileTitle": "1 s · stereo",
+        "fixture": {
+          "signal": "sine",
+          "frequency": 440,
+          "amplitude": 0.1,
+          "frames": 48000,
+          "channels": 2,
+          "sampleRate": 48000
+        },
+        "steps": [
+          {
+            "op": "pad",
+            "before": 12000,
+            "after": 12000
+          }
+        ],
+        "oracle": {
+          "type": "exact",
+          "atol": 0.000001
+        }
+      },
+      "recordedBenchmark": {
+        "status": "fail",
+        "version": "webkit 26.6",
+        "validation": {
+          "channels": 2,
+          "expectedChannels": 2,
+          "lengthDelta": [
+            0,
+            0
+          ],
+          "maxAbsError": 0.10360540449619293,
+          "rmsError": 0.01622019624569106,
+          "pass": false,
+          "reason": "samples",
+          "inputUnchanged": true
+        }
+      },
+      "renders": [
+        {
+          "index": 1,
+          "variant": "A",
+          "inputSha256": "7086df449403afdb7c4f7d0ce6131feec1b1a84cd69db9da98764fc99214cd42",
+          "outputSha256": "0d4eef49a0041cdedb7c6062263a189b809310196c2bb39f05966047523634f5",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "variant": "A",
+          "inputSha256": "7086df449403afdb7c4f7d0ce6131feec1b1a84cd69db9da98764fc99214cd42",
+          "outputSha256": "0d4eef49a0041cdedb7c6062263a189b809310196c2bb39f05966047523634f5",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "variant": "B",
+          "inputSha256": "9aec08036f035eea705a888da7b6f0ad0281e9ad6cbde96ce26d7bbd01d5244c",
+          "outputSha256": "e1f7915fb8e7643491f6b8b6ae7eaf4ccbab3ed33ed50375873ee18fc0ed9ee3",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "variant": "A",
+          "inputSha256": "7086df449403afdb7c4f7d0ce6131feec1b1a84cd69db9da98764fc99214cd42",
+          "outputSha256": "0d4eef49a0041cdedb7c6062263a189b809310196c2bb39f05966047523634f5",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "variant": "A",
+          "inputSha256": "7086df449403afdb7c4f7d0ce6131feec1b1a84cd69db9da98764fc99214cd42",
+          "outputSha256": "0d4eef49a0041cdedb7c6062263a189b809310196c2bb39f05966047523634f5",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "variant": "B",
+          "inputSha256": "9aec08036f035eea705a888da7b6f0ad0281e9ad6cbde96ce26d7bbd01d5244c",
+          "outputSha256": "e1f7915fb8e7643491f6b8b6ae7eaf4ccbab3ed33ed50375873ee18fc0ed9ee3",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "variant": "A",
+          "inputSha256": "7086df449403afdb7c4f7d0ce6131feec1b1a84cd69db9da98764fc99214cd42",
+          "outputSha256": "0d4eef49a0041cdedb7c6062263a189b809310196c2bb39f05966047523634f5",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "variant": "A",
+          "inputSha256": "7086df449403afdb7c4f7d0ce6131feec1b1a84cd69db9da98764fc99214cd42",
+          "outputSha256": "0d4eef49a0041cdedb7c6062263a189b809310196c2bb39f05966047523634f5",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "variant": "B",
+          "inputSha256": "9aec08036f035eea705a888da7b6f0ad0281e9ad6cbde96ce26d7bbd01d5244c",
+          "outputSha256": "e1f7915fb8e7643491f6b8b6ae7eaf4ccbab3ed33ed50375873ee18fc0ed9ee3",
+          "sampleRate": 48000,
+          "verdict": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 72000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.05773502709606338,
+              "nonzero": 47999,
+              "firstNonzero": 12001,
+              "lastNonzero": 59999
+            },
+            {
+              "frames": 72000,
+              "min": -0.09999984502792358,
+              "max": 0.09999984502792358,
+              "rms": 0.05773502690961389,
+              "nonzero": 48000,
+              "firstNonzero": 12000,
+              "lastNonzero": 59999
+            }
+          ]
+        }
+      ],
+      "version": "webkit 26.6",
+      "metadata": {
+        "engine": "webkit",
+        "mode": "OfflineAudioContext in a persistent browser; base64 float32 PCM crosses Playwright",
+        "source": "https://www.w3.org/TR/webaudio-1.0/"
+      }
+    },
+    {
+      "id": "resample-long-stereo",
+      "fixture": {
+        "id": "resample-long-stereo",
+        "title": "Resample 48 → 16 kHz",
+        "group": "Time & pitch",
+        "profile": "long-stereo",
+        "profileTitle": "10 s · stereo",
+        "fixture": {
+          "signal": "sine",
+          "frequency": 440,
+          "amplitude": 0.1,
+          "frames": 480000,
+          "channels": 2,
+          "sampleRate": 48000
+        },
+        "steps": [
+          {
+            "op": "resample",
+            "to": 16000
+          }
+        ],
+        "oracle": {
+          "type": "resample",
+          "to": 16000,
+          "min": -0.25,
+          "max": 0.25,
+          "frequency": 440
+        }
+      },
+      "recordedBenchmark": {
+        "status": "fail",
+        "version": "webkit 26.6",
+        "validation": {
+          "pass": false,
+          "gainDb": -0.40021042981317595,
+          "frequency": 440.0043489465447,
+          "perChannel": [
+            {
+              "pass": false,
+              "gainDb": -0.40021042981317595,
+              "frequency": 440.0043489465447
+            },
+            {
+              "pass": false,
+              "gainDb": -0.40025469783200174,
+              "frequency": 440.0043359361882
+            }
+          ],
+          "sampleRate": 16000,
+          "expectedRate": 16000,
+          "lengthError": 0,
+          "inputUnchanged": true
+        }
+      },
+      "renders": [
+        {
+          "index": 1,
+          "variant": "A",
+          "inputSha256": "c0d0592b14b5e5f9d5812225a3af02eab86ae346dc3cc85f2e3805fac9c3e169",
+          "outputSha256": "a37401cccb8519b7ff4fbea9264b54bc3459ac1e3e182dc3f5888ddf6616612e",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07071067840878348,
+              "nonzero": 159999,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.0707106781214321,
+              "nonzero": 160000,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "variant": "A",
+          "inputSha256": "c0d0592b14b5e5f9d5812225a3af02eab86ae346dc3cc85f2e3805fac9c3e169",
+          "outputSha256": "a37401cccb8519b7ff4fbea9264b54bc3459ac1e3e182dc3f5888ddf6616612e",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07071067840878348,
+              "nonzero": 159999,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.0707106781214321,
+              "nonzero": 160000,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "variant": "B",
+          "inputSha256": "4fca4dc7f68568b22289503ac4b303a80606988a866ddf7c2e8784cb25f40fb7",
+          "outputSha256": "dcea41a64dc9251e4ba5fa1e69e6988f8ca666c5ae2a3c46c40b5e27ffd7abc5",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.00453932378156,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.00453932378156
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378235
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0.19960534572601318,
+            "rmsError": 0.10999924493212385,
+            "pass": false,
+            "reason": "samples"
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07068254250254234,
+              "nonzero": 159871,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.07068253388356249,
+              "nonzero": 159872,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ],
+          "mismatchReference": "Ideal 440 Hz tone at output sample rate; diagnostic only, not a replacement for the RMS/frequency oracle",
+          "mismatches": [
+            {
+              "diagnosticTolerance": 0.000001,
+              "changedSamples": 96793,
+              "maxAbsError": 0.19960534572601318,
+              "worstFrame": 62864,
+              "rangeCount": 488,
+              "firstRanges": [
+                [
+                  62720,
+                  62800
+                ],
+                [
+                  62801,
+                  62964
+                ],
+                [
+                  62965,
+                  63164
+                ],
+                [
+                  63165,
+                  63364
+                ],
+                [
+                  63365,
+                  63564
+                ],
+                [
+                  63565,
+                  63764
+                ],
+                [
+                  63765,
+                  63964
+                ],
+                [
+                  63965,
+                  64164
+                ],
+                [
+                  64165,
+                  64364
+                ],
+                [
+                  64365,
+                  64564
+                ],
+                [
+                  64565,
+                  64764
+                ],
+                [
+                  64765,
+                  64964
+                ]
+              ],
+              "rangeConvention": "[start, end), frame indices per channel",
+              "worstNeighborhood": [
+                {
+                  "frame": 62861,
+                  "actual": -0.08358073979616165,
+                  "expected": 0.08980275690555573
+                },
+                {
+                  "frame": 62862,
+                  "actual": -0.09177546203136444,
+                  "expected": 0.0960293710231781
+                },
+                {
+                  "frame": 62863,
+                  "actual": -0.0972369909286499,
+                  "expected": 0.09939609467983246
+                },
+                {
+                  "frame": 62864,
+                  "actual": -0.09980267286300659,
+                  "expected": 0.09980267286300659
+                },
+                {
+                  "frame": 62865,
+                  "actual": -0.09939609467983246,
+                  "expected": 0.0972369909286499
+                },
+                {
+                  "frame": 62866,
+                  "actual": -0.0960293710231781,
+                  "expected": 0.09177546203136444
+                },
+                {
+                  "frame": 62867,
+                  "actual": -0.08980275690555573,
+                  "expected": 0.08358073979616165
+                }
+              ],
+              "lowestEnergyBlocks": [
+                {
+                  "start": 62464,
+                  "end": 63488,
+                  "energyRatio": 0.8755310876988842
+                },
+                {
+                  "start": 67584,
+                  "end": 68608,
+                  "energyRatio": 0.9988052012352433
+                },
+                {
+                  "start": 93184,
+                  "end": 94208,
+                  "energyRatio": 0.9988052012352433
+                },
+                {
+                  "start": 118784,
+                  "end": 119808,
+                  "energyRatio": 0.9988052012352433
+                },
+                {
+                  "start": 144384,
+                  "end": 145408,
+                  "energyRatio": 0.9988052012352433
+                },
+                {
+                  "start": 64512,
+                  "end": 65536,
+                  "energyRatio": 0.9988113490431059
+                }
+              ]
+            },
+            {
+              "diagnosticTolerance": 0.000001,
+              "changedSamples": 97280,
+              "maxAbsError": 0.1996004655957222,
+              "worstFrame": 62880,
+              "rangeCount": 1,
+              "firstRanges": [
+                [
+                  62720,
+                  160000
+                ]
+              ],
+              "rangeConvention": "[start, end), frame indices per channel",
+              "worstNeighborhood": [
+                {
+                  "frame": 62877,
+                  "actual": 0.08319486677646637,
+                  "expected": -0.08949299901723862
+                },
+                {
+                  "frame": 62878,
+                  "actual": 0.0914955735206604,
+                  "expected": -0.0958319753408432
+                },
+                {
+                  "frame": 62879,
+                  "actual": 0.09707140922546387,
+                  "expected": -0.09931694716215134
+                },
+                {
+                  "frame": 62880,
+                  "actual": 0.09975633770227432,
+                  "expected": -0.09984412789344788
+                },
+                {
+                  "frame": 62881,
+                  "actual": 0.09947038441896439,
+                  "expected": -0.0973978191614151
+                },
+                {
+                  "frame": 62882,
+                  "actual": 0.09622206538915634,
+                  "expected": -0.09205086529254913
+                },
+                {
+                  "frame": 62883,
+                  "actual": 0.09010812640190125,
+                  "expected": -0.08396252244710922
+                }
+              ],
+              "lowestEnergyBlocks": [
+                {
+                  "start": 62464,
+                  "end": 63488,
+                  "energyRatio": 0.875525891660226
+                },
+                {
+                  "start": 76800,
+                  "end": 77824,
+                  "energyRatio": 0.9988070823057524
+                },
+                {
+                  "start": 102400,
+                  "end": 103424,
+                  "energyRatio": 0.9988070823057524
+                },
+                {
+                  "start": 128000,
+                  "end": 129024,
+                  "energyRatio": 0.9988070823057524
+                },
+                {
+                  "start": 153600,
+                  "end": 154624,
+                  "energyRatio": 0.9988070823057524
+                },
+                {
+                  "start": 73728,
+                  "end": 74752,
+                  "energyRatio": 0.9988090229824311
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "variant": "A",
+          "inputSha256": "c0d0592b14b5e5f9d5812225a3af02eab86ae346dc3cc85f2e3805fac9c3e169",
+          "outputSha256": "a37401cccb8519b7ff4fbea9264b54bc3459ac1e3e182dc3f5888ddf6616612e",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07071067840878348,
+              "nonzero": 159999,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.0707106781214321,
+              "nonzero": 160000,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "variant": "A",
+          "inputSha256": "c0d0592b14b5e5f9d5812225a3af02eab86ae346dc3cc85f2e3805fac9c3e169",
+          "outputSha256": "a37401cccb8519b7ff4fbea9264b54bc3459ac1e3e182dc3f5888ddf6616612e",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07071067840878348,
+              "nonzero": 159999,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.0707106781214321,
+              "nonzero": 160000,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "variant": "B",
+          "inputSha256": "4fca4dc7f68568b22289503ac4b303a80606988a866ddf7c2e8784cb25f40fb7",
+          "outputSha256": "76b159144d21ce9dca4762aeaba0ee2b4da45629f59f9eeb7106abd38493b1a7",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07071067840878348,
+              "nonzero": 159999,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.0707106781214321,
+              "nonzero": 160000,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "variant": "A",
+          "inputSha256": "c0d0592b14b5e5f9d5812225a3af02eab86ae346dc3cc85f2e3805fac9c3e169",
+          "outputSha256": "a37401cccb8519b7ff4fbea9264b54bc3459ac1e3e182dc3f5888ddf6616612e",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07071067840878348,
+              "nonzero": 159999,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.0707106781214321,
+              "nonzero": 160000,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "variant": "A",
+          "inputSha256": "c0d0592b14b5e5f9d5812225a3af02eab86ae346dc3cc85f2e3805fac9c3e169",
+          "outputSha256": "a37401cccb8519b7ff4fbea9264b54bc3459ac1e3e182dc3f5888ddf6616612e",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": 8.9936998220965e-9,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": 8.9936998220965e-9,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": 1.747970824177535e-9,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0,
+            "rmsError": 0,
+            "pass": true
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07071067840878348,
+              "nonzero": 159999,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.0707106781214321,
+              "nonzero": 160000,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "variant": "B",
+          "inputSha256": "4fca4dc7f68568b22289503ac4b303a80606988a866ddf7c2e8784cb25f40fb7",
+          "outputSha256": "15d216effb84387005f23d775260953c51d2d0e473f017f93c8c579b934e757d",
+          "sampleRate": 16000,
+          "verdict": {
+            "pass": true,
+            "gainDb": -0.0069163825092008035,
+            "frequency": 440.0045393237817,
+            "perChannel": [
+              {
+                "pass": true,
+                "gainDb": -0.0069163825092008035,
+                "frequency": 440.0045393237817
+              },
+              {
+                "pass": true,
+                "gainDb": -0.006918439094999959,
+                "frequency": 440.00453932378275
+              }
+            ],
+            "sampleRate": 16000,
+            "expectedRate": 16000,
+            "lengthError": 0,
+            "inputUnchanged": true
+          },
+          "reuseComparedWithFirstA": {
+            "channels": 2,
+            "expectedChannels": 2,
+            "lengthDelta": [
+              0,
+              0
+            ],
+            "maxAbsError": 0.19960534572601318,
+            "rmsError": 0.009129056969650573,
+            "pass": false,
+            "reason": "samples"
+          },
+          "channels": [
+            {
+              "frames": 160000,
+              "min": -0.10000000149011612,
+              "max": 0.10000000149011612,
+              "rms": 0.07068254250254234,
+              "nonzero": 159871,
+              "firstNonzero": 1,
+              "lastNonzero": 159999
+            },
+            {
+              "frames": 160000,
+              "min": -0.09999755769968033,
+              "max": 0.09999755769968033,
+              "rms": 0.07068253388356249,
+              "nonzero": 159872,
+              "firstNonzero": 0,
+              "lastNonzero": 159999
+            }
+          ],
+          "mismatchReference": "Ideal 440 Hz tone at output sample rate; diagnostic only, not a replacement for the RMS/frequency oracle",
+          "mismatches": [
+            {
+              "diagnosticTolerance": 0.000001,
+              "changedSamples": 764,
+              "maxAbsError": 0.19960534572601318,
+              "worstFrame": 159464,
+              "rangeCount": 5,
+              "firstRanges": [
+                [
+                  159232,
+                  159364
+                ],
+                [
+                  159365,
+                  159564
+                ],
+                [
+                  159565,
+                  159764
+                ],
+                [
+                  159765,
+                  159964
+                ],
+                [
+                  159965,
+                  160000
+                ]
+              ],
+              "rangeConvention": "[start, end), frame indices per channel",
+              "worstNeighborhood": [
+                {
+                  "frame": 159461,
+                  "actual": 0.08358073979616165,
+                  "expected": -0.08980275690555573
+                },
+                {
+                  "frame": 159462,
+                  "actual": 0.09177546203136444,
+                  "expected": -0.0960293710231781
+                },
+                {
+                  "frame": 159463,
+                  "actual": 0.0972369909286499,
+                  "expected": -0.09939609467983246
+                },
+                {
+                  "frame": 159464,
+                  "actual": 0.09980267286300659,
+                  "expected": -0.09980267286300659
+                },
+                {
+                  "frame": 159465,
+                  "actual": 0.09939609467983246,
+                  "expected": -0.0972369909286499
+                },
+                {
+                  "frame": 159466,
+                  "actual": 0.0960293710231781,
+                  "expected": -0.09177546203136444
+                },
+                {
+                  "frame": 159467,
+                  "actual": 0.08980275690555573,
+                  "expected": -0.08358073979616165
+                }
+              ],
+              "lowestEnergyBlocks": [
+                {
+                  "start": 158720,
+                  "end": 159744,
+                  "energyRatio": 0.8755609060569779
+                },
+                {
+                  "start": 0,
+                  "end": 1024,
+                  "energyRatio": 1
+                },
+                {
+                  "start": 1024,
+                  "end": 2048,
+                  "energyRatio": 1
+                },
+                {
+                  "start": 2048,
+                  "end": 3072,
+                  "energyRatio": 1
+                },
+                {
+                  "start": 3072,
+                  "end": 4096,
+                  "energyRatio": 1
+                },
+                {
+                  "start": 4096,
+                  "end": 5120,
+                  "energyRatio": 1
+                }
+              ]
+            },
+            {
+              "diagnosticTolerance": 0.000001,
+              "changedSamples": 768,
+              "maxAbsError": 0.1996004655957222,
+              "worstFrame": 159480,
+              "rangeCount": 1,
+              "firstRanges": [
+                [
+                  159232,
+                  160000
+                ]
+              ],
+              "rangeConvention": "[start, end), frame indices per channel",
+              "worstNeighborhood": [
+                {
+                  "frame": 159477,
+                  "actual": -0.08319486677646637,
+                  "expected": 0.08949299901723862
+                },
+                {
+                  "frame": 159478,
+                  "actual": -0.0914955735206604,
+                  "expected": 0.0958319753408432
+                },
+                {
+                  "frame": 159479,
+                  "actual": -0.09707140922546387,
+                  "expected": 0.09931694716215134
+                },
+                {
+                  "frame": 159480,
+                  "actual": -0.09975633770227432,
+                  "expected": 0.09984412789344788
+                },
+                {
+                  "frame": 159481,
+                  "actual": -0.09947038441896439,
+                  "expected": 0.0973978191614151
+                },
+                {
+                  "frame": 159482,
+                  "actual": -0.09622206538915634,
+                  "expected": 0.09205086529254913
+                },
+                {
+                  "frame": 159483,
+                  "actual": -0.09010812640190125,
+                  "expected": 0.08396252244710922
+                }
+              ],
+              "lowestEnergyBlocks": [
+                {
+                  "start": 158720,
+                  "end": 159744,
+                  "energyRatio": 0.8753583811188421
+                },
+                {
+                  "start": 159744,
+                  "end": 160000,
+                  "energyRatio": 0.9997307579117567
+                },
+                {
+                  "start": 0,
+                  "end": 1024,
+                  "energyRatio": 1
+                },
+                {
+                  "start": 1024,
+                  "end": 2048,
+                  "energyRatio": 1
+                },
+                {
+                  "start": 2048,
+                  "end": 3072,
+                  "energyRatio": 1
+                },
+                {
+                  "start": 3072,
+                  "end": 4096,
+                  "energyRatio": 1
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "version": "webkit 26.6",
+      "metadata": {
+        "engine": "webkit",
+        "mode": "OfflineAudioContext in a persistent browser; base64 float32 PCM crosses Playwright",
+        "source": "https://www.w3.org/TR/webaudio-1.0/"
+      }
+    }
+  ],
+  "summary": {
+    "renders": 18,
+    "failedRenders": 0,
+    "reuseMismatches": 2
+  },
+  "conclusion": {
+    "workloadVerdicts": "All 18 follow-up renders pass the unchanged recorded workload oracles. This does not amend the two failed benchmark rows.",
+    "repeatability": "Two of nine resample renders differ from the polarity-adjusted first-A output, with maximum sample difference 0.19960534572601318. Padding repeats match exactly.",
+    "diagnosticOffsets": [
+      {
+        "case": "resample-long-stereo",
+        "render": 3,
+        "firstChangedFrame": 62720,
+        "nonzeroFramesLostPerChannel": 128
+      },
+      {
+        "case": "resample-long-stereo",
+        "render": 9,
+        "firstChangedFrame": 159232,
+        "nonzeroFramesLostPerChannel": 128
+      }
+    ],
+    "oracleLimit": "The resampling oracle checks RMS gain over the second half, tone frequency, output sample rate and length. It does not require sample alignment, so timing discontinuities can pass.",
+    "attribution": "Observed inconsistency in the adapter/browser path; the available evidence does not establish a browser-engine defect or its cause."
+  }
+}

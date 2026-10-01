@@ -69,7 +69,7 @@
     "oracle": "limiter",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 11.27049999999872,
+    "durationMs": 10.460084000005736,
     "metrics": {
       "pass": false,
       "peak": 0.5538975596427917,

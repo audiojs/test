@@ -64,6 +64,11 @@ export function makeSignal(fixture) {
     throw new RangeError(`Unknown signal: ${signal}`)
   })
 
+  if (fixture.bitDepth != null) {
+    if (![16,24].includes(fixture.bitDepth)) throw new RangeError('Fixture integer bit depth must be 16 or 24')
+    const scale=2**(fixture.bitDepth-1)
+    for(const channel of output)for(let i=0;i<channel.length;i++)channel[i]=Math.max(-scale,Math.min(scale-1,Math.round(channel[i]*scale)))/scale
+  }
   return { channels: output, sampleRate }
 }
 

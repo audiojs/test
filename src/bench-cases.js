@@ -52,6 +52,9 @@ export function benchmarkCases(){
   add('limiter','Limit at −6 dB','Dynamics',[{op:'limiter',ceiling:-6,lookahead:0,release:.01}],{type:'response',min:-4.3,max:-3.8},{signal:'dc',value:.8})
   add('gate','Open noise gate','Dynamics',[{op:'gate',threshold:-30,attack:.001,hold:0,release:.01}],{type:'response',min:-.1,max:.1},{signal:'dc',value:.5})
   if(frames>=48000)add('loudness','Integrated loudness','Analysis',[{op:'measure',name:'loudness'}],{type:'scalar-range',min:-23.1,max:-22.9},{frequency:1000,phase:0,amplitude:10**(-23/20)})
+  for(const [format,bitDepth] of [['wav',16],['wav',24],['wav',32],['flac',16],['flac',24]]){
+   cases.push({id:`codec-${format}-${bitDepth}-${profile.id}`,title:`Save and reopen ${format.toUpperCase()} ${bitDepth}-bit`,group:'Codecs',profile:profile.id,profileTitle:profile.title,fixture:{...fixture,...(bitDepth===32?{}:{bitDepth})},steps:[],workflow:{op:'codec-roundtrip',format,bitDepth},oracle:{type:'exact',atol:0}})
+  }
  }
  return cases
 }

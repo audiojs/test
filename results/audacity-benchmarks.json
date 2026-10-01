@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "generatedAt": "2026-10-01T03:03:00.867Z",
+  "generatedAt": "2026-10-01T17:45:58.380Z",
   "host": {
     "platform": "linux",
     "arch": "arm64",
@@ -50287,6 +50287,135 @@
         "type": "response",
         "min": -0.1,
         "max": 0.1
+      }
+    },
+    {
+      "id": "codec-wav-16-short-mono",
+      "title": "Save and reopen WAV 16-bit",
+      "group": "Codecs",
+      "profile": "short-mono",
+      "profileTitle": "0.1 s · mono",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 4800,
+        "channels": 1,
+        "sampleRate": 48000,
+        "bitDepth": 16
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 16
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-wav-24-short-mono",
+      "title": "Save and reopen WAV 24-bit",
+      "group": "Codecs",
+      "profile": "short-mono",
+      "profileTitle": "0.1 s · mono",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 4800,
+        "channels": 1,
+        "sampleRate": 48000,
+        "bitDepth": 24
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 24
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-wav-32-short-mono",
+      "title": "Save and reopen WAV 32-bit",
+      "group": "Codecs",
+      "profile": "short-mono",
+      "profileTitle": "0.1 s · mono",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 4800,
+        "channels": 1,
+        "sampleRate": 48000
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 32
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-flac-16-short-mono",
+      "title": "Save and reopen FLAC 16-bit",
+      "group": "Codecs",
+      "profile": "short-mono",
+      "profileTitle": "0.1 s · mono",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 4800,
+        "channels": 1,
+        "sampleRate": 48000,
+        "bitDepth": 16
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "flac",
+        "bitDepth": 16
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-flac-24-short-mono",
+      "title": "Save and reopen FLAC 24-bit",
+      "group": "Codecs",
+      "profile": "short-mono",
+      "profileTitle": "0.1 s · mono",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 4800,
+        "channels": 1,
+        "sampleRate": 48000,
+        "bitDepth": 24
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "flac",
+        "bitDepth": 24
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
       }
     },
     {
@@ -100652,6 +100781,135 @@
       }
     },
     {
+      "id": "codec-wav-16-stereo",
+      "title": "Save and reopen WAV 16-bit",
+      "group": "Codecs",
+      "profile": "stereo",
+      "profileTitle": "1 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 48000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 16
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 16
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-wav-24-stereo",
+      "title": "Save and reopen WAV 24-bit",
+      "group": "Codecs",
+      "profile": "stereo",
+      "profileTitle": "1 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 48000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 24
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 24
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-wav-32-stereo",
+      "title": "Save and reopen WAV 32-bit",
+      "group": "Codecs",
+      "profile": "stereo",
+      "profileTitle": "1 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 48000,
+        "channels": 2,
+        "sampleRate": 48000
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 32
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-flac-16-stereo",
+      "title": "Save and reopen FLAC 16-bit",
+      "group": "Codecs",
+      "profile": "stereo",
+      "profileTitle": "1 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 48000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 16
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "flac",
+        "bitDepth": 16
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-flac-24-stereo",
+      "title": "Save and reopen FLAC 24-bit",
+      "group": "Codecs",
+      "profile": "stereo",
+      "profileTitle": "1 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 48000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 24
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "flac",
+        "bitDepth": 24
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
       "id": "reverse-long-stereo",
       "title": "Reverse",
       "group": "Editing",
@@ -151012,6 +151270,135 @@
         "min": -23.1,
         "max": -22.9
       }
+    },
+    {
+      "id": "codec-wav-16-long-stereo",
+      "title": "Save and reopen WAV 16-bit",
+      "group": "Codecs",
+      "profile": "long-stereo",
+      "profileTitle": "10 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 480000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 16
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 16
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-wav-24-long-stereo",
+      "title": "Save and reopen WAV 24-bit",
+      "group": "Codecs",
+      "profile": "long-stereo",
+      "profileTitle": "10 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 480000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 24
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 24
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-wav-32-long-stereo",
+      "title": "Save and reopen WAV 32-bit",
+      "group": "Codecs",
+      "profile": "long-stereo",
+      "profileTitle": "10 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 480000,
+        "channels": 2,
+        "sampleRate": 48000
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "wav",
+        "bitDepth": 32
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-flac-16-long-stereo",
+      "title": "Save and reopen FLAC 16-bit",
+      "group": "Codecs",
+      "profile": "long-stereo",
+      "profileTitle": "10 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 480000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 16
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "flac",
+        "bitDepth": 16
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
+    },
+    {
+      "id": "codec-flac-24-long-stereo",
+      "title": "Save and reopen FLAC 24-bit",
+      "group": "Codecs",
+      "profile": "long-stereo",
+      "profileTitle": "10 s · stereo",
+      "fixture": {
+        "signal": "sine",
+        "frequency": 440,
+        "amplitude": 0.1,
+        "frames": 480000,
+        "channels": 2,
+        "sampleRate": 48000,
+        "bitDepth": 24
+      },
+      "steps": [],
+      "workflow": {
+        "op": "codec-roundtrip",
+        "format": "flac",
+        "bitDepth": 24
+      },
+      "oracle": {
+        "type": "exact",
+        "atol": 0
+      }
     }
   ],
   "results": [
@@ -151032,17 +151419,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        203.16395900398493,
-        178.44045899808407,
-        144.091958001256,
-        153.05316700041294,
-        164.96812500059605,
-        149.22154200077057,
-        150.18329200148582
+        123.7444579899311,
+        131.49212500452995,
+        126.7661249935627,
+        128.72720900177956,
+        128.51945899426937,
+        126.92070899903774,
+        130.20883299410343
       ],
-      "medianMs": 153.05316700041294,
-      "p95Ms": 203.16395900398493,
-      "driverMaxRssMiB": 57.64453125,
+      "medianMs": 128.51945899426937,
+      "p95Ms": 131.49212500452995,
+      "driverMaxRssMiB": 58.8359375,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151072,17 +151459,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        181.54975000023842,
-        190.89137499779463,
-        218.2011670023203,
-        162.5339169949293,
-        206.44270899891853,
-        158.56320800632238,
-        165.7491250038147
+        136.59441600739956,
+        171.64495900273323,
+        148.46491700410843,
+        142.89954200387,
+        137.6934999972582,
+        137.87437500059605,
+        131.93245901167393
       ],
-      "medianMs": 181.54975000023842,
-      "p95Ms": 218.2011670023203,
-      "driverMaxRssMiB": 58.109375,
+      "medianMs": 137.87437500059605,
+      "p95Ms": 171.64495900273323,
+      "driverMaxRssMiB": 57.046875,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151112,17 +151499,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        137.23679199814796,
-        153.75329099595547,
-        160.67533399909735,
-        132.20112499594688,
-        160.0216249972582,
-        142.87495800107718,
-        215.89687499403954
+        127.0086659938097,
+        121.88650000095367,
+        125.1647920012474,
+        122.43404200673103,
+        121.19966700673103,
+        123.7117499858141,
+        132.01191601157188
       ],
-      "medianMs": 153.75329099595547,
-      "p95Ms": 215.89687499403954,
-      "driverMaxRssMiB": 54.8515625,
+      "medianMs": 123.7117499858141,
+      "p95Ms": 132.01191601157188,
+      "driverMaxRssMiB": 54.97265625,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151152,17 +151539,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        193.22275000065565,
-        152.05208300054073,
-        154.02083399891853,
-        165.95300000160933,
-        143.26304200291634,
-        137.71891700476408,
-        168.0722920000553
+        127.72579199075699,
+        124.98375000059605,
+        122.80204199254513,
+        125.94095900654793,
+        129.39762499928474,
+        128.0698340088129,
+        125.43754199147224
       ],
-      "medianMs": 154.02083399891853,
-      "p95Ms": 193.22275000065565,
-      "driverMaxRssMiB": 55.89453125,
+      "medianMs": 125.94095900654793,
+      "p95Ms": 129.39762499928474,
+      "driverMaxRssMiB": 56.07421875,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151198,17 +151585,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        152.0239579975605,
-        182.8023760020733,
-        169.06724999845028,
-        157.2418330013752,
-        147.12066699564457,
-        182.8082510009408,
-        210.18774999678135
+        126.04662600159645,
+        125.29020799696445,
+        125.00500001013279,
+        122.4389169961214,
+        132.12808300554752,
+        130.22525098919868,
+        130.76845900714397
       ],
-      "medianMs": 169.06724999845028,
-      "p95Ms": 210.18774999678135,
-      "driverMaxRssMiB": 60.97265625,
+      "medianMs": 126.04662600159645,
+      "p95Ms": 132.12808300554752,
+      "driverMaxRssMiB": 61.03125,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151238,17 +151625,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        134.02204100042582,
-        189.23341700434685,
-        177.1990419998765,
-        153.2385000064969,
-        157.17529200017452,
-        150.77733399719,
-        187.96016599982977
+        128.4838339984417,
+        129.3274170011282,
+        125.83945800364017,
+        125.1003330051899,
+        128.47437499463558,
+        124.45724999904633,
+        124.41887600719929
       ],
-      "medianMs": 157.17529200017452,
-      "p95Ms": 189.23341700434685,
-      "driverMaxRssMiB": 57.140625,
+      "medianMs": 125.83945800364017,
+      "p95Ms": 129.3274170011282,
+      "driverMaxRssMiB": 57.8359375,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151278,17 +151665,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        159.1590839996934,
-        156.35095799714327,
-        174.58087600022554,
-        162.48125000298023,
-        177.76695799827576,
-        145.96708299964666,
-        173.48741599917412
+        141.95620799064636,
+        153.28570899367332,
+        134.6626660078764,
+        134.25945799052715,
+        139.0938749909401,
+        134.2728749960661,
+        129.36170800030231
       ],
-      "medianMs": 162.48125000298023,
-      "p95Ms": 177.76695799827576,
-      "driverMaxRssMiB": 58.0703125,
+      "medianMs": 134.6626660078764,
+      "p95Ms": 153.28570899367332,
+      "driverMaxRssMiB": 58.19140625,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151347,17 +151734,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        228.6974580064416,
-        143.9060840010643,
-        155.63204199820757,
-        146.4547500014305,
-        146.33429100364447,
-        157.03991699963808,
-        134.06220899522305
+        130.52091600000858,
+        125.41916699707508,
+        121.132125005126,
+        122.49054101109505,
+        119.40033300220966,
+        121.65374998748302,
+        128.18258298933506
       ],
-      "medianMs": 146.4547500014305,
-      "p95Ms": 228.6974580064416,
-      "driverMaxRssMiB": 57.78515625,
+      "medianMs": 122.49054101109505,
+      "p95Ms": 130.52091600000858,
+      "driverMaxRssMiB": 58.63671875,
       "validation": {
         "channels": 1,
         "expectedChannels": 1,
@@ -151548,17 +151935,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        130.22416699677706,
-        187.28004200011492,
-        142.45425000041723,
-        135.1523329988122,
-        181.84512499719858,
-        136.50545900315046,
-        131.95945800095797
+        119.03720799088478,
+        118.54162499308586,
+        126.0768750011921,
+        117.14258399605751,
+        120.23158299922943,
+        116.78425000607967,
+        128.29841700196266
       ],
-      "medianMs": 136.50545900315046,
-      "p95Ms": 187.28004200011492,
-      "driverMaxRssMiB": 55.859375,
+      "medianMs": 119.03720799088478,
+      "p95Ms": 128.29841700196266,
+      "driverMaxRssMiB": 56.015625,
       "validation": {
         "pass": true,
         "gainDb": -0.000005149313753632681,
@@ -151593,17 +151980,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        167.5287500023842,
-        183.75012500584126,
-        151.9092499986291,
-        156.64387500286102,
-        135.3341249972582,
-        176.43100000172853,
-        139.36820799857378
+        114.24062499403954,
+        114.09637500345707,
+        123.75429099798203,
+        114.95516699552536,
+        110.84120799601078,
+        116.86433300375938,
+        126.20716699957848
       ],
-      "medianMs": 156.64387500286102,
-      "p95Ms": 183.75012500584126,
-      "driverMaxRssMiB": 61.390625,
+      "medianMs": 114.95516699552536,
+      "p95Ms": 126.20716699957848,
+      "driverMaxRssMiB": 61.515625,
       "validation": {
         "pass": true,
         "gainDb": -1.0638426538972958e-7,
@@ -151638,17 +152025,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        153.0266249999404,
-        138.47758299857378,
-        171.17829199880362,
-        148.53141700476408,
-        205.77154199779034,
-        170.65320900082588,
-        167.23387499898672
+        119.48887500166893,
+        122.58408400416374,
+        124.38783299922943,
+        126.65387500822544,
+        122.20087499916553,
+        118.7744999974966,
+        123.26870800554752
       ],
-      "medianMs": 167.23387499898672,
-      "p95Ms": 205.77154199779034,
-      "driverMaxRssMiB": 61.59375,
+      "medianMs": 122.58408400416374,
+      "p95Ms": 126.65387500822544,
+      "driverMaxRssMiB": 61.38671875,
       "validation": {
         "pass": true,
         "frequency": 439.6512871553558,
@@ -151682,17 +152069,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        158.59854200482368,
-        158.48304200172424,
-        154.90829199552536,
-        132.88858299702406,
-        135.27937499433756,
-        162.47645799815655,
-        138.99166699498892
+        115.51195900142193,
+        123.41212500631809,
+        128.34983299672604,
+        120.32837499678135,
+        124.57479199767113,
+        119.91629201173782,
+        121.78824999928474
       ],
-      "medianMs": 154.90829199552536,
-      "p95Ms": 162.47645799815655,
-      "driverMaxRssMiB": 60.56640625,
+      "medianMs": 121.78824999928474,
+      "p95Ms": 128.34983299672604,
+      "driverMaxRssMiB": 60.5625,
       "validation": {
         "pass": true,
         "frequency": 659.3477991246361,
@@ -151726,17 +152113,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        140.63004199415445,
-        154.37741700559855,
-        139.90850000083447,
-        235.80083400011063,
-        160.13987500220537,
-        160.89591699838638,
-        167.56199999898672
+        121.35279200971127,
+        123.07841700315475,
+        123.09279200434685,
+        119.09529100358486,
+        120.34729100763798,
+        122.97220800817013,
+        124.70325000584126
       ],
-      "medianMs": 160.13987500220537,
-      "p95Ms": 235.80083400011063,
-      "driverMaxRssMiB": 58.43359375,
+      "medianMs": 122.97220800817013,
+      "p95Ms": 124.70325000584126,
+      "driverMaxRssMiB": 58.3046875,
       "validation": {
         "pass": true,
         "frequency": 660.2992554727991,
@@ -151797,6 +152184,36 @@
     },
     {
       "adapter": "audacity",
+      "case": "codec-wav-16-short-mono",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-wav-24-short-mono",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-wav-32-short-mono",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-flac-16-short-mono",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-flac-24-short-mono",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
       "case": "reverse-stereo",
       "status": "pass",
       "version": "3.4.2+dfsg-1build4",
@@ -151812,17 +152229,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        215.46087499707937,
-        213.66950000077486,
-        290.41520799696445,
-        256.69720900058746,
-        247.48300000280142,
-        216.20162499696016,
-        237.16145799309015
+        189.19020900130272,
+        181.1582089960575,
+        188.6624590009451,
+        186.02729199826717,
+        184.01175001263618,
+        190.68766701221466,
+        188.6027919948101
       ],
-      "medianMs": 237.16145799309015,
-      "p95Ms": 290.41520799696445,
-      "driverMaxRssMiB": 105.453125,
+      "medianMs": 188.6027919948101,
+      "p95Ms": 190.68766701221466,
+      "driverMaxRssMiB": 127.8125,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -151853,17 +152270,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        243.60750000178814,
-        221.0598750039935,
-        267.58333300054073,
-        275.8347079977393,
-        225.2512499988079,
-        240.32116700708866,
-        284.34650000184774
+        206.54874999821186,
+        198.45783299207687,
+        203.82470799982548,
+        198.4538339972496,
+        270.7753749936819,
+        257.6574579924345,
+        247.54020899534225
       ],
-      "medianMs": 243.60750000178814,
-      "p95Ms": 284.34650000184774,
-      "driverMaxRssMiB": 112.3671875,
+      "medianMs": 206.54874999821186,
+      "p95Ms": 270.7753749936819,
+      "driverMaxRssMiB": 126.98046875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -151894,17 +152311,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        206.4389169961214,
-        204.49637500196695,
-        206.77108400315046,
-        207.55754199624062,
-        241.69245800375938,
-        201.35358300060034,
-        203.67604199796915
+        172.59095899760723,
+        176.56620900332928,
+        173.45791698992252,
+        169.87441700696945,
+        175.05891700088978,
+        175.10395900905132,
+        166.54266698658466
       ],
-      "medianMs": 206.4389169961214,
-      "p95Ms": 241.69245800375938,
-      "driverMaxRssMiB": 103.484375,
+      "medianMs": 173.45791698992252,
+      "p95Ms": 176.56620900332928,
+      "driverMaxRssMiB": 106.47265625,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -151935,17 +152352,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        226.27587500214577,
-        221.64670900255442,
-        220.62808299809694,
-        254.6903330013156,
-        244.84208299964666,
-        221.87070900201797,
-        278.9018750041723
+        179.432166993618,
+        173.56262500584126,
+        181.5654999911785,
+        180.3896659910679,
+        176.5147089958191,
+        225.68879199028015,
+        183.3830420076847
       ],
-      "medianMs": 226.27587500214577,
-      "p95Ms": 278.9018750041723,
-      "driverMaxRssMiB": 123.04296875,
+      "medianMs": 180.3896659910679,
+      "p95Ms": 225.68879199028015,
+      "driverMaxRssMiB": 104.4296875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -151982,17 +152399,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        275.8661670014262,
-        253.9076669961214,
-        295.52583400160074,
-        287.23250000178814,
-        303.97508300095797,
-        262.76995799690485,
-        286.82929199934006
+        280.983334004879,
+        331.48974999785423,
+        298.73383298516273,
+        232.14512500166893,
+        235.39341700077057,
+        225.11479200422764,
+        251.34766700863838
       ],
-      "medianMs": 286.82929199934006,
-      "p95Ms": 303.97508300095797,
-      "driverMaxRssMiB": 129.0859375,
+      "medianMs": 251.34766700863838,
+      "p95Ms": 331.48974999785423,
+      "driverMaxRssMiB": 130.39453125,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152023,17 +152440,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        268.54729200154543,
-        216.11262500286102,
-        199.88254199922085,
-        203.89283400028944,
-        245.23466699570417,
-        217.65045800060034,
-        254.44608400017023
+        192.10758401453495,
+        186.1482920050621,
+        184.554333999753,
+        186.65879099071026,
+        201.9222500026226,
+        204.92991699278355,
+        184.18920800089836
       ],
-      "medianMs": 217.65045800060034,
-      "p95Ms": 268.54729200154543,
-      "driverMaxRssMiB": 126.421875,
+      "medianMs": 186.65879099071026,
+      "p95Ms": 204.92991699278355,
+      "driverMaxRssMiB": 113.51953125,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152064,17 +152481,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        258.26412500441074,
-        240.44545800238848,
-        298.0708340033889,
-        524.1484989970922,
-        491.29983299970627,
-        600.1400420069695,
-        568.1730419993401
+        195.05929200351238,
+        197.48845800757408,
+        263.9777919948101,
+        205.5547919869423,
+        196.21045799553394,
+        193.35429199039936,
+        200.1185829937458
       ],
-      "medianMs": 491.29983299970627,
-      "p95Ms": 600.1400420069695,
-      "driverMaxRssMiB": 113.296875,
+      "medianMs": 197.48845800757408,
+      "p95Ms": 263.9777919948101,
+      "driverMaxRssMiB": 105.79296875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152135,17 +152552,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        543.8500000014901,
-        557.6197910010815,
-        574.8273330032825,
-        607.9295419976115,
-        518.5386670008302,
-        523.667584002018,
-        518.5949999988079
+        194.2828750014305,
+        185.29295799136162,
+        187.35162499547005,
+        188.74475000798702,
+        182.19612599909306,
+        190.69545900821686,
+        189.00987499952316
       ],
-      "medianMs": 543.8500000014901,
-      "p95Ms": 607.9295419976115,
-      "driverMaxRssMiB": 128.5625,
+      "medianMs": 188.74475000798702,
+      "p95Ms": 194.2828750014305,
+      "driverMaxRssMiB": 115.63671875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152350,17 +152767,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        184.76087500154972,
-        174.02154199779034,
-        168.2201669961214,
-        183.03129199892282,
-        179.39762500673532,
-        186.28095900267363,
-        184.4625420048833
+        173.62633299827576,
+        158.7587500065565,
+        157.4911260008812,
+        161.4818750023842,
+        161.98008400201797,
+        158.5615839958191,
+        152.94816699624062
       ],
-      "medianMs": 183.03129199892282,
-      "p95Ms": 186.28095900267363,
-      "driverMaxRssMiB": 99,
+      "medianMs": 158.7587500065565,
+      "p95Ms": 173.62633299827576,
+      "driverMaxRssMiB": 100.58984375,
       "validation": {
         "pass": true,
         "gainDb": -5.207554368900815e-7,
@@ -152400,17 +152817,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        231.54183299839497,
-        225.36766699701548,
-        240.01983299851418,
-        249.75704199820757,
-        242.954916998744,
-        250.92841700464487,
-        240.79133400321007
+        258.2764580100775,
+        214.7578750103712,
+        208.45129200816154,
+        225.1338749974966,
+        226.973042011261,
+        214.9048340022564,
+        222.83924999833107
       ],
-      "medianMs": 240.79133400321007,
-      "p95Ms": 250.92841700464487,
-      "driverMaxRssMiB": 126.51171875,
+      "medianMs": 222.83924999833107,
+      "p95Ms": 258.2764580100775,
+      "driverMaxRssMiB": 126.796875,
       "validation": {
         "pass": true,
         "gainDb": -2.5507011160735576e-9,
@@ -152450,17 +152867,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        288.78362499922514,
-        236.13825000077486,
-        261.4327500015497,
-        245.75450000166893,
-        254.5807920023799,
-        241.30195799469948,
-        247.0182920023799
+        205.97629100084305,
+        211.44287499785423,
+        203.0469170063734,
+        222.07345800101757,
+        210.8022090047598,
+        208.35379199683666,
+        207.80358299613
       ],
-      "medianMs": 247.0182920023799,
-      "p95Ms": 288.78362499922514,
-      "driverMaxRssMiB": 120.7734375,
+      "medianMs": 208.35379199683666,
+      "p95Ms": 222.07345800101757,
+      "driverMaxRssMiB": 126.3203125,
       "validation": {
         "pass": true,
         "frequency": 440.02100225693624,
@@ -152499,17 +152916,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        221.10208300501108,
-        235.00170800089836,
-        240.15770799666643,
-        220.87125000357628,
-        211.82412499934435,
-        222.6651259958744,
-        222.3545830026269
+        195.90283399820328,
+        191.67358399927616,
+        192.7418330013752,
+        194.9682080000639,
+        189.96408300101757,
+        193.91708299517632,
+        189.37041699886322
       ],
-      "medianMs": 222.3545830026269,
-      "p95Ms": 240.15770799666643,
-      "driverMaxRssMiB": 108.015625,
+      "medianMs": 192.7418330013752,
+      "p95Ms": 195.90283399820328,
+      "driverMaxRssMiB": 111.68359375,
       "validation": {
         "pass": true,
         "frequency": 659.2668523670031,
@@ -152548,17 +152965,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        207.9220419973135,
-        194.34524999558926,
-        201.59849999845028,
-        192.78512500226498,
-        198.10766600072384,
-        185.99316699802876,
-        201.50416700541973
+        170.87295800447464,
+        173.3289999961853,
+        174.45325100421906,
+        181.63470900058746,
+        180.12470899522305,
+        171.73974999785423,
+        177.79375000298023
       ],
-      "medianMs": 198.10766600072384,
-      "p95Ms": 207.9220419973135,
-      "driverMaxRssMiB": 106.1015625,
+      "medianMs": 174.45325100421906,
+      "p95Ms": 181.63470900058746,
+      "driverMaxRssMiB": 103.09375,
       "validation": {
         "pass": true,
         "frequency": 659.9148528374218,
@@ -152636,6 +153053,36 @@
     },
     {
       "adapter": "audacity",
+      "case": "codec-wav-16-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-wav-24-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-wav-32-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-flac-16-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-flac-24-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
       "case": "reverse-long-stereo",
       "status": "pass",
       "version": "3.4.2+dfsg-1build4",
@@ -152651,17 +153098,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        1147.4712920039892,
-        815.7453749999404,
-        867.2047920003533,
-        1021.9717919975519,
-        861.2251669988036,
-        802.4700009971857,
-        1006.7707919999957
+        1165.865042001009,
+        1089.0572920143604,
+        790.8101669996977,
+        757.78795799613,
+        774.5095829963684,
+        984.4584169983864,
+        1066.8119170069695
       ],
-      "medianMs": 867.2047920003533,
-      "p95Ms": 1147.4712920039892,
-      "driverMaxRssMiB": 319.90234375,
+      "medianMs": 984.4584169983864,
+      "p95Ms": 1165.865042001009,
+      "driverMaxRssMiB": 565.95703125,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152692,17 +153139,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        1240.8596670031548,
-        862.0549170002341,
-        882.4771669954062,
-        896.6984170004725,
-        835.4542089998722,
-        793.0400009974837,
-        855.3940839990973
+        770.71204200387,
+        778.3219999969006,
+        787.687292009592,
+        764.3502079993486,
+        789.7815420031548,
+        767.2790839970112,
+        771.8302920013666
       ],
-      "medianMs": 862.0549170002341,
-      "p95Ms": 1240.8596670031548,
-      "driverMaxRssMiB": 338.2421875,
+      "medianMs": 771.8302920013666,
+      "p95Ms": 789.7815420031548,
+      "driverMaxRssMiB": 420.23046875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152733,17 +153180,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        646.2442499995232,
-        656.4442919939756,
-        644.0692920014262,
-        620.0233339965343,
-        639.0658759996295,
-        626.8998339995742,
-        618.3927500024438
+        589.0143329948187,
+        581.7682919949293,
+        599.2010840028524,
+        594.6260000020266,
+        587.9593750089407,
+        598.5430420041084,
+        582.7644169926643
       ],
-      "medianMs": 639.0658759996295,
-      "p95Ms": 656.4442919939756,
-      "driverMaxRssMiB": 337.83984375,
+      "medianMs": 589.0143329948187,
+      "p95Ms": 599.2010840028524,
+      "driverMaxRssMiB": 342.14453125,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152774,17 +153221,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        868.824500001967,
-        1007.8086680024862,
-        779.4984589964151,
-        1100.8257509991527,
-        1407.8627090007067,
-        1664.9235009998083,
-        1359.926416002214
+        695.0487920045853,
+        681.8911669999361,
+        689.2608339935541,
+        685.1223759949207,
+        693.1055839955807,
+        685.6802919954062,
+        734.5567089915276
       ],
-      "medianMs": 1100.8257509991527,
-      "p95Ms": 1664.9235009998083,
-      "driverMaxRssMiB": 371.56640625,
+      "medianMs": 689.2608339935541,
+      "p95Ms": 734.5567089915276,
+      "driverMaxRssMiB": 378.38671875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152821,17 +153268,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        1239.4990420043468,
-        1208.970751002431,
-        1137.9732089936733,
-        1314.7194999977946,
-        1176.7164589986205,
-        1307.1990000009537,
-        1562.4648340046406
+        1136.287250995636,
+        1201.2997500002384,
+        1103.3813749998808,
+        1078.6820010095835,
+        1394.0297500044107,
+        1157.1537500023842,
+        1092.6167920082808
       ],
-      "medianMs": 1239.4990420043468,
-      "p95Ms": 1562.4648340046406,
-      "driverMaxRssMiB": 690.265625,
+      "medianMs": 1136.287250995636,
+      "p95Ms": 1394.0297500044107,
+      "driverMaxRssMiB": 468.47265625,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152862,17 +153309,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        799.5844589993358,
-        877.6840009987354,
-        847.9395840018988,
-        794.7000840008259,
-        826.676917001605,
-        846.4358750060201,
-        849.5936250016093
+        794.8667500019073,
+        783.129208996892,
+        774.4504590034485,
+        777.1716669946909,
+        763.7387509942055,
+        766.8851249963045,
+        783.2072509974241
       ],
-      "medianMs": 846.4358750060201,
-      "p95Ms": 877.6840009987354,
-      "driverMaxRssMiB": 336.23828125,
+      "medianMs": 777.1716669946909,
+      "p95Ms": 794.8667500019073,
+      "driverMaxRssMiB": 422.1171875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152903,17 +153350,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        817.4333329945803,
-        821.3098760023713,
-        814.946791999042,
-        839.811792999506,
-        844.572457998991,
-        822.9719170033932,
-        881.1447080001235
+        785.6919170022011,
+        792.5063339918852,
+        787.3838340044022,
+        791.219499990344,
+        774.7494589984417,
+        783.4032499939203,
+        775.8739999979734
       ],
-      "medianMs": 822.9719170033932,
-      "p95Ms": 881.1447080001235,
-      "driverMaxRssMiB": 424.24609375,
+      "medianMs": 785.6919170022011,
+      "p95Ms": 792.5063339918852,
+      "driverMaxRssMiB": 339.984375,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152944,17 +153391,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        816.3269580006599,
-        827.9003750011325,
-        847.5680000036955,
-        826.7711250036955,
-        817.3192510008812,
-        826.1772920042276,
-        884.2252499982715
+        805.3035000115633,
+        804.655209004879,
+        800.9105839878321,
+        804.6599169969559,
+        813.4915840029716,
+        805.9728330075741,
+        806.477375999093
       ],
-      "medianMs": 826.7711250036955,
-      "p95Ms": 884.2252499982715,
-      "driverMaxRssMiB": 335.453125,
+      "medianMs": 805.3035000115633,
+      "p95Ms": 813.4915840029716,
+      "driverMaxRssMiB": 351.4296875,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -152985,17 +153432,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        791.0232919976115,
-        805.5470429956913,
-        798.0387509986758,
-        794.8235009983182,
-        793.8183339983225,
-        799.7880420014262,
-        821.5886680036783
+        756.4004170000553,
+        760.7772089987993,
+        769.2413340061903,
+        783.637708991766,
+        770.0715419948101,
+        763.5131250023842,
+        760.8502089977264
       ],
-      "medianMs": 798.0387509986758,
-      "p95Ms": 821.5886680036783,
-      "driverMaxRssMiB": 413.7734375,
+      "medianMs": 763.5131250023842,
+      "p95Ms": 783.637708991766,
+      "driverMaxRssMiB": 323.6015625,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -153056,17 +153503,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        897.0243749991059,
-        901.3196249976754,
-        905.1933339983225,
-        980.0931259989738,
-        914.4792089983821,
-        897.0105009973049,
-        863.9800839945674
+        844.1110839992762,
+        847.4107919931412,
+        853.1331249922514,
+        849.2771669924259,
+        847.7697499990463,
+        841.2992499917746,
+        852.3416670113802
       ],
-      "medianMs": 901.3196249976754,
-      "p95Ms": 980.0931259989738,
-      "driverMaxRssMiB": 287.61328125,
+      "medianMs": 847.7697499990463,
+      "p95Ms": 853.1331249922514,
+      "driverMaxRssMiB": 244.3515625,
       "validation": {
         "channels": 2,
         "expectedChannels": 2,
@@ -153211,17 +153658,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        557.8088340014219,
-        551.505667001009,
-        581.012000001967,
-        575.8234160020947,
-        560.5451250001788,
-        618.3802919983864,
-        605.1415840014815
+        546.1518329977989,
+        541.3866250067949,
+        541.854459002614,
+        539.4902499914169,
+        537.643041998148,
+        540.6219159960747,
+        530.7804169952869
       ],
-      "medianMs": 575.8234160020947,
-      "p95Ms": 618.3802919983864,
-      "driverMaxRssMiB": 330.2265625,
+      "medianMs": 540.6219159960747,
+      "p95Ms": 546.1518329977989,
+      "driverMaxRssMiB": 268.98046875,
       "validation": {
         "pass": true,
         "gainDb": -5.789988474971862e-8,
@@ -153261,17 +153708,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        1151.606251001358,
-        1161.904417000711,
-        1168.4384169951081,
-        1167.5869589969516,
-        1134.6233339980245,
-        1129.6352090016007,
-        1146.8483339995146
+        1172.4707919955254,
+        1178.7053339928389,
+        1127.5361669957638,
+        1132.3845840096474,
+        1172.177875995636,
+        1105.632957994938,
+        1102.335583999753
       ],
-      "medianMs": 1151.606251001358,
-      "p95Ms": 1168.4384169951081,
-      "driverMaxRssMiB": 456.54296875,
+      "medianMs": 1132.3845840096474,
+      "p95Ms": 1178.7053339928389,
+      "driverMaxRssMiB": 405.0859375,
       "validation": {
         "pass": true,
         "gainDb": 7.832194390927138e-9,
@@ -153311,17 +153758,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        1062.9434589967132,
-        1006.6073760017753,
-        987.2725010067225,
-        1021.2152089998126,
-        1031.3382509946823,
-        1027.9323760047555,
-        1024.6119589954615
+        986.4463749974966,
+        978.0502929985523,
+        1033.2556249946356,
+        980.6761260032654,
+        986.8872089982033,
+        1034.6141249984503,
+        1000.1865839958191
       ],
-      "medianMs": 1024.6119589954615,
-      "p95Ms": 1062.9434589967132,
-      "driverMaxRssMiB": 338.08203125,
+      "medianMs": 986.8872089982033,
+      "p95Ms": 1034.6141249984503,
+      "driverMaxRssMiB": 292.6328125,
       "validation": {
         "pass": true,
         "frequency": 440.02050353690936,
@@ -153360,17 +153807,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        841.8795840069652,
-        835.1440420001745,
-        821.2008339986205,
-        834.2437919974327,
-        848.1502909958363,
-        920.1972500011325,
-        819.8820419982076
+        912.9198759943247,
+        1028.8203750103712,
+        865.029166996479,
+        845.428375005722,
+        813.81470900774,
+        831.4470000118017,
+        825.8549170047045
       ],
-      "medianMs": 835.1440420001745,
-      "p95Ms": 920.1972500011325,
-      "driverMaxRssMiB": 326.80078125,
+      "medianMs": 845.428375005722,
+      "p95Ms": 1028.8203750103712,
+      "driverMaxRssMiB": 414.66015625,
       "validation": {
         "pass": true,
         "frequency": 659.2647006131298,
@@ -153409,17 +153856,17 @@
         "source": "https://manual.audacityteam.org/man/scripting_reference.html"
       },
       "samplesMs": [
-        685.3781249970198,
-        673.0344169959426,
-        668.0224580019712,
-        748.5213750004768,
-        776.4612919986248,
-        687.9383339956403,
-        669.3214590027928
+        674.4331670105457,
+        668.3310829997063,
+        675.7081250101328,
+        676.5267089903355,
+        670.0257090032101,
+        666.6334580034018,
+        661.9909169971943
       ],
-      "medianMs": 685.3781249970198,
-      "p95Ms": 776.4612919986248,
-      "driverMaxRssMiB": 265.390625,
+      "medianMs": 670.0257090032101,
+      "p95Ms": 676.5267089903355,
+      "driverMaxRssMiB": 271.95703125,
       "validation": {
         "pass": true,
         "frequency": 659.9876649827281,
@@ -153492,6 +153939,36 @@
     {
       "adapter": "audacity",
       "case": "loudness-long-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-wav-16-long-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-wav-24-long-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-wav-32-long-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-flac-16-long-stereo",
+      "status": "skip",
+      "reason": "No equivalent adapter mapping"
+    },
+    {
+      "adapter": "audacity",
+      "case": "codec-flac-24-long-stereo",
       "status": "skip",
       "reason": "No equivalent adapter mapping"
     }

@@ -62,7 +62,7 @@
     "oracle": "stretch-transient",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 37.123999999999796,
+    "durationMs": 34.89712500000314,
     "metrics": {
       "pass": false,
       "frequency": 440.0080041097984,

@@ -42,7 +42,7 @@
     "oracle": "resample-snr",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 22.506292000005487,
+    "durationMs": 18.099458000000595,
     "metrics": {
       "snrDb": 56.44983579824328,
       "pass": false,

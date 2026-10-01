@@ -12,9 +12,10 @@ const spec = JSON.parse(await readFile(join(root, 'spec.json')))
 let bench = { results: [] }
 try { bench = JSON.parse(await readFile(join(root, 'benchmarks.json'))) || bench } catch (error) { if (error.code !== 'ENOENT') throw error }
 const runs = input.runs.filter(run => run.adapter !== 'reference')
+const basicRuns = runs.filter(run => run.cases.some(c => c.level === 'integrity' && c.status !== 'skip'))
 const active = spec.filter(c => c.status === 'active')
 const behaviorCount = runs.length ? new Set(active.filter(c => c.level !== 'integrity').map(c => c.feature)).size : 0
-const basicCount = runs.length ? new Set(active.filter(c => c.level === 'integrity').map(c => c.feature)).size : 0
+const basicCount = basicRuns.length ? new Set(active.filter(c => c.level === 'integrity').map(c => c.feature)).size : 0
 const benchTools = [...new Set(bench.results.map(b => b.adapter))]
 const benchCases = [...new Set(bench.results.map(b => b.case))]
 const mime = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wav': 'audio/wav' }
@@ -51,10 +52,13 @@ try {
   assert.equal(await page.locator('input, select, form, .view-tab').count(), 0, 'browsing needs no search or filtering controls')
   assert.equal(await page.locator('#failures, details#evidence, details#speed-evidence').count(), 0, 'duplicate result archives are absent')
   assert.equal(await page.locator('.cell-details > details:visible').count(), 0, 'source records stay hidden until linked directly')
+  assert.equal(await page.locator('details[open]').count(), 0, 'all cases, including failures, start collapsed')
+  assert.equal(await page.locator('main svg:not(.feature-info svg)').count(), 0, 'illustrations belong only to feature descriptions')
   if (runs.length) {
    assert.equal(await page.locator('#feature-panel thead th').count(), runs.length + 1)
-   assert.equal(await page.locator('#basic-panel thead th').count(), runs.length + 1)
   }
+  assert.deepEqual(await page.locator('#basic-panel thead th[data-tool]').evaluateAll(headers => headers.map(header => header.dataset.tool)), basicRuns.map(run => run.adapter), 'basic columns retain every tested tool in run order and omit wholly untested tools')
+  assert.equal(await page.locator('#basic-panel table').count(), basicRuns.length ? 1 : 0)
   if (benchCases.length) {
    assert.equal(await page.locator('.speed-matrix thead th').count(), benchTools.length + 1)
    assert(await page.locator('.speed-row > th small').evaluateAll(clips => clips.every(clip => clip.textContent.trim())), 'every speed row identifies its clip')
@@ -73,6 +77,26 @@ try {
   assert.equal(await container.locator('details, pre, code, table, a, .result-summary, .case-output, .bench-output, .metric').count(), 0, 'row descriptions contain no results, logs, or evidence controls')
   return paragraphs
  }
+ const checkDiagram = async (container, source = container) => {
+  const diagrams = container.locator(':scope > svg.feature-diagram')
+  assert.deepEqual(await diagrams.evaluateAll(nodes => nodes.map(node => node.outerHTML)), await source.locator(':scope > svg.feature-diagram').evaluateAll(nodes => nodes.map(node => node.outerHTML)), 'information preserves its own illustration without leftover content')
+  assert(await diagrams.count() <= 1, 'one illustration explains a feature')
+  for (const diagram of await diagrams.all()) {
+   assert.equal(await diagram.getAttribute('role'), 'img')
+   assert((await diagram.getAttribute('aria-label'))?.trim(), 'the illustration has an accessible name')
+   assert((await diagram.locator(':scope > title').textContent()).trim())
+   assert((await diagram.locator(':scope > desc').textContent()).trim(), 'the illustration describes the transformation for nonvisual readers')
+   assert((await diagram.locator('text').allTextContents()).includes('Example'), 'illustrations are explicitly distinguished from measured results')
+   const geometry = await diagram.evaluate(svg => {
+    const box = svg.getBoundingClientRect(), parent = svg.parentElement.getBoundingClientRect(), view = svg.viewBox.baseVal
+    const texts = [...svg.querySelectorAll('text')]
+    return { left: box.left, right: box.right, parentLeft: parent.left, parentRight: parent.right, viewport: innerWidth, smallestLabel: Math.min(...texts.map(text => parseFloat(getComputedStyle(text).fontSize) * box.width / view.width)), clippedText: texts.filter(text => { const b = text.getBBox(); return b.x < view.x || b.y < view.y || b.x + b.width > view.x + view.width || b.y + b.height > view.y + view.height }).map(text => text.textContent) }
+   })
+   assert(geometry.left >= Math.max(0, geometry.parentLeft) - 1 && geometry.right <= Math.min(geometry.viewport, geometry.parentRight) + 1, 'illustration fits its container and viewport')
+   assert.deepEqual(geometry.clippedText, [], 'illustration labels fit the SVG viewBox')
+   assert(geometry.smallestLabel >= 11.5, `illustration labels remain readable at ${geometry.viewport}px (${geometry.smallestLabel.toFixed(1)}px)`)
+  }
+ }
  const checkMatrix = async panel => {
   const table = page.locator(`${panel} table`)
   if (!await table.count()) return
@@ -87,7 +111,7 @@ try {
   assert.equal(before.maxHeight, 'none')
   assert(before.wrapWidth >= before.tableWidth)
   if (before.viewportWidth >= 1440) assert(Math.abs(before.wrapLeft - 28) < 1, `${panel}: the table border starts 28px from the left at ${before.viewportWidth}px`)
-  await page.evaluate(({ top, height, headHeight }) => scrollTo(document.documentElement.scrollWidth, top + Math.min(120, Math.max(0, height - headHeight - 20))), before)
+  await page.evaluate(({ top, height, headHeight, wrapLeft, tableWidth }) => scrollTo(Math.max(0, wrapLeft + tableWidth - innerWidth), top + Math.min(120, Math.max(0, height - headHeight - 20))), before)
   const after = await table.evaluate(table => {
    const row = table.querySelector('tbody tr:not(.group-row)'), first = row.querySelector('th'), cell = row.querySelector('td'), head = table.querySelector('thead th'), label = table.querySelector('.group-label')
    return { x: scrollX, headTop: head.getBoundingClientRect().top, headLeft: head.getBoundingClientRect().left, firstLeft: first.getBoundingClientRect().left, cellLeft: cell.getBoundingClientRect().left, firstPosition: getComputedStyle(first).position, headZ: +getComputedStyle(head).zIndex, firstZ: +getComputedStyle(first).zIndex, cellWidth: cell.offsetWidth, minWidth: parseFloat(getComputedStyle(table).getPropertyValue('--tool-width')), groupLeft: label?.getBoundingClientRect().left, groupInset: label ? parseFloat(getComputedStyle(label).left) : null, wrapX: table.parentElement.scrollLeft, wrapY: table.parentElement.scrollTop }
@@ -190,7 +214,9 @@ try {
    assert.doesNotMatch(await panel.innerText(), /·/, 'visible cell details use layout rather than middle-dot separators')
    const paragraphs = await panel.locator('p:visible').allTextContents()
    if (!info) assert(paragraphs.every(text => text.trim().length <= 120), 'default cell details contain compact labels rather than long paragraphs')
-   assert.equal(await panel.locator('svg, .result-bar, .case-chips, .pill, .speed-peers').count(), 0, 'results use text and measured values without decorative charts or chips')
+   assert.equal(await panel.locator('.result-bar, .case-chips, .pill, .speed-peers').count(), 0, 'results use text and measured values without decorative charts or chips')
+   if (info) await checkDiagram(panel.locator('.popover-body'), archive)
+   else assert.equal(await panel.locator('svg').count(), 0, 'result details do not inherit explanatory illustrations')
    assert.equal(await panel.locator('.case-output a:visible').count(), 0, 'reproduction links stay inside folded Evidence')
    const metrics = await panel.locator('.metric[data-value]:visible').evaluateAll(metrics => metrics.map(metric => [metric.dataset.value, metric.dataset.min, metric.dataset.max].filter(value => value !== undefined)))
    assert(metrics.every(values => values.every(value => value !== '' && Number.isFinite(Number(value)))), 'metric values and tolerance bounds are finite numbers')
@@ -366,7 +392,15 @@ try {
   await trigger.click(); await opened()
   await panel.getByRole('button', { name: /close/i }).click(); await closed()
   await trigger.click(); await opened()
-  await page.mouse.click(2, 2); await closed()
+  await page.evaluate(() => {
+   const target = document.createElement('span')
+   target.id = 'dismiss-test-target'
+   target.style.cssText = 'position:fixed;left:0;top:0;width:8px;height:8px;z-index:10'
+   document.body.append(target)
+  })
+  await page.mouse.click(2, 2)
+  await page.locator('#dismiss-test-target').evaluate(el => el.remove())
+  await closed()
   assert.deepEqual(await archive.locator('script.visual-template').allTextContents(), templates, 'cell popovers preserve inert archive graphics for later visits')
  }
  await mkdir(shots, { recursive: true })
@@ -393,6 +427,7 @@ try {
    await allSections(page)
   }
   for (const section of ['feature', 'basic']) await checkPopover(`#${section}-rows th a[data-popover="info"]`, { bottom: true, screenshot: `report-${section}-info-${width}.png` })
+  await checkPopover('#feature-rows [data-popover="info"][href="#info-rate.resample"]', { bottom: true, screenshot: `report-diagram-${width}.png` })
   const partial = runs.flatMap(run => [...new Set(active.filter(c => c.level !== 'integrity').map(c => c.feature))].map(feature => ({ adapter: run.adapter, feature, value: featureResult(run.cases.filter(c => c.feature === feature), active.filter(c => c.feature === feature).length) }))).find(item => item.value.state === 'partial')
   if (partial) assert.equal(await page.locator(`.feature-row[data-feature="${partial.feature}"] td[data-tool="${partial.adapter}"]`).textContent(), partial.value.label)
   for (const selector of ['#feature-rows td.fail .result[data-popover]', '#feature-rows td.error .result[data-popover]', '#feature-rows td.pass .result[data-popover]', '#feature-rows td.skip .result[data-popover]', '#basic-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.error .result[data-popover]', '.speed-row td.skip .result[data-popover]']) await checkPopover(selector, { screenshot: selector.includes('td.pass') ? `report-pass-${width}.png` : undefined })
@@ -436,10 +471,12 @@ try {
    assert.equal(await second.getAttribute('aria-expanded'), 'false', 'resizing dismisses the panel')
    await page.setViewportSize({ width: 1440, height: 1000 })
   }
-  if (width === 1440 && runs.length) {
+  if (runs.length) {
    const panel = page.locator('#cell-popover'), before = await page.evaluate(() => ({ x: scrollX, y: scrollY, hash: location.hash }))
-   for (const selector of ['#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#basic-rows td .result[data-popover]', '#feature-rows th a[data-popover="info"]']) {
-    const trigger = page.locator(selector).first(), info = await trigger.getAttribute('data-popover') === 'info'
+   for (const selector of ['#feature-rows [href="#info-edit.reverse"]', '#feature-rows .result[data-popover]', '#feature-rows [href="#info-channels.mono"]', '#feature-rows th a[data-popover="info"]', '#feature-rows [href="#info-filter.lowpass"]', '#basic-rows td .result[data-popover]', '#basic-rows th a[data-popover="info"]']) {
+    const trigger = page.locator(selector).first()
+    if (!await trigger.count()) continue
+    const info = await trigger.getAttribute('data-popover') === 'info'
     await trigger.evaluate(el => el.click())
     await page.waitForFunction(() => document.getElementById('cell-popover').matches(':popover-open'))
     assert.equal(await page.locator('[data-popover][aria-expanded="true"]').count(), 1, 'switching between descriptions and results leaves one active trigger')
@@ -448,7 +485,9 @@ try {
     assert.equal(await panel.locator('h3').textContent(), label, 'switching replaces the feature title')
     if (info) {
      const href = await trigger.getAttribute('href')
-     assert.deepEqual(await descriptionOnly(panel.locator('.popover-body')), await page.locator(`[id=${JSON.stringify(href.slice(1))}] > p`).allTextContents(), 'switching to information replaces all previous content')
+     const source = page.locator(`[id=${JSON.stringify(href.slice(1))}]`)
+     assert.deepEqual(await descriptionOnly(panel.locator('.popover-body')), await source.locator(':scope > p').allTextContents(), 'switching to information replaces all previous content')
+     await checkDiagram(panel.locator('.popover-body'), source)
      assert.equal((await panel.locator('.popover-tool').textContent()).trim(), '')
      assert.equal(await panel.locator('.popover-tool').isVisible(), false)
     } else {
@@ -457,6 +496,8 @@ try {
      assert(await panel.locator('.popover-tool').isVisible())
      assert(await panel.locator('.result-summary').isVisible())
      assert.equal(await panel.locator('.popover-body > p').count(), 0, 'result content clears the previous description')
+     assert.equal(await panel.locator('svg').count(), 0, 'switching to results removes the feature illustration')
+     assert.equal(await panel.locator('details[open]').count(), 0, 'switching to results leaves every case and evidence disclosure closed')
     }
     assert.deepEqual(await page.evaluate(() => ({ x: scrollX, y: scrollY, hash: location.hash })), before, 'switching popover types does not navigate the page')
    }
@@ -509,7 +550,7 @@ try {
  await staticPage.goto(url); await allSections(staticPage)
  await staticPage.locator('.contents a[href="#speed"]').click(); assert.equal(new URL(staticPage.url()).hash, '#speed')
  let previousEvidence
- for (const selector of ['#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
+ for (const selector of ['#feature-rows [href="#info-rate.resample"]', '#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
   const link = staticPage.locator(selector).first()
   if (!await link.count()) continue
   const href = await link.getAttribute('href')
@@ -524,6 +565,7 @@ try {
   if (await link.getAttribute('data-popover') === 'info') {
    assert.equal(await evidence.locator(':scope > summary').textContent(), await link.textContent())
    await descriptionOnly(evidence)
+   await checkDiagram(evidence)
   }
   const recorded = await link.evaluate(el => ({ adapter: el.closest('td, th').dataset.tool, id: el.closest('tr').dataset.case }))
   const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)
@@ -540,7 +582,7 @@ try {
  await fallbackPage.goto(url)
  assert.equal(await fallbackPage.locator('.cell-details > details:visible').count(), 0, 'source records start hidden without the Popover API')
  previousEvidence = null
- for (const selector of ['#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
+ for (const selector of ['#feature-rows [href="#info-rate.resample"]', '#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
   const fallbackLink = fallbackPage.locator(selector).first()
   if (!await fallbackLink.count()) continue
   const href = await fallbackLink.getAttribute('href')
@@ -554,6 +596,7 @@ try {
   if (await fallbackLink.getAttribute('data-popover') === 'info') {
    assert.equal(await evidence.locator(':scope > summary').textContent(), await fallbackLink.textContent())
    await descriptionOnly(evidence)
+   await checkDiagram(evidence)
   }
   const recorded = await fallbackLink.evaluate(el => ({ adapter: el.closest('td, th').dataset.tool, id: el.closest('tr').dataset.case }))
   const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)

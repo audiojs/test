@@ -3,6 +3,30 @@ import { makeSignal } from '../src/signals.js'
 
 const filters=new Set(['lowpass','highpass','bandpass','notch','allpass','lowshelf','highshelf','eq'])
 const operations=new Set(['gain','gain-db','fade','trim','pad','repeat','swap','mono','duplicate','balance','mix','insert','crossfade','speed','resample','delay','convolve','compressor'])
+const processorDefaults={
+ compressor:{threshold:-20,ratio:4,knee:6,makeup:0,attack:5,release:100,upRatio:1},
+ delay:{time:.25,feedback:.3,mix:.5},tremolo:{rate:5,depth:.5},
+ dcblocker:{R:.995},derivative:{},integral:{leak:1},emphasis:{alpha:.97},deemphasis:{alpha:.97}
+}
+
+export function webaudioProcessor({name,params={}}){
+ const defaults=processorDefaults[name]
+ if(!defaults||Object.keys(params).some(key=>!(key in defaults)))return null
+ const p={...defaults,...params}
+ if(Object.values(p).some(value=>!Number.isFinite(value)))return null
+ if(name==='compressor'){
+  if(p.upRatio!==1||p.threshold< -100||p.threshold>0||p.ratio<1||p.ratio>20||p.knee<0||p.knee>40||p.attack<0||p.attack>1000||p.release<0||p.release>1000||p.makeup< -12||p.makeup>24)return null
+  return {op:'compressor',threshold:p.threshold,ratio:p.ratio,knee:p.knee,makeup:p.makeup,attack:p.attack/1000,release:p.release/1000}
+ }
+ if(name==='delay')return p.time>=0&&p.time<180&&p.feedback>=0&&p.feedback<1&&p.mix>=0&&p.mix<=1?{op:'delay',...p}:null
+ if(name==='tremolo')return p.rate>=.1&&p.rate<=20&&p.depth>=0&&p.depth<=1?{op:'tremolo',...p}:null
+ const iir=(feedforward,feedback)=>({op:'iir',feedforward,feedback})
+ if(name==='dcblocker')return p.R>=0&&p.R<1?iir([1,-1],[1,-p.R]):null
+ if(name==='derivative')return iir([1,-1],[1])
+ if(name==='integral')return p.leak>=0&&p.leak<=1?iir([1],[1,-p.leak]):null
+ if(name==='emphasis'||name==='deemphasis')return p.alpha>=0&&p.alpha<1?iir(name==='emphasis'?[1,-p.alpha]:[1],name==='deemphasis'?[1,-p.alpha]:[1]):null
+ return null
+}
 
 export function webaudio(engine='chromium') {
  let browser,page
@@ -18,10 +42,14 @@ export function webaudio(engine='chromium') {
   async available(){return (await connect()).evaluate(()=>typeof OfflineAudioContext==='function')},
   async version(){await connect();return `${engine} ${browser.version()}`},
   async metadata(){return {engine,mode:'OfflineAudioContext in a persistent browser; base64 float32 PCM crosses Playwright',source:'https://www.w3.org/TR/webaudio-1.0/'}},
-  supports(test){return !test.workflow&&test.steps.every(s=>(operations.has(s.op)||filters.has(s.op))&&!(filters.has(s.op)&&s.order!==undefined&&s.order!==2))},
+  supports(test){return !test.workflow&&test.steps.every(s=>s.op==='processor'?webaudioProcessor(s)!==null:(operations.has(s.op)||filters.has(s.op))&&!(filters.has(s.op)&&s.order!==undefined&&s.order!==2))},
   async run(test,input,sampleRate){
    const encode=x=>Buffer.from(x.buffer,x.byteOffset,x.byteLength).toString('base64')
-   const steps=test.steps.map(s=>({...s,...(s.other?{other:makeSignal(s.other).channels.map(encode)}:{})}))
+   const steps=test.steps.map(step=>{
+    const s=step.op==='processor'?webaudioProcessor(step):step
+    if(!s)throw new RangeError(`Unsupported Web Audio processor controls: ${step.name}`)
+    return {...s,...(s.other?{other:makeSignal(s.other).channels.map(encode)}:{})}
+   })
    const result=await (await connect()).evaluate(async({steps,input,sampleRate})=>{
     const decode=value=>{const bytes=Uint8Array.from(atob(value),c=>c.charCodeAt(0));return new Float32Array(bytes.buffer)}
     const encode=x=>{
@@ -54,6 +82,12 @@ export function webaudio(engine='chromium') {
      const gain=value=>{const g=ctx.createGain();g.gain.value=value;return g}
      const connect=node=>{last.connect(node);last=node}
      if(s.op==='gain'||s.op==='gain-db')connect(gain(s.op==='gain'?s.value:10**(s.db/20)))
+     else if(s.op==='iir')connect(ctx.createIIRFilter(s.feedforward,s.feedback))
+     else if(s.op==='tremolo'){
+      const volume=gain(1-s.depth/2),depth=gain(s.depth/2),oscillator=ctx.createOscillator()
+      oscillator.type='sine';oscillator.frequency.value=s.rate
+      oscillator.connect(depth).connect(volume.gain);oscillator.start();connect(volume)
+     }
      else if(s.op==='fade'){
       const g=gain(1),start=s.direction==='in'?0:(n-s.length)/rate
       const values=Float32Array.from({length:s.length+1},(_,i)=>{const t=s.direction==='in'?i/s.length:1-i/s.length;return ({linear:t,exp:t*t,log:Math.sqrt(t),cos:(1-Math.cos(Math.PI*t))/2})[s.curve||'linear']})
@@ -68,7 +102,8 @@ export function webaudio(engine='chromium') {
      }else if(s.op==='convolve'){
       const c=ctx.createConvolver();c.normalize=false;c.buffer=buffer([s.impulse]);connect(c)
      }else if(s.op==='delay'){
-      const bus=gain(1),dry=gain(1-s.mix),wet=gain(s.mix),delay=ctx.createDelay(Math.max(1,s.delayFrames/rate));delay.delayTime.value=s.delayFrames/rate
+      const seconds=s.time??s.delayFrames/rate
+      const bus=gain(1),dry=gain(1-s.mix),wet=gain(s.mix),delay=ctx.createDelay(Math.max(1,seconds));delay.delayTime.value=seconds
       if(s.feedback)delay.connect(gain(s.feedback)).connect(delay)
       source.connect(dry).connect(bus);source.connect(delay).connect(wet).connect(bus);last=bus
      }else if(['swap','mono','duplicate','balance'].includes(s.op)){

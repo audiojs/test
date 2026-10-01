@@ -16,13 +16,21 @@ const feature = id => {
  return { ...value, description: spec.ecosystem.packages.find(pkg => pkg.name === value.package)?.description }
 }
 
+test('codec and phase explanations use the requested contract rather than assumed defaults',()=>{
+ assert.match(copy('codec.wav.24bit.17f.2ch',{bitDepth:16,sampleFormat:'integer'}).summary,/expected 24 bits/)
+ assert.match(copy('codec.wav.32bit.17f.2ch',{bitDepth:32,sampleFormat:'integer'}).summary,/expected float/)
+ assert.match(copy('filter.allpass.phase.48000.1',{perChannel:[{pass:true,gainDb:0,phaseError:0},{pass:false,gainDb:0,phaseError:180}]}).summary,/Channel 2: Phase.*180°.*0.1°/)
+ assert.notEqual(featureCopy(feature('processor.emphasis')).description,featureCopy(feature('processor.deemphasis')).description)
+ for(const id of ['processor.binaural','processor.fm'])assert.doesNotMatch(featureCopy(feature(id)).description,/ITD|ILD|Chowning|op stack/)
+})
+
 test('row descriptions distinguish measurements from effects and state meaningful coverage limits', () => {
  assert.match(featureCopy(feature('analysis.pitch')).description, /Estimate.*frequency/)
  assert.match(featureCopy(feature('analysis.pitch')).checks, /generated tones.*recorded performances are not tested/)
  assert.match(featureCopy(feature('rate.pitch')).description, /Change the pitch.*without changing the duration/)
  assert.equal(featureCopy(feature('rate.pitch')).checks, '')
  assert.match(featureCopy(feature('filter.allpass')).description, /timing.*without changing their levels/)
- assert.match(featureCopy(feature('filter.allpass')).checks, /levels stay unchanged; phase response is not tested/)
+ assert.match(featureCopy(feature('filter.allpass')).checks, /unchanged tone levels.*phase shift.*both channels/)
  assert.match(featureCopy(feature('analysis.true-peak')).description, /between stored samples/)
  assert.match(featureCopy(feature('analysis.loudness')).checks, /synthetic.*selected EBU/)
  assert.match(featureCopy(feature('codec.wav')).description, /uncompressed/)

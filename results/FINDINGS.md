@@ -1,6 +1,6 @@
 # Contract discrepancies
 
-Run: 2026-10-01T03:03:48.839Z. No engine fixes are made by this repository.
+Run: 2026-10-01T17:17:58.023Z. No engine fixes are made by this repository.
 
 Replay a case with its recorded contender version and source hash. WAV files are float32; differences below export quantization are not necessarily DSP bugs.
 
@@ -10,7 +10,7 @@ Status: fail.
 
 `node bin/audio-test.js run --adapter audio --tier quality --case restoration.denoise.reference`
 
-[Reproduction and metrics](artifacts/a4988967cb249b06/case.json)
+[Reproduction and metrics](artifacts/a08dfc072c9c03e7/case.json)
 
 ```json
 {
@@ -948,6 +948,183 @@ Status: fail.
 }
 ```
 
+## sox: codec.wav.32bit.1f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter sox --tier quality --case codec.wav.32bit.1f.1ch`
+
+[Reproduction and metrics](artifacts/0b9b65f45d872cd8/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 2.2351741790771484e-8,
+  "rmsError": 2.2351741790771484e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 62,
+  "bitDepth": 32,
+  "sampleFormat": "float",
+  "inputUnchanged": true
+}
+```
+
+## sox: codec.wav.32bit.1f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter sox --tier quality --case codec.wav.32bit.1f.2ch`
+
+[Reproduction and metrics](artifacts/e055832edcd8c8ed/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 2.2351741790771484e-8,
+  "rmsError": 1.580506819158526e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 66,
+  "bitDepth": 32,
+  "sampleFormat": "float",
+  "inputUnchanged": true
+}
+```
+
+## sox: codec.wav.32bit.17f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter sox --tier quality --case codec.wav.32bit.17f.1ch`
+
+[Reproduction and metrics](artifacts/0171353195043611/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.25,
+  "rmsError": 0.09587062360592177,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 126,
+  "bitDepth": 32,
+  "sampleFormat": "float",
+  "inputUnchanged": true
+}
+```
+
+## sox: codec.wav.32bit.17f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter sox --tier quality --case codec.wav.32bit.17f.2ch`
+
+[Reproduction and metrics](artifacts/5a3f19128a155b9b/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.25,
+  "rmsError": 0.09587062360592169,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 194,
+  "bitDepth": 32,
+  "sampleFormat": "float",
+  "inputUnchanged": true
+}
+```
+
+## sox: codec.wav.32bit.1025f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter sox --tier quality --case codec.wav.32bit.1025f.1ch`
+
+[Reproduction and metrics](artifacts/1bad088bd994f26b/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.25,
+  "rmsError": 0.09877295966495929,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 4158,
+  "bitDepth": 32,
+  "sampleFormat": "float",
+  "inputUnchanged": true
+}
+```
+
+## sox: codec.wav.32bit.1025f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter sox --tier quality --case codec.wav.32bit.1025f.2ch`
+
+[Reproduction and metrics](artifacts/945aa188f49c2eff/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.25,
+  "rmsError": 0.09877295966495912,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 8258,
+  "bitDepth": 32,
+  "sampleFormat": "float",
+  "inputUnchanged": true
+}
+```
+
 ## sox: dynamics.limiter.ceiling-latency
 
 Status: fail.
@@ -981,7 +1158,7 @@ Status: fail.
 
 `node bin/audio-test.js run --adapter librosa --tier quality --case analysis.pitch.tone-110`
 
-[Reproduction and metrics](artifacts/b3ce6a49fcca548f/case.json)
+[Reproduction and metrics](artifacts/29e02866469436d0/case.json)
 
 ```json
 {
@@ -993,13 +1170,721 @@ Status: fail.
 }
 ```
 
+## pedalboard: codec.wav.1f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.1f.1ch`
+
+[Reproduction and metrics](artifacts/63c26be5a13b181c/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000030517578125,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 106,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.1f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.1f.2ch`
+
+[Reproduction and metrics](artifacts/89150f090666119a/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000021579186437577746,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 108,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.17f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.17f.1ch`
+
+[Reproduction and metrics](artifacts/e70d9003b4cc0195/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000017554435480529958,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 138,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.17f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.17f.2ch`
+
+[Reproduction and metrics](artifacts/94ef9e2fa0094097/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000016756084405678495,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 172,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.1025f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.1025f.1ch`
+
+[Reproduction and metrics](artifacts/ac75d91fc16406a9/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000016427306383203866,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 2154,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.1025f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.1025f.2ch`
+
+[Reproduction and metrics](artifacts/05abf3af126c7793/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000016413472859596656,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 4204,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.24bit.1f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.24bit.1f.1ch`
+
+[Reproduction and metrics](artifacts/4108fd4212087af3/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 1.1920928955078125e-7,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 108,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.24bit.1f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.24bit.1f.2ch`
+
+[Reproduction and metrics](artifacts/6343a9f0b1c02efd/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 8.429369702178807e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 110,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.24bit.17f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.24bit.17f.1ch`
+
+[Reproduction and metrics](artifacts/5d38bcc17bce8c67/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.857201357311376e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 156,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.24bit.17f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.24bit.17f.2ch`
+
+[Reproduction and metrics](artifacts/bc93dc36056be12b/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.545345468589339e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 206,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.24bit.1025f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.24bit.1025f.1ch`
+
+[Reproduction and metrics](artifacts/8d08eaf3a3a1ba96/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.416916553363417e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 3180,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.wav.24bit.1025f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.wav.24bit.1025f.2ch`
+
+[Reproduction and metrics](artifacts/ec559bee53294aba/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.411512833202172e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 6254,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.1f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.1f.1ch`
+
+[Reproduction and metrics](artifacts/419cec91e932bd38/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000030517578125,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 120,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.1f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.1f.2ch`
+
+[Reproduction and metrics](artifacts/7bae6d1132263cf5/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000021579186437577746,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 123,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.17f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.17f.1ch`
+
+[Reproduction and metrics](artifacts/67fbe60be84b3da2/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000017554435480529958,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 152,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.17f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.17f.2ch`
+
+[Reproduction and metrics](artifacts/1ecb91c0dd180292/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000016756084405678495,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 187,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.1025f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.1025f.1ch`
+
+[Reproduction and metrics](artifacts/1bfcdd7621764ca0/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000016427306383203866,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 1683,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.1025f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.1025f.2ch`
+
+[Reproduction and metrics](artifacts/6446bdd7a068c677/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 0.000030517578125,
+  "rmsError": 0.000016413472859596656,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 3112,
+  "bitDepth": 16,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.24bit.1f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.24bit.1f.1ch`
+
+[Reproduction and metrics](artifacts/8ad9ae17183b9c76/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 1.1920928955078125e-7,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 121,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.24bit.1f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.24bit.1f.2ch`
+
+[Reproduction and metrics](artifacts/6c6e85a4c100e462/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 8.429369702178807e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 8000,
+  "encodedBytes": 125,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.24bit.17f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.24bit.17f.1ch`
+
+[Reproduction and metrics](artifacts/5f28faaeebc2e013/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.857201357311376e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 169,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.24bit.17f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.24bit.17f.2ch`
+
+[Reproduction and metrics](artifacts/d37825823988e353/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.545345468589339e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 44100,
+  "encodedBytes": 221,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.24bit.1025f.1ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.24bit.1025f.1ch`
+
+[Reproduction and metrics](artifacts/dccb7af1756f891e/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.416916553363417e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 2713,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
+## pedalboard: codec.flac.24bit.1025f.2ch
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter pedalboard --tier quality --case codec.flac.24bit.1025f.2ch`
+
+[Reproduction and metrics](artifacts/8f6e9f39ae942089/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.1920928955078125e-7,
+  "rmsError": 6.411512833202172e-8,
+  "pass": false,
+  "reason": "samples",
+  "sourceUnchanged": true,
+  "sourceMaxAbsError": 0,
+  "sampleRate": 48000,
+  "encodedBytes": 5167,
+  "bitDepth": 24,
+  "sampleFormat": "integer",
+  "inputUnchanged": true
+}
+```
+
 ## pedalboard: dynamics.limiter.zero-lookahead
 
 Status: fail.
 
 `node bin/audio-test.js run --adapter pedalboard --tier quality --case dynamics.limiter.zero-lookahead`
 
-[Reproduction and metrics](artifacts/aaef7d9f1ae6a244/case.json)
+[Reproduction and metrics](artifacts/cb8ddd2e50d7446a/case.json)
 
 ```json
 {
@@ -1026,7 +1911,7 @@ Status: fail.
 
 `node bin/audio-test.js run --adapter pedalboard --tier core --case effect.convolution.impulse`
 
-[Reproduction and metrics](artifacts/ac324ad8d2c40860/case.json)
+[Reproduction and metrics](artifacts/ac5a6ca2448da9ee/case.json)
 
 ```json
 {
@@ -1159,6 +2044,147 @@ Status: fail.
   ],
   "maxAbsError": 0.5946992039680481,
   "rmsError": 0.015174054629030754,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio: neutral.compressor.16000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio --tier quality --case neutral.compressor.16000.1`
+
+[Reproduction and metrics](artifacts/26f8e012d01624c0/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.443507730960846,
+  "rmsError": 0.23767107149358557,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio: neutral.compressor.16000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio --tier quality --case neutral.compressor.16000.2`
+
+[Reproduction and metrics](artifacts/3e67eecf2df840a4/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.4436084628105164,
+  "rmsError": 0.2817864739778227,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio: neutral.compressor.48000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio --tier quality --case neutral.compressor.48000.1`
+
+[Reproduction and metrics](artifacts/99a0598ed06e129e/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.1341201663017273,
+  "rmsError": 0.3562156753191757,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio: neutral.compressor.48000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio --tier quality --case neutral.compressor.48000.2`
+
+[Reproduction and metrics](artifacts/4d4d3599ad951366/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.2980850338935852,
+  "rmsError": 0.3923594740017142,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio: neutral.compressor.96000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio --tier quality --case neutral.compressor.96000.1`
+
+[Reproduction and metrics](artifacts/effdf8b5022031af/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.9160852134227753,
+  "rmsError": 0.4180861531876369,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio: neutral.compressor.96000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio --tier quality --case neutral.compressor.96000.2`
+
+[Reproduction and metrics](artifacts/3ef242c10797765e/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.0218661725521088,
+  "rmsError": 0.44137818113765437,
   "pass": false,
   "reason": "samples",
   "inputUnchanged": true
@@ -1374,6 +2400,147 @@ Status: fail.
 }
 ```
 
+## webaudio-firefox: neutral.compressor.16000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-firefox --tier quality --case neutral.compressor.16000.1`
+
+[Reproduction and metrics](artifacts/c24ca65bb4a05265/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.4435074925422668,
+  "rmsError": 0.2376817408770067,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-firefox: neutral.compressor.16000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-firefox --tier quality --case neutral.compressor.16000.2`
+
+[Reproduction and metrics](artifacts/233004a7dcd4072c/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.4436094164848328,
+  "rmsError": 0.281793242338463,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-firefox: neutral.compressor.48000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-firefox --tier quality --case neutral.compressor.48000.1`
+
+[Reproduction and metrics](artifacts/5bc0973cdac0dd8e/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.133644014596939,
+  "rmsError": 0.35615358821841625,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-firefox: neutral.compressor.48000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-firefox --tier quality --case neutral.compressor.48000.2`
+
+[Reproduction and metrics](artifacts/f3572db1e7980948/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.297917127609253,
+  "rmsError": 0.39230331298136684,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-firefox: neutral.compressor.96000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-firefox --tier quality --case neutral.compressor.96000.1`
+
+[Reproduction and metrics](artifacts/eb1ae6d3336cafe1/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.9156634956598282,
+  "rmsError": 0.41792872109198465,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-firefox: neutral.compressor.96000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-firefox --tier quality --case neutral.compressor.96000.2`
+
+[Reproduction and metrics](artifacts/0b4ba0a2d790349a/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.0215203762054443,
+  "rmsError": 0.4412403448850513,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
 ## webaudio-firefox: rate.resample.snr-bandwidth
 
 Status: fail.
@@ -1502,6 +2669,147 @@ Status: fail.
       ]
     }
   ],
+  "inputUnchanged": true
+}
+```
+
+## webaudio-webkit: neutral.compressor.16000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-webkit --tier quality --case neutral.compressor.16000.1`
+
+[Reproduction and metrics](artifacts/3ae65b234bb0d776/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.443507730960846,
+  "rmsError": 0.23767107148875496,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-webkit: neutral.compressor.16000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-webkit --tier quality --case neutral.compressor.16000.2`
+
+[Reproduction and metrics](artifacts/a8c437393784d46e/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.4436084628105164,
+  "rmsError": 0.2817864739765587,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-webkit: neutral.compressor.48000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-webkit --tier quality --case neutral.compressor.48000.1`
+
+[Reproduction and metrics](artifacts/aafb32cc37b12521/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 1.134120225906372,
+  "rmsError": 0.35621567550568234,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-webkit: neutral.compressor.48000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-webkit --tier quality --case neutral.compressor.48000.2`
+
+[Reproduction and metrics](artifacts/aa69e774f9fbba45/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.2980850338935852,
+  "rmsError": 0.3923594739262376,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-webkit: neutral.compressor.96000.1
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-webkit --tier quality --case neutral.compressor.96000.1`
+
+[Reproduction and metrics](artifacts/c0b592a225a41a88/case.json)
+
+```json
+{
+  "channels": 1,
+  "expectedChannels": 1,
+  "lengthDelta": [
+    0
+  ],
+  "maxAbsError": 0.9160852432250977,
+  "rmsError": 0.4180861594440418,
+  "pass": false,
+  "reason": "samples",
+  "inputUnchanged": true
+}
+```
+
+## webaudio-webkit: neutral.compressor.96000.2
+
+Status: fail.
+
+`node bin/audio-test.js run --adapter webaudio-webkit --tier quality --case neutral.compressor.96000.2`
+
+[Reproduction and metrics](artifacts/e32782a5c1e62cab/case.json)
+
+```json
+{
+  "channels": 2,
+  "expectedChannels": 2,
+  "lengthDelta": [
+    0,
+    0
+  ],
+  "maxAbsError": 1.0218662321567535,
+  "rmsError": 0.4413781873491349,
+  "pass": false,
+  "reason": "samples",
   "inputUnchanged": true
 }
 ```

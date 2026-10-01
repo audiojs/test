@@ -70,6 +70,11 @@ export function catalog(ecosystem) {
     const gain=20*Math.log10((op==='highpass'?w:1)/Math.sqrt(1+w*w))
     add(`filter.${op}1.${sampleRate}.${ratio}`,feature(`filter.${op}1`,`${op} (one pole)`,'Filters','First-order bilinear low/highpass response, ±0.3 dB.'),{signal:'sine',frequency:1000*ratio,frames:sampleRate,sampleRate,amplitude:.1},[{op,freq:1000,order:1,Q:.7071067811865476}],{type:'response',min:gain-.3,max:gain+.3},{tier:'quality'})
   }
+  // W3C Audio EQ Cookbook APF: H(s)=(s²-s/Q+1)/(s²+s/Q+1), with bilinear frequency warping.
+  for(const sampleRate of [16000,48000,96000])for(const ratio of [.5,1,2]){
+    const frequency=1000*ratio,Q=Math.SQRT1_2,w=Math.tan(Math.PI*frequency/sampleRate)/Math.tan(Math.PI*1000/sampleRate)
+    add(`filter.allpass.phase.${sampleRate}.${ratio}`,'filter.allpass',{signal:'sine',frequency,frames:sampleRate,sampleRate,channels:2,amplitude:.2},[{op:'allpass',freq:1000,Q}],{type:'phase',phaseDegrees:-2*Math.atan2(w/Q,1-w*w)*180/Math.PI,phaseTolerance:.1,gainTolerance:.05},{tier:'quality',sources:['https://www.w3.org/TR/audio-eq-cookbook/']})
+  }
   for(const [name,params] of Object.entries({compressor:{ratio:1,upRatio:1,makeup:0},tremolo:{depth:0},delay:{mix:0},freeverb:{mix:0},distortion:{mix:0}}))for(const sampleRate of [16000,48000,96000])for(const channels of [1,2]){
     add(`neutral.${name}.${sampleRate}.${channels}`,feature(`neutral.${name}`,`${name}: neutral settings`,'DSP invariants','Declared bypass settings preserve every input sample and frame.'),{signal:'sample-id',frames:4097,sampleRate,channels},[{op:'processor',name,params}],{type:'neutral',atol:1e-6},{tier:'quality'})
   }
@@ -99,13 +104,16 @@ export function catalog(ecosystem) {
   const itu='https://www.itu.int/dms_pubrec/itu-r/rec/bs/R-REC-BS.1770-5-202311-I!!PDF-E.pdf'
   const scalar=(value,tolerance)=>({type:'scalar-range',min:value-tolerance,max:value+tolerance})
 
-  const pcm16=[-1,-32767/32768,-1/32768,0,1/32768,32767/32768,.5,-.25]
   for(const format of ['wav','flac']){
-    const f=feature(`codec.${format}`,`${format.toUpperCase()} lossless roundtrip`,'Codecs','Encode nonempty 16-bit PCM, decode it, and preserve every sample, channel and sample rate. Includes a byte stream split after the first byte and before the last byte. Metadata, lossy formats and corrupted files are separate coverage.','standard')
+    const f=feature(`codec.${format}`,`${format.toUpperCase()} lossless roundtrip`,'Codecs',`Encode nonempty 16-bit and 24-bit PCM${format==='wav'?', plus 32-bit floating-point audio':''}, decode it, and preserve every sample, channel and sample rate. Includes a byte stream split after the first byte and before the last byte. Metadata, lossy formats and corrupted files are separate coverage.`,'standard')
+    for(const bitDepth of format==='wav'?[16,24,32]:[16,24]){
+    const scale=2**(bitDepth-1),samples=bitDepth===32?[.1,-.3,2**-80,-(2**-70),.75,-.875,1.25,-1.125]:[-1,-(scale-1)/scale,-1/scale,0,1/scale,(scale-1)/scale,.5,-.25]
+    const prefix=`codec.${format}${bitDepth===16?'':'.'+bitDepth+'bit'}`
     for(const [frames,sampleRate] of [[1,8000],[17,44100],[1025,48000]])for(const channels of [1,2]){
-      const fixture={signal:'array',frames,channels,sampleRate,samples:Array.from({length:channels},(_,c)=>Array.from({length:frames},(_,i)=>pcm16[(i+c*3)%pcm16.length]))}
-      quality(`codec.${format}.${frames}f.${channels}ch`,f,`${format.toUpperCase()}: ${frames} frames, ${channels} channels`,fixture,[],{type:'exact',atol:0},{workflow:{op:'codec-roundtrip',format}})
-      if(frames===1025&&channels===2)quality(`codec.${format}.byte-boundaries`,f,`${format.toUpperCase()}: first and final byte boundaries`,fixture,[],{type:'exact',atol:0},{workflow:{op:'codec-roundtrip',format,split:true}})
+      const fixture={signal:'array',frames,channels,sampleRate,samples:Array.from({length:channels},(_,c)=>Array.from({length:frames},(_,i)=>samples[(i+c*3)%samples.length]))}
+      quality(`${prefix}.${frames}f.${channels}ch`,f,`${format.toUpperCase()} ${bitDepth}-bit: ${frames} frames, ${channels} channels`,fixture,[],{type:'exact',atol:0},{workflow:{op:'codec-roundtrip',format,bitDepth}})
+      if(frames===1025&&channels===2)quality(`${prefix}.byte-boundaries`,f,`${format.toUpperCase()} ${bitDepth}-bit: first and final byte boundaries`,fixture,[],{type:'exact',atol:0},{workflow:{op:'codec-roundtrip',format,bitDepth,split:true}})
+    }
     }
   }
 

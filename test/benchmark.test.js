@@ -19,7 +19,7 @@ test('benchmark workloads span sizes, channels and operation families with indep
  assert.equal(new Set(cases.map(c=>c.id)).size,cases.length)
  assert.deepEqual([...new Set(cases.map(c=>c.fixture.frames))],[4800,48000,480000])
  for(const group of ['Editing','Channels','Filters','Analysis','Time & pitch'])assert(cases.some(c=>c.group===group))
- for(const c of cases.filter(c=>['exact','scalar'].includes(c.oracle.type))){
+ for(const c of cases.filter(c=>['exact','scalar'].includes(c.oracle.type)&&!c.workflow)){
   const {channels,sampleRate}=makeSignal(c.fixture),gold=expected(c,channels)
   assert(judge(c,gold,gold,channels,sampleRate).pass,c.id)
  }
@@ -35,7 +35,7 @@ test('benchmark rejects empty selections and invalid repetitions',async()=>{
 
 test('benchmark adds dense long convolutions, growing FFTs and learned-noise workloads',()=>{
  const cases=benchmarkCases(),convolutions=cases.filter(c=>c.oracle.type==='convolution-dc')
- assert.equal(cases.length,143)
+ assert.equal(cases.length,158)
  assert.equal(convolutions.length,6)
  for(const c of convolutions){
   const impulse=c.steps[0].impulse
@@ -46,6 +46,21 @@ test('benchmark adds dense long convolutions, growing FFTs and learned-noise wor
  assert.deepEqual(convolutions.map(c=>c.steps[0].impulse),benchmarkCases().filter(c=>c.oracle.type==='convolution-dc').map(c=>c.steps[0].impulse),'kernels are repeatable')
  assert.deepEqual(cases.filter(c=>c.id.startsWith('spectrum-')).map(c=>c.steps[0].size),[4096,32768,262144])
  assert.deepEqual(cases.filter(c=>c.id.startsWith('denoise-')).map(c=>c.profile),['stereo','long-stereo'])
+})
+
+test('codec benchmarks cover integer and float formats at every clip size without quantization loss',()=>{
+ const cases=benchmarkCases().filter(c=>c.workflow?.op==='codec-roundtrip')
+ assert.equal(cases.length,15)
+ for(const c of cases){
+  const {channels,sampleRate}=makeSignal(c.fixture),gold=expected(c,channels),depth=c.workflow.bitDepth
+  assert.equal(c.oracle.atol,0)
+  assert.deepEqual(gold.channels,channels)
+  assert.deepEqual(gold.observations.sourceAfter,channels)
+  if(depth!==32)assert(channels.every(ch=>ch.every(v=>Number.isInteger(v*2**(depth-1)))))
+  const actual={...gold,sampleRate,encodedBytes:44,bitDepth:depth,sampleFormat:depth===32?'float':'integer'}
+  assert(judge(c,actual,gold,channels,sampleRate).pass)
+  assert.equal(judge(c,{...actual,bitDepth:8},gold,channels,sampleRate).pass,false)
+ }
 })
 
 test('benchmark passes long kernels over stdin without OS argument-size limits',async()=>{

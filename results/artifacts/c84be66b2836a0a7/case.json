@@ -40,7 +40,7 @@
     "oracle": "scalar",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 7.1628339999952,
+    "durationMs": 7.195791999998619,
     "metrics": {
       "pass": false,
       "actual": 599.6084152512,

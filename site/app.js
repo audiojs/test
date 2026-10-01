@@ -49,7 +49,7 @@ if(popover&&typeof popover.showPopover==='function'){
   body.replaceChildren()
   const source=document.getElementById(trigger.hash.slice(1))
   if(info){
-   for(const paragraph of source.querySelectorAll(':scope > p'))body.append(paragraph.cloneNode(true))
+   for(const item of source.querySelectorAll(':scope > p, :scope > .feature-diagram'))body.append(item.cloneNode(true))
    return
   }
   const column=[...table.tHead.querySelectorAll('[data-tool]')].find(th=>th.dataset.tool===cell.dataset.tool)

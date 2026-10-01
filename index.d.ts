@@ -23,6 +23,7 @@ export interface AdapterResult {
   sampleRate?: number
   encodedBytes?: number
   bitDepth?: number
+  sampleFormat?: 'integer' | 'float'
   inputUnchanged?: boolean
   observations?: Record<string, Channels>
 }

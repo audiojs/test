@@ -8,6 +8,19 @@ const fixture = id => { const value = spec.cases.find(t => t.id === id); assert(
 const visual = (id, metrics, status = 'fail') => caseVisual(fixture(id), { status, metrics })
 const metric = (value, label) => { const found = value.metrics.find(m => m.label === label); assert(found, label); return found }
 
+test('phase and expanded codec results expose the tested units and requested format',()=>{
+ const phase=visual('filter.allpass.phase.48000.1',{perChannel:[{gainDb:0,phaseError:0},{gainDb:0,phaseError:180}]})
+ assert.equal(phase.metrics.some(m=>m.label==='Ch 1 Phase error'),false,'passing channel does not distract from the failure')
+ assert.equal(metric(phase,'Ch 2 Phase error').unit,'°')
+ assert.equal(metric(phase,'Ch 2 Phase error').status,'fail')
+ assert.equal(metric(phase,'Ch 2 Phase error').max,.1)
+ const file=visual('codec.wav.32bit.17f.2ch',{sampleRate:44100,encodedBytes:180,bitDepth:32,sampleFormat:'integer'})
+ assert.equal(metric(file,'Sample format').status,'fail')
+ assert.match(file.label,/32-bit/)
+ const passed=visual('codec.wav.32bit.17f.2ch',{sampleRate:44100,encodedBytes:180,bitDepth:32,sampleFormat:'float'},'pass')
+ assert.equal(metric(passed,'Bit depth').target,32)
+})
+
 test('conditions use short labels and literal chips, not prose or internal IDs', () => {
  const crossfade = visual('edit.crossfade.17.1.end')
  assert.equal(crossfade.label, 'Linear crossfade')

@@ -14,7 +14,7 @@ function condition(test) {
  if (s.op === 'crossfade') label = `${capital(words(s.curve || 'linear'))} crossfade`
  if (s.op === 'fade') label = `${({ exp: 'Squared', log: 'Square-root', cos: 'Cosine', linear: 'Linear' })[s.curve || 'linear'] || capital(words(s.curve))} fade ${s.direction || ''}`.trim()
  if (test.steps?.length > 1) label = test.steps.every(step => step.op === 'reverse') ? `${test.steps.length} reversals` : `${test.steps.length} chained operations`
- if (w.op) label = ({ 'codec-roundtrip': `${String(w.format || 'Audio').toUpperCase()} round trip`, 'copy-reverse': 'Reverse a copy', 'clip-reverse': 'Reverse a clip', 'clone-reverse': 'Reverse a clone', undo: 'Undo', 'undo-redo': 'Undo and redo', stream: 'Streamed output', 'resample-chunks': 'Chunked resampling' })[w.op] || capital(words(w.op))
+ if (w.op) label = ({ 'codec-roundtrip': `${String(w.format || 'Audio').toUpperCase()} ${w.bitDepth??16}-bit round trip`, 'copy-reverse': 'Reverse a copy', 'clip-reverse': 'Reverse a clip', 'clone-reverse': 'Reverse a clone', undo: 'Undo', 'undo-redo': 'Undo and redo', stream: 'Streamed output', 'resample-chunks': 'Chunked resampling' })[w.op] || capital(words(w.op))
  const chips = []
  if (finite(f.frames)) chips.push(`${count(f.frames)} ${f.frames === 1 ? 'frame' : 'frames'}`)
  if (finite(f.channels)) chips.push(f.channels === 1 ? 'Mono' : f.channels === 2 ? 'Stereo' : `${count(f.channels)} channels`)
@@ -75,7 +75,11 @@ export function caseVisual(test = {}, result = {}) {
  if (m.lengthError !== undefined) add('Length error', m.lengthError, 'frames', { min: scale(allowedLength, -1), max: allowedLength, target: 0 }, finite(allowedLength) ? undefined : 'unknown')
  if (m.frames !== undefined && finite(m.expectedFrames)) add('Output length', m.frames, 'frames', { target: m.expectedFrames })
  if (m.sampleRate !== undefined || w.op === 'codec-roundtrip') add('Sample rate', m.sampleRate, 'Hz', { target: m.expectedRate ?? o.to ?? w.to ?? f.sampleRate })
- if (w.op === 'codec-roundtrip') { add('Encoded size', m.encodedBytes, 'bytes', { min: 1 }); add('Bit depth', m.bitDepth, 'bits', { target: 16 }) }
+ if (w.op === 'codec-roundtrip') {
+  const depth=w.bitDepth??16,format=depth===32?'float':'integer'
+  add('Encoded size', m.encodedBytes, 'bytes', { min: 1 }); add('Bit depth', m.bitDepth, 'bits', { target: depth })
+  metrics.push({label:'Sample format',value:m.sampleFormat??'Not recorded',status:m.sampleFormat===undefined?'unknown':m.sampleFormat===format?'pass':'fail'})
+ }
  if (basic) {
   if (m.frames !== undefined) add('Output length', m.frames, 'frames', { min: 1 })
   if (m.finite !== undefined) flag('Audio samples', m.finite, 'Finite', 'Non-finite')
@@ -114,6 +118,10 @@ export function caseVisual(test = {}, result = {}) {
    const prefix = perChannel.length > 1 ? `Ch ${index + 1} ` : '', metric = (label, ...args) => add(prefix + label, ...args)
    if (reasons[channel.reason] && channel !== m) { const [label, value] = reasons[channel.reason]; metrics.push({ label: prefix + label, value, status: 'fail' }) }
    if (['response', 'resample'].includes(o.type)) metric('Gain', channel.gainDb, 'dB', { min: m.min ?? o.min, max: m.max ?? o.max })
+   if (o.type === 'phase') {
+    metric('Level change', channel.gainDb, 'dB', {min:-o.gainTolerance,max:o.gainTolerance,target:0})
+    metric('Phase error', channel.phaseError, '°', {min:0,max:o.phaseTolerance,target:0})
+   }
    if (['tone', 'stretch-transient', 'chunk-equivalence'].includes(o.type) || o.type === 'resample' && finite(o.frequency)) {
     const target = m.expectedFrequency ?? o.frequency ?? f.frequency, tolerance = ['resample', 'chunk-equivalence'].includes(o.type) ? .01 : .02
     const error = finite(channel.frequency) && finite(target) && target !== 0 ? Math.abs(channel.frequency / target - 1) : undefined

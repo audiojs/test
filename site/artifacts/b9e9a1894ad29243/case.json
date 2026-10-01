@@ -43,7 +43,7 @@
     "oracle": "dither",
     "level": "conformance",
     "status": "fail",
-    "durationMs": 28.433124999999563,
+    "durationMs": 27.851208000000042,
     "metrics": {
       "pass": false,
       "quantum": 0.000030517578125,
