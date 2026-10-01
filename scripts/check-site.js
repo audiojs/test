@@ -89,6 +89,100 @@ try {
    if (after.groupLeft !== undefined) assert(Math.abs(after.groupLeft - after.groupInset) < 2, 'group headings remain visible at the left edge')
   }
  }
+ const checkPopover = async (selector, { bottom = false, expandCase = false, screenshot } = {}) => {
+  const trigger = page.locator(selector).first()
+  if (!await trigger.count()) return
+  const cell = trigger.locator('..'), panel = page.locator('#cell-popover')
+  await cell.evaluate((cell, bottom) => {
+   const box = cell.getBoundingClientRect(), labelWidth = cell.parentElement.querySelector('th').offsetWidth
+   scrollTo(box.left + scrollX - Math.max(labelWidth + 8, (innerWidth - box.width) / 2), box.top + scrollY - (bottom ? innerHeight - box.height - 10 : innerHeight / 3))
+  }, bottom)
+  const before = await cell.evaluate(cell => ({ x: scrollX, y: scrollY, hash: location.hash, tableHeight: cell.closest('table').offsetHeight, pageWidth: document.documentElement.scrollWidth }))
+  const unchanged = async () => assert.deepEqual(await cell.evaluate(cell => ({ x: scrollX, y: scrollY, hash: location.hash, tableHeight: cell.closest('table').offsetHeight, pageWidth: document.documentElement.scrollWidth })), before, 'opening cell details preserves page position and table layout')
+  const opened = async () => {
+   await page.waitForFunction(() => document.getElementById('cell-popover')?.matches(':popover-open'))
+   assert.equal(await page.locator('[popover]:popover-open').count(), 1, 'only one contextual panel is open')
+   assert.equal(await trigger.getAttribute('aria-expanded'), 'true')
+   assert.equal(await panel.getAttribute('role'), 'dialog')
+   const bounds = await panel.evaluate(el => {
+    const box = el.getBoundingClientRect()
+    return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: innerWidth, height: innerHeight }
+   })
+   assert(bounds.left >= 0 && bounds.right <= bounds.width && bounds.top >= 0 && bounds.bottom <= bounds.height, `cell details fit viewport: ${JSON.stringify(bounds)}`)
+   assert(bounds.bottom - bounds.top <= 480, 'cell details keep a bounded reading height')
+   await unchanged()
+  }
+  const closed = async () => {
+   await page.waitForFunction(() => !document.getElementById('cell-popover')?.matches(':popover-open'))
+   assert.equal(await trigger.getAttribute('aria-expanded'), 'false')
+   await unchanged()
+  }
+  const box = await cell.boundingBox()
+  await cell.click({ position: { x: box.width - 4, y: box.height - 4 } }); await opened()
+  const adapter = await cell.getAttribute('data-tool'), feature = await cell.evaluate(cell => cell.parentElement.dataset.feature)
+  const toolName = await cell.evaluate(cell => cell.closest('table').querySelector(`thead th[data-tool="${cell.dataset.tool}"] a`).textContent)
+  assert((await panel.textContent()).includes(toolName), 'cell details identify the selected tool')
+  if (feature) {
+   const rowName = await cell.evaluate(cell => cell.parentElement.querySelector('th a').textContent)
+   assert((await panel.textContent()).includes(rowName), 'feature details identify the selected row')
+   const failures = runs.find(run => run.adapter === adapter)?.cases.filter(c => c.feature === feature && ['fail', 'error'].includes(c.status)) || []
+   for (const failure of failures) assert((await panel.textContent()).includes(failure.id), `selected tool failure ${failure.id} is available in context`)
+   assert(await panel.locator('.case-output[data-tool]').evaluateAll((outputs, adapter) => outputs.every(output => output.dataset.tool === adapter), adapter), 'contextual evidence belongs only to the selected tool')
+  }
+  const benchmark = await cell.evaluate(cell => cell.parentElement.dataset.case)
+  if (benchmark) {
+   const result = bench.results.find(b => b.adapter === adapter && b.case === benchmark)
+   if (result?.status !== 'pass' && result?.validation) assert((await panel.textContent()).includes(JSON.stringify(result.validation, null, 2)), 'failed timing retains its output-check evidence')
+   if (result?.error) assert((await panel.textContent()).includes(result.error), 'failed timing explains the error')
+   if (result?.status === 'skip' && result.reason) assert((await panel.textContent()).includes(result.reason), 'unmeasured timing explains its recorded reason')
+   if (result?.status === 'pass' && Number.isFinite(result.p95Ms)) assert.match(await panel.textContent(), /95th percentile/)
+  }
+  let collapsedBounds
+  if (expandCase) {
+   const detail = panel.locator('.popover-case').first()
+   assert.equal(await detail.evaluate(el => el.open), false, 'passing evidence starts collapsed')
+   collapsedBounds = await panel.boundingBox()
+   assert(collapsedBounds.y + collapsedBounds.height < box.y, 'details open above a cell near the viewport bottom')
+   await detail.locator(':scope > summary').click()
+   await page.waitForFunction(() => {
+    const panel = document.getElementById('cell-popover'), trigger = document.querySelector('.result[aria-expanded="true"]'), detail = panel.querySelector('.popover-case')
+    return detail.open && panel.getBoundingClientRect().bottom < trigger.closest('td').getBoundingClientRect().top
+   })
+   assert((await panel.boundingBox()).height > collapsedBounds.height, 'expanding passing evidence grows the panel')
+   await opened()
+  }
+  const body = panel.locator('.popover-body')
+  if (await body.evaluate(el => el.scrollHeight > el.clientHeight)) {
+   const close = panel.getByRole('button', { name: /close/i }), header = await close.boundingBox()
+   await body.evaluate(el => { el.scrollTop = el.scrollHeight })
+   assert(await body.evaluate(el => el.scrollTop > 0), 'long evidence scrolls inside the panel')
+   await opened()
+   assert.deepEqual(await close.boundingBox(), header, 'Close remains visible while evidence scrolls')
+   await body.evaluate(el => { el.scrollTop = 0 })
+  }
+  if (screenshot) await page.screenshot({ path: join(shots, screenshot) })
+  if (expandCase) {
+   await panel.locator('.popover-case > summary').first().click()
+   await page.waitForFunction(({ y, height }) => {
+    const panel = document.getElementById('cell-popover'), box = panel.getBoundingClientRect()
+    return !panel.querySelector('.popover-case').open && Math.abs(box.top - y) < 1 && Math.abs(box.height - height) < 1
+   }, collapsedBounds)
+   await opened()
+  }
+  await page.keyboard.press('Escape'); await closed()
+  assert(await trigger.evaluate(el => document.activeElement === el), 'Escape restores focus to the cell trigger')
+  for (const key of ['Enter', 'Space']) {
+   await trigger.evaluate(el => el.focus({ preventScroll: true }))
+   await page.keyboard.press(key); await opened()
+   await page.keyboard.press('Escape'); await closed()
+  }
+  await trigger.click(); await opened()
+  await trigger.click(); await closed()
+  await trigger.click(); await opened()
+  await panel.getByRole('button', { name: /close/i }).click(); await closed()
+  await trigger.click(); await opened()
+  await page.mouse.click(2, 2); await closed()
+ }
  await mkdir(shots, { recursive: true })
  for (const width of [1440, 768, 414, 375, 320]) {
   await page.setViewportSize({ width, height: width > 700 ? 1000 : 844 }); await page.goto(url)
@@ -102,7 +196,7 @@ try {
    await page.screenshot({ path: join(shots, `report-speed-scrolled-${width}.png`) })
   }
  }
- for (const width of [1440, 375]) {
+ for (const width of [1440, 375, 320]) {
   await page.setViewportSize({ width, height: width === 1440 ? 1000 : 844 }); await page.goto(url)
   for (let cycle = 0; cycle < 2; cycle++) for (const section of ['speed', 'basic-checks', 'features']) {
    await page.locator(`.contents a[href="#${section}"]`).click()
@@ -111,15 +205,40 @@ try {
   }
   const partial = runs.flatMap(run => [...new Set(active.filter(c => c.level !== 'integrity').map(c => c.feature))].map(feature => ({ adapter: run.adapter, feature, value: featureResult(run.cases.filter(c => c.feature === feature), active.filter(c => c.feature === feature).length) }))).find(item => item.value.state === 'partial')
   if (partial) assert.equal(await page.locator(`.feature-row[data-feature="${partial.feature}"] td[data-tool="${partial.adapter}"]`).textContent(), partial.value.label)
-  for (const selector of ['.speed-row td[data-ms] .bench-detail', '.speed-row td.error .bench-detail']) {
-   const detail = page.locator(selector).first()
-   if (!await detail.count()) continue
-   for (let cycle = 0; cycle < 2; cycle++) {
-    await detail.locator('summary').click(); assert(await detail.evaluate(el => el.open))
-    await detail.locator('summary').click(); assert.equal(await detail.evaluate(el => el.open), false)
-   }
+  for (const selector of ['#feature-rows td.fail .result[data-popover]', '#feature-rows td.pass .result[data-popover]', '#feature-rows td.skip .result[data-popover]', '#basic-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.error .result[data-popover]', '.speed-row td.skip .result[data-popover]']) await checkPopover(selector)
+  await checkPopover('#feature-rows td.fail .result[data-popover]', { bottom: true, screenshot: `report-failure-${width}.png` })
+  await checkPopover('.speed-row td:last-child .result[data-popover]', { bottom: true, screenshot: `report-speed-detail-${width}.png` })
+  const expandable = runs.flatMap(run => [...new Set(run.cases.map(c => c.feature))].map(feature => ({ adapter: run.adapter, feature, cases: run.cases.filter(c => c.feature === feature) }))).find(item => item.cases.length === 1 && item.cases[0].status === 'pass' && item.cases[0].metrics)
+  if (expandable) await checkPopover(`.feature-row[data-feature="${expandable.feature}"] td[data-tool="${expandable.adapter}"] .result[data-popover]`, { bottom: true, expandCase: true, screenshot: `report-expanded-case-${width}.png` })
+  if (width === 1440 && runs.length) {
+   const href = await page.locator('#feature-rows .result[data-popover]').first().getAttribute('href')
+   await page.goto(url + href)
+   await page.waitForFunction(href => document.activeElement === document.getElementById(href.slice(1))?.querySelector('summary'), href)
+   await checkPopover('#feature-rows .result[data-popover]')
+   assert.equal(new URL(page.url()).hash, href, 'same-hash cell clicks open locally without the legacy evidence jump')
+   await page.goto(url)
   }
-  assert(await page.locator('td[data-ms] summary').evaluateAll(cells => cells.every(el => /^(\d+(\.\d+)?|<0\.01)$/.test(el.textContent.trim()))))
+  if (width === 1440 && runs.length > 1) {
+   const first = page.locator('#feature-rows .feature-row').first().locator('.result[data-popover]').nth(0)
+   const second = page.locator('#feature-rows .feature-row').first().locator('.result[data-popover]').nth(1)
+   await first.evaluate(el => { const box = el.getBoundingClientRect(); scrollTo(0, box.top + scrollY - innerHeight / 3) })
+   await first.click(); await page.waitForFunction(() => document.getElementById('cell-popover').matches(':popover-open'))
+   await second.click(); await page.waitForFunction(() => document.querySelectorAll('.result[aria-expanded="true"]').length === 1)
+   assert.equal(await first.getAttribute('aria-expanded'), 'false')
+   assert.equal(await second.getAttribute('aria-expanded'), 'true')
+   const adapter = await second.locator('..').getAttribute('data-tool')
+   assert(await page.locator('#cell-popover .case-output[data-tool]').evaluateAll((outputs, adapter) => outputs.every(output => output.dataset.tool === adapter), adapter), 'switching cells replaces the previous tool evidence')
+   await page.evaluate(() => scrollBy(0, 1))
+   await page.waitForFunction(() => !document.getElementById('cell-popover').matches(':popover-open'))
+   assert.equal(await second.getAttribute('aria-expanded'), 'false', 'page scrolling dismisses the panel')
+   await second.click(); await page.waitForFunction(() => document.getElementById('cell-popover').matches(':popover-open'))
+   await page.setViewportSize({ width: 1439, height: 1000 })
+   await page.waitForFunction(() => !document.getElementById('cell-popover').matches(':popover-open'))
+   assert.equal(await second.getAttribute('aria-expanded'), 'false', 'resizing dismisses the panel')
+   await page.setViewportSize({ width: 1440, height: 1000 })
+  }
+  assert.equal(await page.locator('.matrix .bench-detail').count(), 0, 'speed details never expand the table')
+  assert(await page.locator('td[data-ms] .result').evaluateAll(cells => cells.every(el => /^(\d+(\.\d+)?|<0\.01)$/.test(el.textContent.trim()))))
   for (const id of ['planned', 'evidence', 'ecosystem', 'methodology']) {
    const disclosure = page.locator(`details#${id}`)
    if (!await disclosure.isVisible()) continue
@@ -156,7 +275,34 @@ try {
  await staticPage.locator('.contents a[href="#speed"]').click(); assert.equal(new URL(staticPage.url()).hash, '#speed')
  await staticPage.locator('#evidence > summary').click(); assert(await staticPage.locator('#evidence').evaluate(el => el.open))
  await staticPage.locator('#evidence > summary').click(); assert.equal(await staticPage.locator('#evidence').evaluate(el => el.open), false)
+ for (const selector of ['#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
+  const link = staticPage.locator(selector).first()
+  if (!await link.count()) continue
+  const href = await link.getAttribute('href')
+  assert(href?.startsWith('#') && href.length > 1, 'cell has a real evidence link without JavaScript')
+  await link.click(); assert.equal(new URL(staticPage.url()).hash, href)
+  const evidence = staticPage.locator(`[id=${JSON.stringify(href.slice(1))}]`)
+  assert(await evidence.isVisible(), 'linked evidence can be read without JavaScript')
+  const recorded = await link.evaluate(el => ({ adapter: el.closest('td').dataset.tool, id: el.closest('tr').dataset.case }))
+  const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)
+  if (result?.status === 'skip' && result.reason) assert((await evidence.textContent()).includes(result.reason), 'recorded skip reason remains readable without JavaScript')
+ }
  await staticPage.close()
+ const fallbackPage = await browser.newPage({ viewport: { width: 375, height: 844 } })
+ await fallbackPage.addInitScript(() => { delete HTMLElement.prototype.showPopover })
+ await fallbackPage.goto(url)
+ for (const selector of ['#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
+  const fallbackLink = fallbackPage.locator(selector).first()
+  if (!await fallbackLink.count()) continue
+  const href = await fallbackLink.getAttribute('href')
+  await fallbackLink.click(); assert.equal(new URL(fallbackPage.url()).hash, href)
+  const evidence = fallbackPage.locator(`[id=${JSON.stringify(href.slice(1))}]`)
+  assert(await evidence.isVisible(), 'browsers without the Popover API retain evidence links')
+  const recorded = await fallbackLink.evaluate(el => ({ adapter: el.closest('td').dataset.tool, id: el.closest('tr').dataset.case }))
+  const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)
+  if (result?.status === 'skip' && result.reason) assert((await evidence.textContent()).includes(result.reason), 'recorded skip reason remains readable without the Popover API')
+ }
+ await fallbackPage.close()
  assert.deepEqual(errors, [])
- console.log(`Report verified: ${runs.length} contenders, ${behaviorCount} features, ${basicCount} basic checks, ${benchCases.length} speed cases; page scrolling, sticky labels and headers, evidence, downloads, keyboard navigation, JavaScript disabled, and five viewport widths`)
+ console.log(`Report verified: ${runs.length} contenders, ${behaviorCount} features, ${basicCount} basic checks, ${benchCases.length} speed cases; page scrolling, sticky labels and headers, contextual cell details, downloads, keyboard navigation, JavaScript disabled, Popover API fallback, and five viewport widths`)
 } finally { await browser?.close(); await new Promise(resolve => server.close(resolve)) }

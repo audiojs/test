@@ -68,6 +68,11 @@ test('the matrix preserves partial results and keeps plans in their own details'
   assert.match(row('edit.fade'), /class="[^"]*\bpartial\b/)
   assert(row('edit.fade').includes(`◐ 2/${fade.length}`))
   assert.doesNotMatch(row('edit.fade'), /class="[^"]*\bpass\b/)
+  assert.match(row('edit.fade'), /data-popover="feature"[^>]*href="#edit\.fade"/)
+  assert.match(html, /id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-title"/)
+  assert.equal((html.match(/id="cell-popover"/g)||[]).length,1)
+  assert.match(html, /class="case-output pass" data-tool="audio" data-status="pass"/)
+  assert.match(html, /class="case-result" data-title="/)
   const basicMatrix = html.match(/<tbody id="basic-rows">([\s\S]*?)<\/tbody>/)?.[1]
   assert(basicMatrix.includes(`○ ${basic.length}/${basic.length}`))
   assert(basicMatrix.includes('data-feature="processor.compressor"'))
@@ -147,7 +152,7 @@ test('speed results keep their own contenders and versions', async () => {
     'benchmark-only': { label: 'Linux container', host: { platform: 'linux', arch: 'arm64', cpu: 'Container CPU' } }
    },
    results: [
-    { adapter: 'audio', case: 'reverse-10s-stereo', status: 'skip' },
+    { adapter: 'audio', case: 'reverse-10s-stereo', status: 'skip', reason: 'No <reverse> & mapping' },
     { adapter: 'audio', case: 'gain-10s-stereo', status: 'pass', version: '9.8.7', medianMs: 2, metadata: { mode: 'Benchmark worker' } },
     { adapter: 'benchmark-only', case: 'gain-10s-stereo', status: 'pass', version: '4.5.6', medianMs: .0003, p95Ms: .0004 }
    ]
@@ -165,13 +170,22 @@ test('speed results keep their own contenders and versions', async () => {
   assert.match(speed, /4\.5\.6/)
   assert.match(speed, /9\.8\.7/)
   assert.doesNotMatch(speed, /1\.2\.3|local build/)
-  assert.match(speed, /Benchmark worker/)
-  assert.match(speed, />&lt;0\.01<\/summary>/, 'positive sub-resolution times must not display as zero')
+  const records=[...html.matchAll(/<details id="bench-\d+" class="bench-result">([\s\S]*?)<\/details>/g)].map(m=>m[1]).join('')
+  assert.match(records, /Benchmark worker/)
+  assert.match(speed, />&lt;0\.01<\/a>/, 'positive sub-resolution times must not display as zero')
   assert.match(speed, /less than 0\.01 milliseconds/)
-  assert.match(speed, /95th percentile: &lt;0\.01 ms/)
+  assert.match(records, /95th percentile: &lt;0\.01 ms/)
+  assert.match(records, /Median: &lt;0\.01 ms/)
+  const skipped=html.match(/<details id="bench-0" class="bench-result">([\s\S]*?)<\/details>/)?.[1]
+  assert.match(skipped, /No &lt;reverse&gt; &amp; mapping/, 'skipped speed reasons remain readable without JavaScript')
+  assert.doesNotMatch(skipped, /Median:|Output did not pass/)
+  assert.match(speed, /class="skip" data-tool="audio"><a class="result" data-popover="speed" href="#bench-0"/)
+  assert.match(speed, /href="#benchmark-method" data-description="Not measured"/, 'missing cells retain a method link')
+  assert.doesNotMatch(speed, /<details|<summary/,'cell interaction must not expand a table row')
+  for(const [,id] of speed.matchAll(/data-popover="speed" href="#(bench-\d+)"/g))assert(html.includes(`id="${id}" class="bench-result"`),'each measured cell retains its static evidence target')
   assert.match(speed, /data-ms="0\.0003"/, 'fastest highlighting uses the unrounded measurement')
   assert.match(speed, /class="environment">Linux container/)
-  assert.match(speed, /linux · arm64 · Container CPU/)
+  assert.match(records, /linux · arm64 · Container CPU/)
   assert.doesNotMatch(speed, /class="fastest"/, 'different environments must not share a fastest ranking')
   assert.match(html, /data-rankable="false"/)
   assert.match(html, /compare timings within one environment/)
