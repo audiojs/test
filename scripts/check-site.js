@@ -126,7 +126,7 @@ try {
    assert(cell.cohort, 'ranked timings identify their comparison cohort')
    if (cohorts.has(cell.cohort)) assert.equal(cohorts.get(cell.cohort), cohort, 'a cohort never combines different environments or sessions')
    cohorts.set(cell.cohort, cohort)
-   assert.match(cell.label || '', /fastest/i, 'speed comparisons are available as text as well as color')
+   assert.match(cell.label || '', /on this host/i, 'speed comparisons identify their scope in text as well as color')
    const hue = Number(cell.hue)
    assert(Number.isFinite(hue) && hue >= 0 && hue <= 120, 'speed hue stays on the green-to-red scale')
    const key = `${cell.id}\0${cohort}`
@@ -178,12 +178,8 @@ try {
    assert.doesNotMatch(await panel.innerText(), /·/, 'visible cell details use layout rather than middle-dot separators')
    const paragraphs = await panel.locator('p:visible').allTextContents()
    assert(paragraphs.every(text => text.trim().length <= 120), 'default cell details contain compact labels rather than long paragraphs')
-   const charts = await panel.locator('svg[viewBox]:visible').evaluateAll(charts => charts.map(chart => {
-    const box = chart.getBBox(), view = chart.viewBox.baseVal, rect = chart.getBoundingClientRect()
-    const geometry = new Set(['x', 'y', 'x1', 'x2', 'y1', 'y2', 'cx', 'cy', 'r', 'width', 'height', 'd', 'points', 'transform', 'viewBox'])
-    return { coordinates: [box.x, box.y, box.width, box.height, view.x, view.y, view.width, view.height, rect.x, rect.y, rect.width, rect.height], width: view.width, height: view.height, invalid: [...chart.querySelectorAll('*')].some(node => [...node.attributes].some(attr => geometry.has(attr.name) && /NaN|Infinity/.test(attr.value))) }
-   }))
-   for (const chart of charts) assert(chart.coordinates.every(Number.isFinite) && chart.width > 0 && chart.height > 0 && !chart.invalid, 'numeric charts have finite, nonempty bounds')
+   assert.equal(await panel.locator('svg, .result-bar, .case-chips, .pill, .speed-peers').count(), 0, 'results use text and measured values without decorative charts or chips')
+   assert.equal(await panel.locator('.case-output a:visible').count(), 0, 'reproduction links stay inside folded Evidence')
    const metrics = await panel.locator('.metric[data-value]:visible').evaluateAll(metrics => metrics.map(metric => [metric.dataset.value, metric.dataset.min, metric.dataset.max].filter(value => value !== undefined)))
    assert(metrics.every(values => values.every(value => value !== '' && Number.isFinite(Number(value)))), 'metric values and tolerance bounds are finite numbers')
   }
@@ -205,10 +201,12 @@ try {
    const total = active.filter(c => c.feature === feature).length
    expected.skip += Math.max(0, total - reported.length)
    const counts = await summary.locator('[data-status][data-count]').evaluateAll(counters => counters.map(counter => ({ status: counter.dataset.status, count: Number(counter.dataset.count) })))
-   assert(counts.every(counter => statuses.includes(counter.status) && Number.isInteger(counter.count) && counter.count >= 0), 'result counters use valid counts and states')
+   assert(counts.every(counter => statuses.includes(counter.status) && Number.isInteger(counter.count) && counter.count > 0), 'the summary includes only nonzero result counts')
    assert.equal(new Set(counts.map(counter => counter.status)).size, counts.length, 'each result state is counted once')
-   assert.deepEqual(Object.fromEntries(statuses.map(status => [status, counts.find(counter => counter.status === status)?.count || 0])), expected, 'visual counters preserve every recorded test outcome')
-   assert.equal(counts.reduce((sum, counter) => sum + counter.count, 0), total, 'the result stack sums to the feature test count')
+   const countLines = await summary.locator('[data-status][data-count]').evaluateAll(counters => counters.map(counter => counter.getBoundingClientRect().top))
+   assert(Math.max(...countLines) - Math.min(...countLines) < 2, 'result counts read as one inline summary')
+   assert.deepEqual(Object.fromEntries(statuses.map(status => [status, counts.find(counter => counter.status === status)?.count || 0])), expected, 'the summary preserves every recorded test outcome')
+   assert.equal(counts.reduce((sum, counter) => sum + counter.count, 0), total, 'the summary sums to the feature test count')
    const evidence = await panel.locator('.case-output[data-tool]').evaluateAll(outputs => outputs.map(output => ({ id: output.querySelector('.technical-details code')?.textContent, raw: output.querySelector('.technical-details pre')?.textContent })))
    for (const { id, raw } of evidence) {
     if (!raw) continue
@@ -220,6 +218,11 @@ try {
   }
   const benchmark = await cell.evaluate(cell => cell.parentElement.dataset.case)
   if (benchmark) {
+   const environmentLabel = await cell.evaluate(cell => cell.closest('table').querySelector(`thead th[data-tool="${cell.dataset.tool}"] .environment`)?.textContent)
+   if (environmentLabel) {
+    assert(await panel.locator('.speed-clip').isVisible(), 'the benchmark environment stays visible with the clip')
+    assert((await panel.locator('.speed-clip').textContent()).includes(environmentLabel), 'the popup retains its column’s benchmark environment')
+   }
    const result = bench.results.find(b => b.adapter === adapter && b.case === benchmark)
    const records = (await panel.locator('.technical-details pre').allTextContents()).map(text => JSON.parse(text))
    if (result?.status !== 'pass' && result?.validation) {
@@ -230,47 +233,60 @@ try {
    if (result?.status === 'pass') assert(records.some(raw => raw.medianMs === result.medianMs && raw.p95Ms === result.p95Ms && JSON.stringify(raw.samplesMs) === JSON.stringify(result.samplesMs)), 'folded timing evidence preserves all samples and summary measurements')
    assert(await panel.locator(result ? '.bench-output' : '.case-state').isVisible(), 'speed cells show their result before technical details')
    if (result?.status === 'pass' && Number.isFinite(result.medianMs) && result.medianMs > 0) {
-    assert(await panel.locator('.speed-stats').isVisible(), 'passing timing shows numeric statistics')
-    assert.equal(Number(await panel.locator('.speed-stats [data-stat="median"]').getAttribute('data-ms')), result.medianMs, 'median card preserves its recorded value')
-    if (Number.isFinite(result.p95Ms) && result.p95Ms >= result.medianMs) assert.equal(Number(await panel.locator('.speed-stats [data-stat="p95"]').getAttribute('data-ms')), result.p95Ms, '95th-percentile card preserves its recorded value')
-    const samples = await panel.locator('.speed-samples svg circle[data-call][data-ms]').evaluateAll(dots => dots.map(dot => ({ call: Number(dot.dataset.call), ms: Number(dot.dataset.ms) })))
+    const median = panel.locator('[data-stat="median"]')
+    assert(await median.isVisible(), 'the median is the primary timing')
+    assert.equal(Number(await median.getAttribute('data-ms')), result.medianMs, 'the visible median preserves its recorded value')
+    assert.equal(await panel.locator('[data-stat]:visible').count(), 1, 'secondary timings stay folded')
+    if (Number.isFinite(result.p95Ms) && result.p95Ms >= result.medianMs) assert.equal(Number(await panel.locator('.technical-details [data-stat="p95"]').getAttribute('data-ms')), result.p95Ms, 'folded Evidence preserves the 95th percentile')
+    const samples = await panel.locator('.technical-details .speed-samples [data-call][data-ms]').evaluateAll(calls => calls.map(call => ({ call: Number(call.dataset.call), ms: Number(call.dataset.ms) })))
     const expectedSamples = (result.samplesMs || []).map((ms, index) => ({ call: index + 1, ms })).filter(sample => Number.isFinite(sample.ms) && sample.ms >= 0)
-    assert.deepEqual(samples, expectedSamples, 'sparkline preserves sample order, original call numbers and zero values')
-    if (!expectedSamples.length) assert(await panel.locator('.speed-no-samples').isVisible(), 'missing samples are explicit rather than invented')
-    const peers = await panel.locator('.speed-peers [data-tool][data-ms][data-speed-cohort]').evaluateAll(peers => peers.map(peer => ({ adapter: peer.dataset.tool, ms: Number(peer.dataset.ms), cohort: peer.dataset.speedCohort, width: parseFloat(peer.style.getPropertyValue('--speed-width')) })))
-    for (const peer of peers) {
-     const recorded = bench.results.find(b => b.case === benchmark && b.adapter === peer.adapter)
-     assert(recorded?.status === 'pass' && recorded.medianMs === peer.ms, 'comparison bars show recorded passing timings')
-     assert(benchmarkEnvironment(recorded) && benchmarkEnvironment(recorded) === benchmarkEnvironment(result), 'comparison bars use only the selected environment and run')
-     assert(Number.isFinite(peer.width) && peer.width >= 0 && peer.width <= 100, 'comparison bars have finite bounded widths')
-    }
+    assert.deepEqual(samples, expectedSamples, 'Evidence preserves sample order, original call numbers and zero values')
+    assert(await panel.locator('.speed-samples [data-call][data-ms]').evaluateAll(calls => calls.every(call => Number(call.textContent) === Number(call.dataset.ms))), 'individual call values remain readable as exact numbers')
+    assert.equal(await panel.locator('[data-call][data-ms]:visible').count(), 0, 'individual calls remain folded until requested')
    }
-   if (await cell.getAttribute('data-speed-ratio')) {
+   const environment = result && benchmarkEnvironment(result)
+   const peers = environment && result.status === 'pass' && result.medianMs > 0 ? bench.results.filter(b => b.case === benchmark && b.status === 'pass' && Number.isFinite(b.medianMs) && b.medianMs > 0 && benchmarkEnvironment(b) === environment) : []
+   if (peers.length > 1) {
     const comparison = panel.locator('.speed-comparison')
     assert(await comparison.isVisible(), 'speed comparison is readable without relying on color')
-    assert.match(await comparison.textContent(), /fastest/i)
-   }
+    assert.match(await comparison.textContent(), /on this host/i)
+    const ratio = await cell.getAttribute('data-speed-ratio')
+    if (ratio) assert.equal(await comparison.getAttribute('data-speed-ratio'), ratio, 'the plain comparison preserves the table’s speed ratio')
+    else assert.match(await comparison.textContent(), /same median/i, 'tied cohorts report their equal measurements')
+   } else assert.equal(await panel.locator('.speed-comparison').count(), 0, 'unknown and singleton timings omit an empty comparison')
   }
   let collapsedBounds
   const firstCase = panel.locator('.popover-case').first()
   const hasCases = await firstCase.count()
+  const initiallyOpen = await panel.locator('.popover-case[open]').count()
   if (hasCases) {
-   assert.equal(await panel.locator('.popover-case[open]').count(), 1, 'exactly one case opens initially')
-   assert(await firstCase.evaluate(el => el.open), 'the first case opens initially')
-   if (feature && runs.find(run => run.adapter === adapter)?.cases.some(c => c.feature === feature && ['fail', 'error'].includes(c.status))) assert(['fail', 'error'].includes(await firstCase.locator('.case-output').getAttribute('data-status')), 'the initial case prioritizes a failure')
+   const failed = runs.find(run => run.adapter === adapter)?.cases.some(c => c.feature === feature && ['fail', 'error'].includes(c.status)) || false
+   assert.equal(initiallyOpen, failed ? 1 : 0, 'only a failing feature opens a case initially')
+   assert.equal(await firstCase.evaluate(el => el.open), failed, 'passing and skipped cases start closed')
+   if (failed) assert(['fail', 'error'].includes(await firstCase.locator('.case-output').getAttribute('data-status')), 'the initial case prioritizes a failure')
   }
+  if (screenshot && !expandCase) await page.screenshot({ path: join(shots, screenshot) })
   if (expandCase) {
-   assert(hasCases && await firstCase.evaluate(el => el.open), 'passing metrics are visible before technical details')
+   assert(hasCases && !await firstCase.evaluate(el => el.open), 'passing cases stay closed until selected')
    collapsedBounds = await panel.boundingBox()
    assert(collapsedBounds.y + collapsedBounds.height < box.y, 'details open above a cell near the viewport bottom')
   }
   if (hasCases) {
-   if (await firstCase.locator('.case-chips').count()) assert(await firstCase.locator('.case-chips').isVisible(), 'known fixture facts are visible as compact chips')
+   const values = await firstCase.locator('.metric-value').allTextContents()
+   if (!await firstCase.evaluate(el => el.open)) await firstCase.locator(':scope > summary').click()
+   await opened(); await visual()
+   assert.deepEqual(await firstCase.locator('.metric-value:visible').allTextContents(), values, 'opening a passing case reveals its unchanged measured values')
+   if (await firstCase.locator('.case-context').count()) assert(await firstCase.locator('.case-context').first().isVisible(), 'fixture context remains readable without chips')
    if (await firstCase.locator('.metric-grid').count()) {
     assert(await firstCase.locator('.metric-grid').isVisible(), 'the open case shows its measured result')
     assert(await firstCase.locator('.metric-value').count() > 0, 'measured results include a visible value')
    } else assert(await firstCase.locator('.case-state').isVisible(), 'a case without measurements shows its state without inventing numbers')
    await folded()
+  }
+  if (expandCase) {
+   const expandedBounds = await panel.boundingBox()
+   assert(expandedBounds.height > collapsedBounds.height, `opening a case grows the panel (${collapsedBounds.height} to ${expandedBounds.height}px)`)
+   assert(expandedBounds.y + expandedBounds.height < box.y, 'expanded results remain above a cell near the viewport bottom')
   }
   if (await panel.locator('.popover-case').count() > 1) {
    const original = await firstCase.locator('.case-output').textContent(), secondCase = panel.locator('.popover-case').nth(1)
@@ -287,38 +303,31 @@ try {
   }
   const technical = panel.locator('.case-output .technical-details, .bench-output .technical-details').first()
   if (await technical.count()) {
+   assert.equal(await technical.locator(':scope > summary').textContent(), 'Evidence', 'raw records and reproduction files share one Evidence disclosure')
    const raw = await technical.locator('pre').allTextContents()
    await technical.locator(':scope > summary').click()
    assert(await technical.evaluate(el => el.open))
    for (const pre of await technical.locator('pre').all()) assert(await pre.isVisible(), 'opening technical details reveals the raw evidence')
+   for (const value of await technical.locator('[data-stat], [data-call][data-ms]').all()) assert(await value.isVisible(), 'opening Evidence reveals secondary timings and individual calls')
    assert.deepEqual(await technical.locator('pre').allTextContents(), raw, 'revealing evidence does not change it')
    await opened()
-   if (!expandCase) await technical.locator(':scope > summary').click()
+   const body = panel.locator('.popover-body')
+   if (await body.evaluate(el => el.scrollHeight > el.clientHeight)) {
+    const close = panel.getByRole('button', { name: /close/i }), header = await close.boundingBox()
+    await body.evaluate(el => { el.scrollTop = el.scrollHeight })
+    assert(await body.evaluate(el => el.scrollTop > 0), 'long evidence scrolls inside the panel')
+    await opened()
+    assert.deepEqual(await close.boundingBox(), header, 'Close remains visible while evidence scrolls')
+    await body.evaluate(el => { el.scrollTop = 0 })
+   }
+   await technical.locator(':scope > summary').click(); await opened(); await folded()
   }
+  if (screenshot && expandCase) await page.screenshot({ path: join(shots, screenshot) })
   if (expandCase) {
-   await page.waitForFunction(() => {
-    const panel = document.getElementById('cell-popover'), trigger = document.querySelector('.result[aria-expanded="true"]'), detail = panel.querySelector('.popover-case')
-    return detail.open && panel.getBoundingClientRect().bottom < trigger.closest('td').getBoundingClientRect().top
-   })
-   const expandedBounds = await panel.boundingBox()
-   assert(expandedBounds.height > collapsedBounds.height, `expanding raw evidence grows the panel (${collapsedBounds.height} to ${expandedBounds.height}px)`)
-   await opened()
-  }
-  const body = panel.locator('.popover-body')
-  if (await body.evaluate(el => el.scrollHeight > el.clientHeight)) {
-   const close = panel.getByRole('button', { name: /close/i }), header = await close.boundingBox()
-   await body.evaluate(el => { el.scrollTop = el.scrollHeight })
-   assert(await body.evaluate(el => el.scrollTop > 0), 'long evidence scrolls inside the panel')
-   await opened()
-   assert.deepEqual(await close.boundingBox(), header, 'Close remains visible while evidence scrolls')
-   await body.evaluate(el => { el.scrollTop = 0 })
-  }
-  if (screenshot) await page.screenshot({ path: join(shots, screenshot) })
-  if (expandCase) {
-   await technical.locator(':scope > summary').click()
+   await firstCase.locator(':scope > summary').click()
    await page.waitForFunction(({ y, height }) => {
     const panel = document.getElementById('cell-popover'), box = panel.getBoundingClientRect()
-    return !panel.querySelector('.case-output .technical-details').open && Math.abs(box.top - y) < 1 && Math.abs(box.height - height) < 1
+    return !panel.querySelector('.popover-case').open && Math.abs(box.top - y) < 1 && Math.abs(box.height - height) < 1
    }, collapsedBounds)
    await opened()
   }
@@ -331,6 +340,7 @@ try {
   for (const key of ['Enter', 'Space']) {
    await trigger.evaluate(el => el.focus({ preventScroll: true }))
    await page.keyboard.press(key); await opened(); await folded()
+   assert.equal(await panel.locator('.popover-case[open]').count(), initiallyOpen, 'reopening restores the initial case disclosures')
    await page.keyboard.press('Escape'); await closed()
   }
   await trigger.click(); await opened(); await folded()
@@ -345,8 +355,8 @@ try {
  for (const width of [1440, 768, 414, 375, 320]) {
   await freshPage({ width, height: width > 700 ? 1000 : 844 }); await page.goto(url)
   await allSections(page); await readableText()
-  assert.equal(await page.locator('#evidence .metric').count(), 0, 'archived metric graphics do not populate the initial DOM')
-  assert.equal(await page.locator('#speed-evidence svg').count(), 0, 'archived speed charts do not populate the initial DOM')
+  assert.equal(await page.locator('#evidence .metric').count(), 0, 'archived metric rows do not populate the initial DOM')
+  assert.equal(await page.locator('#speed-evidence svg').count(), 0, 'speed evidence has no decorative charts')
   if (width === 1440) await checkSpeedColors()
   if (width === 1440 || width === 375) await page.screenshot({ path: join(shots, `report-${width}.png`) })
   for (const panel of ['#feature-panel', '#speed-panel', '#basic-panel']) await checkMatrix(panel)
@@ -422,7 +432,7 @@ try {
    const href = await failure.getAttribute('href')
    const waitForCase = (focus = true) => page.waitForFunction(({ id, focus }) => { const el = document.getElementById(id); if (!el?.open || el.querySelector('script.visual-template')) return false; for (let p = el; p; p = p.parentElement) if (p.tagName === 'DETAILS' && !p.open) return false; return !focus || document.activeElement === el.querySelector('summary') }, { id: href.slice(1), focus })
    await failure.click(); await waitForCase(); await readableText()
-   assert(await page.locator(`[id=${JSON.stringify(href.slice(1))}] .metric`).count() > 0, 'archive hash navigation creates graphics for the selected case')
+   assert(await page.locator(`[id=${JSON.stringify(href.slice(1))}] .metric`).count() > 0, 'archive hash navigation creates measurement rows for the selected case')
    await page.goto('about:blank'); await page.goto(url + href); await waitForCase(false)
   }
   for (const fragment of ['#missing-feature', '#%E0%A4%A']) { await page.goto('about:blank'); await page.goto(url + fragment); await allSections(page) }
@@ -460,7 +470,7 @@ try {
   if (result) {
    if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
    const timed = result.status === 'pass' && Number.isFinite(result.medianMs) && result.medianMs > 0
-   assert(await evidence.locator(timed ? '.speed-stats' : '.speed-state').isVisible(), 'speed graphics and states remain visible without JavaScript')
+   assert(await evidence.locator(timed ? '[data-stat="median"]' : '.speed-state').isVisible(), 'timing and status remain readable without JavaScript')
    assert.equal(await evidence.locator('.technical-details[open]').count(), 0, 'raw timing evidence stays folded without JavaScript')
    if (result.status === 'skip' && result.reason) assert((await evidence.locator('.technical-details pre').allTextContents()).some(text => JSON.parse(text).reason === result.reason), 'recorded skip reason remains available without JavaScript')
   }
@@ -481,7 +491,7 @@ try {
   if (result) {
    if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
    const timed = result.status === 'pass' && Number.isFinite(result.medianMs) && result.medianMs > 0
-   assert(await evidence.locator(timed ? '.speed-stats' : '.speed-state').isVisible(), 'speed graphics and states remain visible without the Popover API')
+   assert(await evidence.locator(timed ? '[data-stat="median"]' : '.speed-state').isVisible(), 'timing and status remain readable without the Popover API')
    assert.equal(await evidence.locator('.technical-details[open]').count(), 0, 'raw timing evidence stays folded without the Popover API')
    if (result.status === 'skip' && result.reason) assert((await evidence.locator('.technical-details pre').allTextContents()).some(text => JSON.parse(text).reason === result.reason), 'recorded skip reason remains available without the Popover API')
   }

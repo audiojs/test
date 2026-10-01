@@ -107,7 +107,7 @@ export async function generateReport(results, options={}) {
      }
      const copy=caseCopy(test,result),visual=caseVisual(test,result)
      const raw={...(result.metrics==null?{}:{metrics:result.metrics}),...(result.reason?{reason:result.reason}:{}),...(result.error?{error:result.error}:{})}
-     outputs.push(`<div class="case-output ${esc(result.status)}" data-tool="${esc(run.adapter)}" data-status="${esc(result.status)}"><p class="case-tool"><strong>${esc(name(run.adapter))}: ${esc(result.status==='skip'?'not tested':result.status)}</strong></p>${visualTemplate(`<div class="case-chips">${visual.chips.map(chip=>`<span class="pill">${esc(chip)}</span>`).join('')}</div>${visual.metrics.length?renderMetrics(visual.metrics):`<div class="case-state ${esc(result.status)}">${esc(visual.statusLabel)}</div>`}`)}<noscript><p>${esc(copy.summary)}</p></noscript>${result.artifact?`<p class="case-artifacts"><a href="${esc(result.artifact)}">Reproduction files</a>${wavFiles.has(inputWav(result.artifact))?` <a href="${esc(inputWav(result.artifact))}">Input WAV</a>`:''}</p>`:''}<details class="technical-details"><summary>Technical details</summary><p class="case-explanation">${esc(copy.summary)}</p><p><code>${esc(test.id)}</code></p>${Object.keys(raw).length?`<pre>${esc(JSON.stringify(raw,null,2))}</pre>`:''}</details></div>`)
+     outputs.push(`<div class="case-output ${esc(result.status)}" data-tool="${esc(run.adapter)}" data-status="${esc(result.status)}"><p class="case-tool"><strong>${esc(name(run.adapter))}: ${esc(result.status==='skip'?'not tested':result.status)}</strong></p>${visualTemplate(`<span class="case-context">${visual.chips.map(esc).join(', ')}</span>${visual.metrics.length?renderMetrics(visual.metrics):`<div class="case-state ${esc(result.status)}">${esc(visual.statusLabel)}</div>`}`)}<noscript><p>${esc(copy.summary)}</p></noscript><details class="technical-details"><summary>Evidence</summary>${result.artifact?`<p class="case-artifacts"><a href="${esc(result.artifact)}">Reproduction files</a>${wavFiles.has(inputWav(result.artifact))?` <a href="${esc(inputWav(result.artifact))}">Input WAV</a>`:''}</p>`:''}<p class="case-explanation">${esc(copy.summary)}</p><p><code>${esc(test.id)}</code></p>${Object.keys(raw).length?`<pre>${esc(JSON.stringify(raw,null,2))}</pre>`:''}</details></div>`)
    }
    if(skipped.length)outputs.push(`<p class="not-tested">Not tested: ${skipped.map(esc).join(', ')}.</p>`)
    return outputs.join('')
@@ -172,37 +172,26 @@ export async function generateReport(results, options={}) {
    const environment=benchEnvironments.get(b.adapter),comparison=comparisons.get(b)
    if(!environment.key)return 'Host or run details are missing; relative speed is not compared.'
    if(!comparison||comparison.count<2)return `No other passing timing for this clip on ${environment.label} in this run.`
-   if(!comparison.ranked)return `All ${comparison.count} passing tools recorded the same median for this clip on ${environment.label}.`
-   const context=`${comparison.count} passing tools for this clip on ${environment.label} in this run`
-   if(comparison.ratio===1)return `${comparison.fastest.length>1?'Joint fastest':'Fastest'} of ${context}.`
-   if(comparison.ratio<1.01)return `Less than 1% longer than the fastest result (${name(comparison.fastest[0].adapter)}). Compared with ${context}.`
-   const ratio=Number.isFinite(comparison.ratio)?Number(comparison.ratio.toPrecision(3)).toLocaleString('en-US',{maximumFractionDigits:3}):'over 10³⁰⁸'
-   return `Takes ${ratio}× as long as the fastest result (${name(comparison.fastest[0].adapter)}). Compared with ${context}.`
- }
- const samplePlot=b=>{
-   const recorded=Array.isArray(b.samplesMs)?b.samplesMs:[],samples=recorded.flatMap((ms,index)=>Number.isFinite(ms)&&ms>=0?[{ms,index}]:[])
-   if(!samples.length)return '<div class="speed-no-samples">No recorded calls</div>'
-   const maximum=Math.max(...samples.map(sample=>sample.ms)),x=index=>recorded.length>1?12+index/(recorded.length-1)*296:160,y=ms=>maximum>0?64-ms/maximum*48:64
-   const count=samples.length===recorded.length?`${samples.length} measured call${samples.length===1?'':'s'}`:`${samples.length} of ${recorded.length} calls plotted`
-   return `<figure class="speed-samples"><figcaption><span>${count}</span><span>${esc(milliseconds(maximum))} ms max</span></figcaption><svg viewBox="0 0 320 76" role="img" aria-label="${esc(`${count}, in recording order. Vertical scale: 0 to ${maximum} milliseconds.`)}"><path class="speed-sample-axis" d="M12 64H308"/>${samples.map(({ms,index})=>`<path class="speed-sample-stem" d="M${x(index)} 64V${y(ms)}"/><circle data-call="${index+1}" data-ms="${ms}" cx="${x(index)}" cy="${y(ms)}" r="3.5"><title>Call ${index+1}: ${esc(ms)} ms</title></circle>`).join('')}</svg><div class="speed-sample-labels"><span>0 ms</span><span>Call ${recorded.length}</span></div></figure>`
- }
- const peerPlot=b=>{
-   const environment=benchEnvironments.get(b.adapter),peers=cohorts.get(JSON.stringify([b.case,environment.key]))||[]
-   if(peers.length<2)return ''
-   const sorted=[...peers].sort((a,b)=>a.medianMs-b.medianMs),other=sorted.find(peer=>peer!==b)
-   const shown=[b,other].sort((a,b)=>a.medianMs-b.medianMs),maximum=Math.max(...shown.map(peer=>peer.medianMs))
-   return `<figure class="speed-peers"><figcaption><span>Same clip and host</span><span>${esc(environment.label)}</span></figcaption>${shown.map(peer=>`<div class="speed-peer${peer===b?' selected':''}" data-tool="${esc(peer.adapter)}" data-ms="${peer.medianMs}" data-speed-cohort="${environment.id}" style="--speed-width:${peer.medianMs/maximum*100}%"><div class="speed-peer-label"><span>${esc(name(peer.adapter))}${peer===b?'<small>Selected</small>':''}</span><strong>${esc(milliseconds(peer.medianMs))} <small>ms</small></strong></div><div class="speed-peer-track"><span></span></div></div>`).join('')}</figure>`
+   if(!comparison.ranked)return `Same median as ${name(comparison.fastest.find(peer=>peer!==b).adapter)} on this host.`
+   if(comparison.ratio===1)return comparison.fastest.length>1?`Tied with ${name(comparison.fastest.find(peer=>peer!==b).adapter)} for fastest on this host.`:`Fastest of ${comparison.count} tools on this host.`
+   const peer=name(comparison.fastest[0].adapter)
+   if(comparison.ratio<1.01)return `Less than 1% longer than ${peer} on this host.`
+   const ratio=Number.isFinite(comparison.ratio)?comparison.ratio>=1e6?comparison.ratio.toExponential(1):Number(comparison.ratio.toPrecision(3)).toLocaleString('en-US',{maximumFractionDigits:3}):'over 10³⁰⁸'
+   return `${ratio}× ${peer}’s time on this host.`
  }
  const benchDetails=b=>{
    const valid=timed(b),comparison=comparisons.get(b),context=comparisonText(b),fixture=bench.fixtures?.find(test=>test.id===b.case)
    const variability=Number.isFinite(b.p95Ms)&&b.p95Ms>=b.medianMs
-   const ratio=comparison?.ratio,badge=!comparison?'Unranked':comparison.count<2?'Only result':!comparison.ranked?'Tied':ratio===1?comparison.fastest.length>1?'Joint fastest':'Fastest':ratio<1.01?'<1% longer':`${Number.isFinite(ratio)?ratio>=1e6?ratio.toExponential(1):Number(ratio.toPrecision(3)).toLocaleString('en-US',{maximumFractionDigits:3}):'>10³⁰⁸'}× as long`
-   const visual=caseVisual(fixture||{},{status:b.status,metrics:b.validation,error:b.error,reason:b.reason})
-   const stats=valid?`<dl class="speed-stats"><div data-stat="median" data-ms="${b.medianMs}"><dt>Median</dt><dd>${esc(milliseconds(b.medianMs))} <small>ms</small></dd></div><div data-stat="p95"${variability?` data-ms="${b.p95Ms}"`:''}><dt title="95th percentile">95% within</dt><dd>${variability?`${esc(milliseconds(b.p95Ms))} <small>ms</small>`:'—'}</dd></div></dl><div class="speed-comparison" title="${esc(context)}"${comparison?.ranked?` data-speed-ratio="${ratio}" style="--speed-hue:${comparison.hue.toFixed(3)}"`:''}><strong>${esc(badge)}</strong>${comparison?.count>1?`<span>${comparison.count} tools</span>`:''}</div>`:`<div class="speed-state ${esc(b.status)}"><strong>${esc(b.status==='pass'?'No timing':visual.statusLabel)}</strong>${b.status==='fail'?'<span>Timing excluded</span>':''}</div>${visual.metrics.length?visualTemplate(renderMetrics(visual.metrics)):''}`
-   const scope=valid&&['ffmpeg','sox','rubberband','soundtouch'].includes(b.adapter)?'<div class="speed-scope"><span>Includes</span><span class="pill">Process launch</span><span class="pill">Audio file I/O</span></div>':''
-   const details=[['Tool',name(b.adapter)],['Version',shortVersion(b)],['Execution',b.metadata?.mode],['Environment',environmentDetails(b.adapter)],['Median',valid?`${b.medianMs} ms`:null],['95th percentile',valid&&variability?`${b.p95Ms} ms`:null],['Driver peak memory',valid&&Number.isFinite(b.driverMaxRssMiB)?`${b.driverMaxRssMiB} MiB`:null]].filter(([,value])=>value)
+   const relative=comparison?.count>1?`<span class="speed-comparison"${comparison.ranked?` data-speed-ratio="${comparison.ratio}"`:''}>${esc(context)}</span>`:''
+   const visual=valid?null:caseVisual(fixture||{},{status:b.status,metrics:b.validation,error:b.error,reason:b.reason})
+   const stats=valid?`<div class="speed-stats"><span data-stat="median" data-ms="${b.medianMs}"><strong>${esc(milliseconds(b.medianMs))} <small>ms</small></strong> median</span>${relative}</div>`:`<div class="speed-state ${esc(b.status)}"><strong>${esc(b.status==='pass'?'No timing':visual.statusLabel)}</strong>${b.status==='fail'?'<span>Timing excluded</span>':''}</div>${visual.metrics.length?renderMetrics(visual.metrics):''}`
+   const scope=valid&&['ffmpeg','sox','rubberband','soundtouch'].includes(b.adapter)?`<p class="speed-scope">Includes starting ${esc(name(b.adapter))} and reading/writing files.</p>`:''
+   const recorded=Array.isArray(b.samplesMs)?b.samplesMs:[],samples=recorded.flatMap((ms,index)=>Number.isFinite(ms)&&ms>=0?[`<span data-call="${index+1}" data-ms="${ms}" title="Call ${index+1}">${esc(ms)}</span>`]:[])
+   const calls=b.status==='pass'?`<div class="speed-samples"><dt>Calls (ms)</dt><dd>${samples.length?samples.join(', '):'Not recorded'}${samples.length&&samples.length!==recorded.length?` <small>${samples.length} of ${recorded.length} valid</small>`:''}</dd></div>`:''
+   const p95=valid?`<div data-stat="p95"${variability?` data-ms="${b.p95Ms}"`:''}><dt>95th percentile</dt><dd>${variability?`${esc(b.p95Ms)} ms`:'Not recorded'}</dd></div>`:''
+   const details=[['Version',shortVersion(b)],['Execution',b.metadata?.mode],['Environment',environmentDetails(b.adapter)],['Driver peak memory',valid&&Number.isFinite(b.driverMaxRssMiB)?`${b.driverMaxRssMiB} MiB`:null]].filter(([,value])=>value)
    const {metadata,host,...technical}=b
-   return `<div class="bench-output">${stats}${visualTemplate(`${b.status==='pass'?samplePlot(b):''}${valid?peerPlot(b):''}`)}${scope}<details class="technical-details"><summary>Technical details</summary>${context?`<p>${esc(context)}</p>`:''}${b.status==='fail'?`<p>${esc(caseCopy(fixture||{},{status:'fail',metrics:b.validation}).summary)}</p>`:''}<dl class="speed-meta">${details.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl><pre>${esc(JSON.stringify(technical,null,2))}</pre><p><a href="benchmarks.json">All samples and measurements</a></p></details></div>`
+   return `<div class="bench-output">${stats}${scope}<details class="technical-details"><summary>Evidence</summary>${context&&!relative?`<p>${esc(context)}</p>`:''}${b.status==='fail'?`<p>${esc(caseCopy(fixture||{},{status:'fail',metrics:b.validation}).summary)}</p>`:''}<dl class="speed-meta">${p95}${calls}${details.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl><pre>${esc(JSON.stringify(technical,null,2))}</pre><p><a href="benchmarks.json">All samples and measurements</a></p></details></div>`
  }
  const benchCell=(b,adapter)=>{
    const data=`data-tool="${esc(adapter)}"`

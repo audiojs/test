@@ -49,7 +49,8 @@ if(popover&&typeof popover.showPopover==='function'){
   body.replaceChildren()
   const source=document.getElementById(trigger.hash.slice(1))
   if(trigger.dataset.popover==='speed'){
-   if(clipText)body.append(element('div',clipText,'speed-clip'))
+   const context=[clipText,column.querySelector('.environment')?.textContent].filter(Boolean).join(', ')
+   if(context)body.append(element('div',context,'speed-clip'))
    const output=source?.querySelector('.bench-output')
    if(output){
     const evidence=inflate(output.cloneNode(true))
@@ -59,16 +60,15 @@ if(popover&&typeof popover.showPopover==='function'){
    return
   }
   const totals=(trigger.dataset.counts||'0,0,0,0').split(',').map(Number)
-  const overview=element('div','','result-summary'),bar=element('div','','result-bar'),stats=element('div','','result-counts')
-  bar.setAttribute('aria-hidden','true')
-  const states=['pass','fail','error','skip'],names=['Passed','Failed','Errors','Not run'],icons=['✓','!','!','—']
+  const overview=element('div','','result-summary')
+  const states=['pass','fail','error','skip'],names=['passed','failed','errors','not run']
   totals.forEach((count,i)=>{
-   if(i===2&&!count)return
-   const stat=element('div','',states[i]);stat.dataset.status=states[i];stat.dataset.count=count
-   stat.append(element('strong',String(count)),element('span',`${icons[i]} ${names[i]}`));stats.append(stat)
-   if(count){const segment=element('span','',states[i]);segment.style.flexGrow=count;bar.append(segment)}
+   if(!count)return
+   const stat=element('span',`${count} ${i===2&&count===1?'error':names[i]}`,states[i]);stat.dataset.status=states[i];stat.dataset.count=count
+   if(overview.childNodes.length)overview.append(', ')
+   overview.append(stat)
   })
-  overview.append(stats,bar);body.append(overview)
+  body.append(overview)
   if(row.dataset.scope==='integrity')body.append(element('div','Basic checks: valid output, input intact','scope-label'))
   const contract=source?.querySelector(':scope > p')
   const cases=[...source?.querySelectorAll('.case-result')||[]].map(test=>({test,output:[...test.querySelectorAll('.case-output')].find(out=>out.dataset.tool===cell.dataset.tool)})).filter(item=>item.output)
@@ -76,11 +76,12 @@ if(popover&&typeof popover.showPopover==='function'){
   cases.sort((a,b)=>Number(failed(b.output.dataset.status))-Number(failed(a.output.dataset.status)))
   for(const [index,{test,output}] of cases.entries()){
    const status=output.dataset.status,detail=document.createElement('details'),summary=element('summary','')
-   detail.className='popover-case';detail.name='popover-cases';detail.open=index===0
-   summary.append(element('span',test.dataset.title||'Recorded test','case-label'),element('span',({pass:'✓ Pass',fail:'! Fail',error:'! Error',skip:'— Not run'})[status]||status,`case-status ${status}`))
+   detail.className='popover-case';detail.name='popover-cases';detail.open=index===0&&failed(status)
+   summary.append(element('span',test.dataset.title||'Recorded test','case-label'),element('span',({pass:'✓',fail:'!',error:'Error',skip:'Not run'})[status]||status,`case-status ${status}`))
    const evidence=inflate(output.cloneNode(true))
-   const context=[...evidence.querySelectorAll('.case-chips .pill')].slice(0,2).map(chip=>chip.textContent).join(', ')
-   if(context)summary.querySelector('.case-label').append(element('small',context,'case-size'))
+   summary.querySelector('.case-status').setAttribute('aria-label',status)
+   const context=evidence.querySelector('.case-context')
+   if(context)summary.querySelector('.case-label').append(context)
    evidence.querySelector('.case-tool')?.remove()
    for(const raw of evidence.querySelectorAll('details'))raw.open=false
    const definition=test.querySelector(':scope > .technical-details > pre')
@@ -89,7 +90,7 @@ if(popover&&typeof popover.showPopover==='function'){
    detail.append(evidence)
    body.append(detail)
   }
-  if(!cases.length)body.append(element('div','No comparable results','case-state'))
+  if(!cases.length&&!totals.some(Boolean))body.append(element('div','No results recorded','case-state'))
   if(contract){
    const definition=document.createElement('details')
    definition.className='technical-details'

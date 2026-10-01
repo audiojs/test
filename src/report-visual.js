@@ -51,7 +51,7 @@ const reasons = {
 const analysisLabels = { min: 'Lowest sample', max: 'Highest sample', peak: 'Peak', rms: 'RMS level', dc: 'DC offset', energy: 'Energy', zcr: 'Zero crossings', loudness: 'Loudness', 'true-peak': 'True peak', pitch: 'Pitch', tempo: 'Tempo' }
 const analysisUnits = { loudness: 'LUFS', 'true-peak': 'dBTP', pitch: 'Hz', tempo: 'BPM' }
 
-/** Unrounded measurements and declared bounds for compact report charts. */
+/** Unrounded measurements and declared bounds for the report. */
 export function caseVisual(test = {}, result = {}) {
  test ||= {}; result ||= {}
  const f = test.fixture || {}, o = test.oracle || {}, w = test.workflow || {}, m = result.metrics || {}

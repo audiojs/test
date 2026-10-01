@@ -180,10 +180,9 @@ test('speed results keep their own contenders and versions', async () => {
   assert.match(speed, />&lt;0\.01<\/a>/, 'positive sub-resolution times must not display as zero')
   assert.match(speed, /less than 0\.01 milliseconds/)
   assert.match(records, /<dt>95th percentile<\/dt><dd>0\.0004 ms/)
-  assert.match(records, /<dt>Median<\/dt><dd>0\.0003 ms/)
-  assert.match(records, /data-stat="median" data-ms="0\.0003"><dt>Median<\/dt><dd>&lt;0\.01 <small>ms/)
-  assert.match(records, /data-stat="p95" data-ms="0\.0004"><dt title="95th percentile">95% within<\/dt><dd>&lt;0\.01 <small>ms/)
-  assert.match(records, /<details class="technical-details"><summary>Technical details<\/summary>/)
+  assert.match(records, /data-stat="median" data-ms="0\.0003"><strong>&lt;0\.01 <small>ms<\/small><\/strong> median/)
+  assert.match(records, /data-stat="p95" data-ms="0\.0004"><dt>95th percentile<\/dt><dd>0\.0004 ms/)
+  assert.match(records, /<details class="technical-details"><summary>Evidence<\/summary>/)
   const skipped=html.match(/<details id="bench-0" class="bench-result">([\s\S]*?)<\/details>/)?.[1]
   assert.match(skipped, /No &lt;reverse&gt; &amp; mapping/, 'skipped speed reasons remain readable without JavaScript')
   assert.doesNotMatch(skipped, /Median:|Output did not pass/)
@@ -324,18 +323,19 @@ test('speed colors compare measured ratios only within the same clip, host and s
   assert.equal(Number(attr('ffmpeg','data-speed-ratio','other-clip')),2,'each clip has its own baseline')
   const record=adapter=>html.split(`<details id="bench-${results.findIndex(r=>r.adapter===adapter)}" class="bench-result">`)[1].split('</details>')[0]
   assert.match(record('near'),/Less than 1% longer/,'near ties cannot round to an apparent exact tie')
-  assert.match(record('ffmpeg'),/Takes 2× as long as the fastest result \(audio\)/)
-  assert.match(record('ffmpeg'),/class="speed-scope"><span>Includes<\/span><span class="pill">Process launch<\/span><span class="pill">Audio file I\/O/)
-  assert.match(record('ffmpeg'),/<details class="technical-details"><summary>Technical details<\/summary>/)
+  assert.match(record('ffmpeg'),/2× audio’s time on this host\./)
+  assert.match(record('ffmpeg'),/class="speed-scope">Includes starting FFmpeg and reading\/writing files\./)
+  assert.match(record('ffmpeg'),/<details class="technical-details"><summary>Evidence<\/summary>/)
   const visible=record('ffmpeg').split('<details class="technical-details">')[0]
-  assert.match(visible,/data-stat="median" data-ms="2"><dt>Median<\/dt><dd>2\.00 <small>ms/)
-  assert.match(visible,/data-stat="p95" data-ms="2\.4"><dt title="95th percentile">95% within<\/dt><dd>2\.40 <small>ms/)
-  assert.match(visible,/class="speed-comparison"[^>]*data-speed-ratio="2" style="--speed-hue:90.000"><strong>2× as long<\/strong><span>6 tools/)
-  assert.doesNotMatch(visible,/<p\b| · /,'default speed details use figures and labels, not prose')
-  const peers=[...visible.matchAll(/class="speed-peer[^\"]*" data-tool="([^\"]+)" data-ms="([^\"]+)" data-speed-cohort="([^\"]+)" style="--speed-width:([^%]+)%"/g)]
-  assert.deepEqual(peers.map(([,adapter,ms,,width])=>[adapter,Number(ms),Number(width)]),[['audio',1,50],['ffmpeg',2,100]],'bars compare the selected result with the fastest result')
-  assert(peers.every(([, , , cohort])=>cohort===attr('ffmpeg','data-speed-cohort')),'bars never cross recording environments')
+  assert.match(visible,/data-stat="median" data-ms="2"><strong>2\.00 <small>ms<\/small><\/strong> median/)
+  assert.equal([...visible.matchAll(/data-stat=/g)].length,1,'the median is the only prominent timing')
+  assert.match(visible,/class="speed-comparison" data-speed-ratio="2">2× audio’s time on this host\./)
+  assert.doesNotMatch(visible,/data-stat="p95"|data-call=|speed-peer|<svg|class="pill"|Unranked|Only result| · /,'secondary numbers and decorations do not compete with the result')
   assert.doesNotMatch(visible,/subprocess|samplesMs|medianMs|<pre>/,'raw data and execution mode stay folded')
+  const evidence=record('ffmpeg').split('<details class="technical-details">')[1]
+  assert.match(evidence,/data-stat="p95" data-ms="2\.4"><dt>95th percentile<\/dt><dd>2\.4 ms/)
+  assert.match(evidence,/data-call="1" data-ms="2"[^>]*>2<\/span>, <span data-call="2" data-ms="2\.4"[^>]*>2\.4<\/span>/)
+  for(const adapter of ['other-host','other-session','unknown-one','unknown-two'])assert.doesNotMatch(record(adapter).split('<details class="technical-details">')[0],/speed-comparison|Unranked|Only result/,'singleton and unknown environments have no empty comparison badge')
   assert.match(record('ffmpeg'),/subprocess with float WAV I\/O/)
   assert.doesNotMatch(record('ffmpeg'),/unneededTree|not repeated/,'dependency trees are retained only in the full download')
   assert.match(record('failed'),/original input|original audio|input audio/i)
@@ -345,8 +345,8 @@ test('speed colors compare measured ratios only within the same clip, host and s
  }finally{await rm(dir,{recursive:true,force:true})}
 })
 
-test('speed graphics preserve recorded samples, zeroes and missing measurements', async () => {
- const dir=await mkdtemp(join(tmpdir(),'audio-test-speed-graphics-'))
+test('speed evidence preserves recorded samples, zeroes and missing measurements', async () => {
+ const dir=await mkdtemp(join(tmpdir(),'audio-test-speed-evidence-'))
  try{
   const generatedAt='2026-10-01T01:00:00Z',host={platform:'darwin',arch:'arm64',cpu:'Test CPU'}
   const values=[
@@ -364,23 +364,24 @@ test('speed graphics preserve recorded samples, zeroes and missing measurements'
   await mkdir(join(dir,'results'))
   await writeFile(join(dir,'results/benchmarks.json'),JSON.stringify({generatedAt,host,results}))
   const out=await generateReport({generatedAt,runs:[],specSha256:'test'},{root:dir}),html=await readFile(out.site,'utf8')
-  const record=id=>html.split(`<details id="bench-${values.findIndex(value=>value.case===id)}" class="bench-result">`)[1].split('<details class="technical-details">')[0]
-  const dots=id=>[...record(id).matchAll(/<circle data-call="(\d+)" data-ms="([^"]+)" cx="([^"]+)" cy="([^"]+)"/g)].map(([,call,ms,x,y])=>({call:Number(call),ms:Number(ms),x:Number(x),y:Number(y)}))
-  assert.match(record('empty'),/No recorded calls/)
-  assert.match(record('invalid-samples'),/No recorded calls/)
-  assert.doesNotMatch(record('empty'),/<svg/,'a median alone does not invent sample observations')
-  assert.deepEqual(dots('single'),[{call:1,ms:5,x:160,y:16}],'a single measured call is drawn once at its true scale')
-  assert.deepEqual(dots('zero').map(({call,ms,y})=>({call,ms,y})),[{call:1,ms:0,y:64},{call:2,ms:0,y:64}])
+  const record=id=>html.split(`<details id="bench-${values.findIndex(value=>value.case===id)}" class="bench-result">`)[1].split('</details>')[0]
+  const samples=id=>[...record(id).matchAll(/<span data-call="(\d+)" data-ms="([^"]+)"[^>]*>([^<]+)<\/span>/g)].map(([,call,ms,text])=>({call:Number(call),ms:Number(ms),text}))
+  assert.match(record('empty'),/Calls \(ms\)<\/dt><dd>Not recorded/)
+  assert.match(record('invalid-samples'),/Calls \(ms\)<\/dt><dd>Not recorded/)
+  assert.deepEqual(samples('empty'),[],'a median alone does not invent sample observations')
+  assert.deepEqual(samples('single'),[{call:1,ms:5,text:'5'}],'one measured call is listed once')
+  assert.deepEqual(samples('zero'),[{call:1,ms:0,text:'0'},{call:2,ms:0,text:'0'}])
   assert.match(record('zero'),/class="speed-state pass"><strong>No timing/,'zero median is not ranked or presented as a successful speed score')
-  assert.deepEqual(dots('gaps').map(({call,ms})=>({call,ms})),[{call:1,ms:0},{call:5,ms:5},{call:7,ms:7}],'invalid samples neither become zero nor renumber later calls')
-  assert.match(record('gaps'),/3 of 7 calls plotted/)
-  assert.deepEqual(dots('large').map(({y})=>y),[64,40,16],'extreme finite samples do not overflow chart arithmetic')
-  for(const id of ['single','zero','gaps','large'])for(const point of dots(id)){
-   assert(Number.isFinite(point.x)&&point.x>=12&&point.x<=308)
-   assert(Number.isFinite(point.y)&&point.y>=16&&point.y<=64)
+  assert.deepEqual(samples('gaps').map(({call,ms})=>({call,ms})),[{call:1,ms:0},{call:5,ms:5},{call:7,ms:7}],'invalid samples neither become zero nor renumber later calls')
+  assert.match(record('gaps'),/3 of 7 valid/)
+  assert.deepEqual(samples('large').map(({ms})=>ms),[0,Number.MAX_VALUE/2,Number.MAX_VALUE])
+  for(const id of ['single','zero','gaps','large'])for(const sample of samples(id))assert.equal(Number(sample.text),sample.ms,'displayed samples retain their exact recorded values')
+  for(const id of ['missing-p95','invalid-p95'])assert.match(record(id),/data-stat="p95"><dt>95th percentile<\/dt><dd>Not recorded<\/dd>/,'unknown p95 is never synthesized from median or samples')
+  for(const {case:id} of values){
+   const visible=record(id).split('<details class="technical-details">')[0]
+   assert.doesNotMatch(visible,/speed-comparison|data-stat="p95"|data-call=/,'only the main timing is visible for a single tool')
+   assert.doesNotMatch(record(id),/speed-peer\b|<svg|class="pill"| · /,'plain evidence retains numbers without decorative graphics')
   }
-  for(const id of ['missing-p95','invalid-p95'])assert.match(record(id),/data-stat="p95"><dt title="95th percentile">95% within<\/dt><dd>—<\/dd>/,'unknown p95 is never synthesized from median or samples')
-  for(const {case:id} of values)assert.doesNotMatch(record(id),/speed-peer\b|<p\b| · /,'single-tool graphics have no invented competitors or prose')
  }finally{await rm(dir,{recursive:true,force:true})}
 })
 
@@ -434,7 +435,7 @@ test('case evidence combines ordinary skips while preserving custom reasons and 
   assert.match(evidence, /Missing &lt;binary&gt;/)
   assert.match(evidence, /passed-tool: pass/)
   assert.match(evidence, /<p class="case-explanation">[^<]+<\/p>/)
-  assert.match(evidence, /<details class="technical-details"><summary>Technical details<\/summary>/)
+  assert.match(evidence, /<details class="technical-details"><summary>Evidence<\/summary>/)
   assert.doesNotMatch(evidence, /class="technical-details" open/)
   assert.deepEqual(JSON.parse(await readFile(join(dir, 'site/results.json'), 'utf8')), input)
  } finally {
