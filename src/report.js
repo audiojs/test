@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile, cp, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { loadSpec } from './spec.js'
+import { caseCopy } from './report-copy.js'
 
 export const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])
 const cell = v => String(v ?? '').replaceAll('|','\\|').replaceAll('\n',' ')
@@ -11,7 +12,14 @@ const milliseconds = value => value > 0 && value < .01 ? '<0.01' : value.toFixed
 
 export function featureResult(cases, expected=cases.length, basic=false) {
  const [pass,fail,error]=counts(cases),total=Math.max(expected,cases.length),missing=total-pass-fail-error
- const description=[`${pass} passed`,fail&&`${fail} failed`,error&&`${error} errors`,missing&&`${missing} not tested`,basic&&'Basic output checks only'].filter(Boolean).join(' · ')
+ const description=[
+   fail&&(fail===total?(total===1?'The test failed.':`All ${total} tests failed.`):`${fail} of ${total} tests failed.`),
+   error&&`${error} ${error===1?'test could':'tests could'} not finish.`,
+   pass&&(pass===total?(total===1?'The test passed.':`All ${total} tests passed.`):`${pass} passed.`),
+   missing&&cases.length&&`${missing} ${missing===1?'test was':'tests were'} not run.`,
+   !cases.length&&'No results recorded for this tool.',
+   basic&&'These checks cover valid output and unchanged input; they do not measure sound quality.'
+ ].filter(Boolean).join(' ')
  if(error)return {state:'error',label:`! ${error} errors`,description}
  if(fail)return {state:'fail',label:`! ${fail} failed`,description}
  if(!pass)return {state:'skip',label:'—',description:description||'Not tested'}
@@ -90,8 +98,9 @@ export async function generateReport(results, options={}) {
      if(result.status==='skip'&&defaultReasons.has(result.reason||'')&&!result.error&&!result.metrics&&!result.artifact){
        skipped.push(name(run.adapter));continue
      }
-     const reason=[result.reason,result.error].filter(Boolean).map(esc).join(' · ')
-     outputs.push(`<div class="case-output ${esc(result.status)}" data-tool="${esc(run.adapter)}" data-status="${esc(result.status)}"><p><strong>${esc(name(run.adapter))}: ${esc(result.status==='skip'?'not tested':result.status)}</strong> ${reason}</p>${result.metrics?`<pre>${esc(JSON.stringify(result.metrics,null,2))}</pre>`:''}${result.artifact?`<p><a href="${esc(result.artifact)}">Reproduction files</a>${wavFiles.has(inputWav(result.artifact))?` · <a href="${esc(inputWav(result.artifact))}">Input WAV</a>`:''}</p>`:''}</div>`)
+     const copy=caseCopy(test,result)
+     const raw={...(result.metrics==null?{}:{metrics:result.metrics}),...(result.reason?{reason:result.reason}:{}),...(result.error?{error:result.error}:{})}
+     outputs.push(`<div class="case-output ${esc(result.status)}" data-tool="${esc(run.adapter)}" data-status="${esc(result.status)}"><p class="case-tool"><strong>${esc(name(run.adapter))}: ${esc(result.status==='skip'?'not tested':result.status)}</strong></p><p class="case-explanation">${esc(copy.summary)}</p>${result.artifact?`<p class="case-artifacts"><a href="${esc(result.artifact)}">Reproduction files</a>${wavFiles.has(inputWav(result.artifact))?` · <a href="${esc(inputWav(result.artifact))}">Input WAV</a>`:''}</p>`:''}<details class="technical-details"><summary>Technical details</summary><p><code>${esc(test.id)}</code></p>${Object.keys(raw).length?`<pre>${esc(JSON.stringify(raw,null,2))}</pre>`:''}</details></div>`)
    }
    if(skipped.length)outputs.push(`<p class="not-tested">Not tested: ${skipped.map(esc).join(', ')}.</p>`)
    return outputs.join('')
@@ -100,7 +109,7 @@ export async function generateReport(results, options={}) {
    const cs=featureCases(f),method=cs.find(c=>c.steps?.length)?.steps[0]?.op
    const files={reverse:'reverse','reverse-range':'reverse',trim:'crop',remove:'remove',pad:'pad',repeat:'repeat',gain:'gain','gain-db':'gain',fade:'fade',mix:'mix',insert:'insert',crossfade:'crossfade',normalize:'normalize',lowpass:'filter',highpass:'filter',bandpass:'filter',notch:'filter',allpass:'filter',eq:'filter',resample:'resample',stretch:'stretch',pitch:'pitch',speed:'speed'}
    const source=f.url||(files[method]?`https://github.com/audiojs/audio/blob/main/fn/${files[method]}.js`:'https://github.com/audiojs/audio')
-   return `<details id="${esc(f.id)}" class="contract"><summary>${esc(featureName(f))} <small>${cs.length} tests</small></summary><p>${esc(f.contract)}</p><p class="case-tools"><a href="#features">Back to comparison</a> · <a href="${esc(source)}">audio API</a> · <a href="${repo}src/catalog.js">Case definitions</a> · <a href="${repo}src/oracles.js">Expected results</a></p><p><code>${esc(f.id)}</code> · ${esc(f.class)}</p>${cs.map(c=>`<details id="case-${esc(c.id)}" class="case-result" data-title="${esc(c.title)}"><summary><code>${esc(c.id)}</code> <small>${c.status==='planned'?'Planned':esc(c.oracle.type)}</small></summary><pre>${esc(JSON.stringify(c,null,2))}</pre>${caseEvidence(c)}<pre>node bin/audio-test.js run --adapter audio --tier ${esc(c.tier||'research')} --case ${esc(c.id)}</pre></details>`).join('')}</details>`
+   return `<details id="${esc(f.id)}" class="contract"><summary>${esc(featureName(f))} <small>${cs.length} tests</small></summary><p>${esc(f.contract)}</p><p class="case-tools"><a href="#features">Back to comparison</a> · <a href="${esc(source)}">audio API</a> · <a href="${repo}src/catalog.js">Case definitions</a> · <a href="${repo}src/oracles.js">Expected results</a></p><p><code>${esc(f.id)}</code> · ${esc(f.class)}</p>${cs.map(c=>{const title=esc(caseCopy(c).title);return `<details id="case-${esc(c.id)}" class="case-result" data-title="${title}"><summary>${title} <small>${c.status==='planned'?'Planned':esc(c.oracle.type)}</small></summary>${caseEvidence(c)}<details class="technical-details"><summary>Test definition</summary><pre>${esc(JSON.stringify(c,null,2))}</pre><pre>node bin/audio-test.js run --adapter audio --tier ${esc(c.tier||'research')} --case ${esc(c.id)}</pre></details></details>`}).join('')}</details>`
  }
  const methodLink = method => {
    const id=['processor','analysis','edit','filter','rate'].map(prefix=>`${prefix}.${method.name}`).find(id=>spec.features.features.some(f=>f.id===id))
@@ -115,12 +124,17 @@ export async function generateReport(results, options={}) {
  const benchIds=[...new Set(benchResults.map(b=>b.adapter))]
  const benchOrder=[...runs.map(r=>r.adapter).filter(id=>benchIds.includes(id)),...benchIds.filter(id=>!runs.some(r=>r.adapter===id))]
  const benchRuns=benchOrder.map(adapter=>({...benchResults.find(b=>b.adapter===adapter&&b.version)||benchResults.find(b=>b.adapter===adapter)||{adapter}}))
+ const environmentIds=new Map()
  const benchEnvironments=new Map(benchRuns.map(run=>{
-   const recorded=bench.environments?.[run.adapter],host=recorded?.host||run.host||bench.host||{}
+   const recorded=bench.environments?.[run.adapter],session=bench.sessions?.find(s=>s.adapters?.includes(run.adapter)),host=recorded?.host||session?.host||run.host||bench.host||{}
    const label=recorded?.label||({darwin:'macOS',linux:'Linux',win32:'Windows'})[host.platform]||host.platform||'Recorded host'
-   return [run.adapter,{label,host}]
+   const generatedAt=recorded?.generatedAt||session?.generatedAt||bench.generatedAt
+   const fingerprint=JSON.stringify([label,host.platform,host.arch,host.os,host.cpu,host.logicalCpus,host.totalMemoryBytes,host.node,generatedAt])
+   const known=host.platform&&host.arch&&host.cpu&&host.cpu!=='unknown'&&generatedAt,key=known?fingerprint:null
+   if(key&&!environmentIds.has(key))environmentIds.set(key,`speed-environment-${environmentIds.size}`)
+   return [run.adapter,{label,host,generatedAt,fingerprint,key,id:environmentIds.get(key)}]
  }))
- const mixedEnvironments=new Set([...benchEnvironments.values()].map(({label,host})=>JSON.stringify([label,host.platform,host.arch,host.cpu]))).size>1
+ const mixedEnvironments=new Set([...benchEnvironments.values()].map(e=>e.fingerprint)).size>1
  if(mixedEnvironments)for(const run of benchRuns)run.environmentLabel=benchEnvironments.get(run.adapter).label
  const environmentDetails=adapter=>{const environment=benchEnvironments.get(adapter);return mixedEnvironments?[environment.label,environment.host.platform,environment.host.arch,environment.host.cpu].filter(Boolean).join(' · '):''}
  const benchCases=[...new Set(benchResults.map(b=>b.case))].map(id=>{
@@ -132,18 +146,54 @@ export async function generateReport(results, options={}) {
  })
  const benchGroups=[...new Set(benchCases.map(c=>c.group))]
  const benchRecords=new Map(benchResults.map((b,i)=>[b,`bench-${i}`]))
- const benchDetails=b=>{
-   const valid=b.status==='pass'&&Number.isFinite(b.medianMs)
-   const detail=[`${name(b.adapter)} · ${shortVersion(b)}`,b.metadata?.mode,environmentDetails(b.adapter),valid&&`Median: ${milliseconds(b.medianMs)} ms`,valid&&Number.isFinite(b.p95Ms)&&`95th percentile: ${milliseconds(b.p95Ms)} ms`,valid&&Number.isFinite(b.driverMaxRssMiB)&&`Driver peak memory: ${b.driverMaxRssMiB.toFixed(1)} MiB`].filter(Boolean)
-   return `<div class="bench-output"><p>${detail.map(esc).join('<br>')}</p>${!valid?`<p>${esc(b.error||b.reason||(b.status==='skip'?'Not measured':'Output did not pass the benchmark check.'))}</p>${b.validation?`<pre>${esc(JSON.stringify(b.validation,null,2))}</pre>`:''}`:''}<p><a href="benchmarks.json">All samples and measurements</a></p></div>`
+ const timed=b=>b?.status==='pass'&&Number.isFinite(b.medianMs)&&b.medianMs>0
+ const cohorts=new Map(),comparisons=new Map()
+ for(const b of benchResults){
+   const environment=benchEnvironments.get(b.adapter)
+   if(!timed(b)||!environment.key)continue
+   const key=JSON.stringify([b.case,environment.key])
+   if(!cohorts.has(key))cohorts.set(key,[])
+   cohorts.get(key).push(b)
  }
- const benchCell=(b,adapter,best)=>{
+ for(const peers of cohorts.values()){
+   const best=Math.min(...peers.map(b=>b.medianMs)),fastest=peers.filter(b=>b.medianMs===best)
+   const ranked=peers.length>1&&fastest.length<peers.length
+   for(const b of peers)comparisons.set(b,{count:peers.length,fastest,ranked,ratio:b.medianMs/best,hue:120*(1-Math.min(1,Math.max(0,Math.log2(b.medianMs)-Math.log2(best))/4))})
+ }
+ const comparisonText=b=>{
+   if(!timed(b))return ''
+   const environment=benchEnvironments.get(b.adapter),comparison=comparisons.get(b)
+   if(!environment.key)return 'Host or run details are missing; relative speed is not compared.'
+   if(!comparison||comparison.count<2)return `No other passing timing for this clip on ${environment.label} in this run.`
+   if(!comparison.ranked)return `All ${comparison.count} passing tools recorded the same median for this clip on ${environment.label}.`
+   const context=`${comparison.count} passing tools for this clip on ${environment.label} in this run`
+   if(comparison.ratio===1)return `${comparison.fastest.length>1?'Joint fastest':'Fastest'} of ${context}.`
+   if(comparison.ratio<1.01)return `Less than 1% longer than the fastest result (${name(comparison.fastest[0].adapter)}). Compared with ${context}.`
+   const ratio=Number.isFinite(comparison.ratio)?Number(comparison.ratio.toPrecision(3)).toLocaleString('en-US',{maximumFractionDigits:3}):'over 10³⁰⁸'
+   return `Takes ${ratio}× as long as the fastest result (${name(comparison.fastest[0].adapter)}). Compared with ${context}.`
+ }
+ const benchDetails=b=>{
+   const valid=timed(b),comparison=comparisonText(b),fixture=bench.fixtures?.find(test=>test.id===b.case)
+   const variability=Number.isFinite(b.p95Ms)&&b.p95Ms>=b.medianMs
+   let explanation
+   if(valid)explanation=`Typically <strong>${esc(milliseconds(b.medianMs))} ms</strong> per call (median).${variability?` 95% of measured calls finished within <strong>${esc(milliseconds(b.p95Ms))} ms</strong>.`:''}`
+   else if(b.status==='skip')explanation=esc(b.reason&&!['No equivalent adapter mapping','adapter has no equivalent mapping'].includes(b.reason)?b.reason:'This operation has not been connected to this tool.')
+   else if(b.status==='error')explanation=esc(caseCopy(fixture||{},b).summary)
+   else if(b.status==='pass')explanation='No positive timing was recorded.'
+   else explanation=esc(fixture?caseCopy(fixture,{status:'fail',metrics:b.validation}).summary:'The output did not pass the accuracy check.')+' Timing is excluded.'
+   const scope=valid&&['ffmpeg','sox','rubberband','soundtouch'].includes(b.adapter)?`<p>Includes starting ${esc(name(b.adapter))} and reading/writing audio files.</p>`:''
+   const details=[`${name(b.adapter)} · ${shortVersion(b)}`,b.metadata?.mode,environmentDetails(b.adapter),valid&&`Median: ${b.medianMs} ms`,valid&&variability&&`95th percentile: ${b.p95Ms} ms`,valid&&Number.isFinite(b.driverMaxRssMiB)&&`Driver peak memory: ${b.driverMaxRssMiB} MiB`].filter(Boolean)
+   const {metadata,host,...technical}=b
+   return `<div class="bench-output"><p class="bench-explanation">${explanation}</p>${comparison?`<p class="speed-comparison">${esc(comparison)}</p>`:''}${scope}<details class="technical-details"><summary>Technical details</summary><p>${details.map(esc).join('<br>')}</p><pre>${esc(JSON.stringify(technical,null,2))}</pre><p><a href="benchmarks.json">All samples and measurements</a></p></details></div>`
+ }
+ const benchCell=(b,adapter)=>{
    const data=`data-tool="${esc(adapter)}"`
    const target=`class="result" data-popover="speed" href="#${b?benchRecords.get(b):'benchmark-method'}"`
    if(!b||b.status==='skip')return `<td class="skip" ${data}><a ${target}${b?'':' data-description="Not measured"'} aria-label="${esc(`${name(adapter)}: not measured`)}">—</a></td>`
-   if(b.status!=='pass'||!Number.isFinite(b.medianMs))return `<td class="error" ${data}><a ${target}>${esc(b.status==='fail'?'Failed check':b.status==='error'?'Error':'No timing')}</a></td>`
-   const timing=milliseconds(b.medianMs)
-   return `<td ${data} data-ms="${b.medianMs}"${!mixedEnvironments&&b.medianMs===best?' class="fastest"':''}><a ${target} aria-label="${esc(`${name(adapter)}: ${timing.replace('<','less than ')} milliseconds`)}">${esc(timing)}</a></td>`
+   if(!timed(b))return `<td class="error" ${data}><a ${target}>${esc(b.status==='fail'?'Failed check':b.status==='error'?'Error':'No timing')}</a></td>`
+   const timing=milliseconds(b.medianMs),comparison=comparisons.get(b),environment=benchEnvironments.get(adapter)
+   const heat=comparison?.ranked?` class="speed-ranked" data-speed-ratio="${comparison.ratio}" data-speed-cohort="${environment.id}" style="--speed-hue:${comparison.hue.toFixed(3)}"`:''
+   return `<td ${data} data-ms="${b.medianMs}"${heat}><a ${target} aria-label="${esc(`${name(adapter)}: ${timing.replace('<','less than ')} milliseconds. ${comparisonText(b)}`)}">${esc(timing)}</a></td>`
  }
  const benchEvidence=[...benchRecords].map(([b,id])=>{
    const c=benchCases.find(c=>c.id===b.case)
@@ -154,13 +204,13 @@ export async function generateReport(results, options={}) {
    if(!measured.length)return ''
    return `<details class="overhead"><summary>${esc(name(run.adapter))} call overhead</summary><p>Each call starts a process and exchanges WAV files. An unchanged clip measures that round trip.</p><ul>${measured.map(result=>`<li>${esc(result.title)}${result.profileTitle?` · ${esc(result.profileTitle)}`:''}: <strong>${esc(milliseconds(result.medianMs))} ms</strong></li>`).join('')}</ul><p>Separate measurements; nothing is subtracted from the operation timings. <a href="benchmarks.json">Samples and environment</a></p></details>`
  }).join('')
- const benchHtml=benchCases.length?`<p class="note">Median milliseconds for the whole adapter call; lower is faster.</p>${mixedEnvironments?'<p class="note environment-note">Runs use different environments; compare timings within one environment.</p>':''}<div class="table-wrap"><table class="matrix speed-matrix" aria-label="Speed comparison" data-rankable="${!mixedEnvironments}" style="--tool-count:${benchRuns.length}">${tableHead('Operation / clip',benchRuns)}<tbody>${benchGroups.map(group=>{
+ const rankable=[...comparisons.values()].some(c=>c.ranked)
+ const benchHtml=benchCases.length?`<p class="note">Median milliseconds for the whole adapter call; lower is faster.</p><p class="note speed-scale">Green → yellow → red: fastest, 4× as long, 16× or more. Colors compare the same clip, host and run.</p>${mixedEnvironments?'<p class="note environment-note">Runs use different environments; compare timings within one environment.</p>':''}<div class="table-wrap"><table class="matrix speed-matrix" aria-label="Speed comparison" data-rankable="${rankable}" style="--tool-count:${benchRuns.length}">${tableHead('Operation / clip',benchRuns)}<tbody>${benchGroups.map(group=>{
    const groupCases=benchCases.filter(c=>c.group===group)
    const cases=[...new Set(groupCases.map(c=>c.title))].flatMap(title=>groupCases.filter(c=>c.title===title))
    return `<tr class="group-row" data-group="${esc(group)}"><th colspan="${benchRuns.length+1}" scope="rowgroup"><span class="group-label">${esc(group)}</span></th></tr>`+cases.map(c=>{
      const bs=benchRuns.map(r=>benchResults.find(b=>b.case===c.id&&b.adapter===r.adapter))
-     const valid=bs.filter(b=>b?.status==='pass'&&Number.isFinite(b.medianMs)),best=Math.min(...valid.map(b=>b.medianMs))
-     return `<tr class="speed-row" data-case="${esc(c.id)}" data-profile="${esc(c.profile)}" data-group="${esc(c.group)}"><th scope="row">${esc(c.title)}<small>${esc(c.profileTitle)}</small></th>${bs.map((b,i)=>benchCell(b,benchRuns[i].adapter,best)).join('')}</tr>`
+     return `<tr class="speed-row" data-case="${esc(c.id)}" data-profile="${esc(c.profile)}" data-group="${esc(c.group)}"><th scope="row">${esc(c.title)}<small>${esc(c.profileTitle)}</small></th>${bs.map((b,i)=>benchCell(b,benchRuns[i].adapter)).join('')}</tr>`
    }).join('')
  }).join('')}</tbody></table></div><p class="note">Includes native command launches and WAV I/O where used. <a href="#benchmark-method">How it was measured</a></p>${overheadHtml}`:'<p>No speed measurements yet.</p>'
  const problems=runs.flatMap(r=>r.cases.filter(c=>['fail','error'].includes(c.status)).map(c=>({run:r,result:c})))

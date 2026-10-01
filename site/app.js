@@ -39,29 +39,37 @@ if(popover&&typeof popover.showPopover==='function'){
   const source=document.getElementById(trigger.hash.slice(1))
   if(trigger.dataset.popover==='speed'){
    const output=source?.querySelector('.bench-output')
-   if(output)body.append(output.cloneNode(true))
+   if(output){
+    const evidence=output.cloneNode(true)
+    for(const detail of evidence.querySelectorAll('details'))detail.open=false
+    body.append(evidence)
+   }
    return
   }
   const contract=source?.querySelector(':scope > p')
-  if(contract)body.append(element('p',contract.textContent,'popover-contract'))
   const cases=[...source?.querySelectorAll('.case-result')||[]].map(test=>({test,output:[...test.querySelectorAll('.case-output')].find(out=>out.dataset.tool===cell.dataset.tool)})).filter(item=>item.output)
   const failed=status=>status==='fail'||status==='error'
   cases.sort((a,b)=>Number(failed(b.output.dataset.status))-Number(failed(a.output.dataset.status)))
   for(const {test,output} of cases){
-   const id=test.id.slice(5),title=test.dataset.title,generated=!title||title===id.replaceAll('.',' · ')
-   const status=output.dataset.status,detail=document.createElement('details'),summary=element('summary',generated?'':title)
-   if(generated)summary.append(element('code',id))
+   const status=output.dataset.status,detail=document.createElement('details'),summary=element('summary',test.dataset.title||'Recorded test')
    detail.className='popover-case';detail.open=failed(status)
    summary.append(element('small',({pass:'Passed',fail:'Failed',error:'Error',skip:'Not compared'})[status]||status))
-   const evidence=output.cloneNode(true),line=evidence.querySelector('p')
-   line?.querySelector('strong')?.remove()
-   if(line&&!line.textContent.trim())line.remove()
+   const evidence=output.cloneNode(true)
+   evidence.querySelector('.case-tool')?.remove()
+   for(const raw of evidence.querySelectorAll('details'))raw.open=false
+   const definition=test.querySelector(':scope > .technical-details > pre')
+   if(definition)evidence.querySelector('.technical-details')?.append(element('p','Test definition'),definition.cloneNode(true))
    detail.append(summary)
-   if(!generated)detail.append(element('code',id))
    detail.append(evidence)
    body.append(detail)
   }
   if(!cases.length&&!trigger.dataset.description)body.append(element('p','No results recorded.'))
+  if(contract){
+   const definition=document.createElement('details')
+   definition.className='technical-details'
+   definition.append(element('summary','Test definition'),element('p',contract.textContent))
+   body.append(definition)
+  }
  }
  function position(trigger){
   const rect=trigger.closest('td').getBoundingClientRect(),gap=8,edge=12

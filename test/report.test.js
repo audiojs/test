@@ -14,6 +14,7 @@ test('partially tested features retain the full case count', () => {
  const mixed = featureResult(outcomes('pass', 'pass', ...Array(6).fill('skip')), 8)
  assert.equal(mixed.state, 'partial')
  assert.equal(mixed.label, '◐ 2/8')
+ assert.equal(mixed.description, '2 passed. 6 tests were not run.')
  const incomplete = featureResult(outcomes('pass', 'pass'), 8)
  assert.equal(incomplete.state, 'partial')
  assert.equal(incomplete.label, '◐ 2/8')
@@ -23,6 +24,7 @@ test('basic checks cannot produce a behavior-test pass', () => {
  const basic = featureResult(outcomes('pass', 'pass', 'pass'), 3, true)
  assert.notEqual(basic.state, 'pass')
  assert.equal(basic.label, '○ 3/3')
+ assert.match(basic.description, /All 3 tests passed\..*do not measure sound quality/)
  const behavior = featureResult(outcomes('pass', 'pass', 'pass'), 3)
  assert.equal(behavior.state, 'pass')
  assert.equal(behavior.label, '✓ 3/3')
@@ -33,6 +35,9 @@ test('missing, failing and broken tests never look like a pass', () => {
  assert.equal(featureResult(outcomes('skip'), 1).label, '—')
  assert.equal(featureResult(outcomes('pass', 'fail'), 2).state, 'fail')
  assert.equal(featureResult(outcomes('pass', 'error'), 2).state, 'error')
+ assert.equal(featureResult(outcomes('fail'), 1).description, 'The test failed.')
+ assert.equal(featureResult(outcomes('pass'), 1).description, 'The test passed.')
+ assert.equal(featureResult([], 3).description, 'No results recorded for this tool.')
 })
 
 test('the matrix preserves partial results and keeps plans in their own details', async () => {
@@ -174,8 +179,11 @@ test('speed results keep their own contenders and versions', async () => {
   assert.match(records, /Benchmark worker/)
   assert.match(speed, />&lt;0\.01<\/a>/, 'positive sub-resolution times must not display as zero')
   assert.match(speed, /less than 0\.01 milliseconds/)
-  assert.match(records, /95th percentile: &lt;0\.01 ms/)
-  assert.match(records, /Median: &lt;0\.01 ms/)
+  assert.match(records, /95th percentile: 0\.0004 ms/)
+  assert.match(records, /Median: 0\.0003 ms/)
+  assert.match(records, /Typically <strong>&lt;0\.01 ms<\/strong> per call \(median\)/)
+  assert.match(records, /95% of measured calls finished within <strong>&lt;0\.01 ms<\/strong>/)
+  assert.match(records, /<details class="technical-details"><summary>Technical details<\/summary>/)
   const skipped=html.match(/<details id="bench-0" class="bench-result">([\s\S]*?)<\/details>/)?.[1]
   assert.match(skipped, /No &lt;reverse&gt; &amp; mapping/, 'skipped speed reasons remain readable without JavaScript')
   assert.doesNotMatch(skipped, /Median:|Output did not pass/)
@@ -186,7 +194,7 @@ test('speed results keep their own contenders and versions', async () => {
   assert.match(speed, /data-ms="0\.0003"/, 'fastest highlighting uses the unrounded measurement')
   assert.match(speed, /class="environment">Linux container/)
   assert.match(records, /linux · arm64 · Container CPU/)
-  assert.doesNotMatch(speed, /class="fastest"/, 'different environments must not share a fastest ranking')
+  assert.doesNotMatch(speed, /class="speed-ranked"/, 'singleton environments have no relative ranking')
   assert.match(html, /data-rankable="false"/)
   assert.match(html, /compare timings within one environment/)
   const overhead = html.match(/<details class="overhead">([\s\S]*?)<\/details>/)?.[1]
@@ -269,6 +277,69 @@ test('speed comparison preserves every operation, profile and tool without fixed
  }
 })
 
+test('speed colors compare measured ratios only within the same clip, host and session', async () => {
+ const dir=await mkdtemp(join(tmpdir(),'audio-test-speed-colors-'))
+ try{
+  const host={platform:'darwin',arch:'arm64',os:'25.5',cpu:'Test CPU',logicalCpus:8,totalMemoryBytes:16000000000,node:'v24'},generatedAt='2026-10-01T01:00:00Z'
+  const linux={...host,platform:'linux',os:'6.10',cpu:'Linux CPU'}
+  const row=(adapter,medianMs,extra={},id='ratios')=>({adapter,case:id,status:'pass',version:'1.0.0',medianMs,p95Ms:medianMs*1.2,samplesMs:[medianMs,medianMs*1.2],...extra})
+  const results=[
+   row('audio',1),row('near',1.00001),row('ffmpeg',2,{metadata:{mode:'subprocess with float WAV I/O',dependencies:{unneededTree:'not repeated'}}}),
+   row('four',4),row('sixteen',16),row('outlier',1e12),row('linux-one',.01),row('linux-two',.04),
+   row('other-host',.001),row('other-session',.001),row('unknown-one',.001),row('unknown-two',.002),
+   row('zero',0),row('negative',-1),row('infinite',Infinity),row('not-a-number',NaN),
+   row('skipped',.0001,{status:'skip',reason:'No equivalent adapter mapping'}),
+   row('failed',.0001,{status:'fail',validation:{pass:false,inputUnchanged:false}}),
+   row('errored',.0001,{status:'error',error:'worker <failed>\nNative error details'}),
+   row('audio',5,{},'equal'),row('ffmpeg',5,{},'equal'),row('four',5,{},'equal'),
+   row('audio',.25,{},'singleton'),row('audio',100,{},'other-clip'),row('ffmpeg',200,{},'other-clip')
+  ]
+  const environments=Object.fromEntries([...new Set(results.map(r=>r.adapter))].map(adapter=>[adapter,{label:'macOS',host,generatedAt}]))
+  for(const adapter of ['linux-one','linux-two'])environments[adapter]={label:'Linux',host:linux,generatedAt}
+  environments['other-host']={label:'macOS',host:{...host,cpu:'Different CPU'},generatedAt}
+  environments['other-session']={label:'macOS',host,generatedAt:'2026-10-01T02:00:00Z'}
+  for(const adapter of ['unknown-one','unknown-two'])environments[adapter]={label:'Unknown',host:{}}
+  const fixtures=['ratios','equal','singleton','other-clip'].map(id=>({id,title:id,profile:'short-mono',profileTitle:'0.1 s · mono',fixture:{frames:4800,sampleRate:48000,channels:1},steps:[{op:'gain',value:.5}],oracle:{type:'exact',atol:1e-6}}))
+  await writeFile(join(dir,'README.md'),'<!-- results:start --><!-- results:end -->\n<!-- features:start --><!-- features:end -->')
+  await mkdir(join(dir,'results'))
+  await writeFile(join(dir,'results/benchmarks.json'),JSON.stringify({generatedAt,host,environments,fixtures,results}))
+  const out=await generateReport({generatedAt,runs:[],specSha256:'test'},{root:dir}),html=await readFile(out.site,'utf8')
+  const rows=[...html.matchAll(/<tr class="speed-row"[^>]*>[\s\S]*?<\/tr>/g)].map(m=>m[0])
+  const cell=(adapter,id='ratios')=>[...rows.find(row=>row.includes(`data-case="${id}"`)).matchAll(/<td\b[^>]*>[\s\S]*?<\/td>/g)].map(m=>m[0]).find(cell=>cell.includes(`data-tool="${adapter}"`))
+  const attr=(adapter,name,id)=>cell(adapter,id).match(new RegExp(`${name}="([^"]+)"`))?.[1]
+  const hue=adapter=>Number(attr(adapter,'style').match(/--speed-hue:([\d.]+)/)[1])
+  assert.match(html,/data-rankable="true"/,'mixed environments retain comparisons within each cohort')
+  assert.deepEqual(['audio','ffmpeg','four','sixteen','outlier'].map(hue),[120,90,60,0,0],'log ratios are capped without flattening smaller differences')
+  assert.deepEqual(['audio','ffmpeg','four','sixteen','outlier'].map(id=>Number(attr(id,'data-speed-ratio'))),[1,2,4,16,1e12])
+  assert.equal(attr('audio','data-speed-cohort'),attr('ffmpeg','data-speed-cohort'))
+  assert.notEqual(attr('audio','data-speed-cohort'),attr('linux-one','data-speed-cohort'))
+  assert.equal(attr('linux-one','data-speed-cohort'),attr('linux-two','data-speed-cohort'))
+  assert.equal(hue('linux-one'),120);assert.equal(hue('linux-two'),60)
+  for(const adapter of ['other-host','other-session','unknown-one','unknown-two','zero','negative','infinite','not-a-number','skipped','failed','errored']){
+   assert.doesNotMatch(cell(adapter),/speed-ranked|data-speed-ratio|--speed-hue/,adapter)
+  }
+  for(const adapter of ['zero','negative','infinite','not-a-number'])assert.doesNotMatch(cell(adapter),/data-ms=/,'invalid or zero times do not show a timing score')
+  for(const adapter of ['audio','ffmpeg','four'])assert.doesNotMatch(cell(adapter,'equal'),/speed-ranked|data-speed-ratio/,'identical medians remain neutral')
+  assert.doesNotMatch(cell('audio','singleton'),/speed-ranked|data-speed-ratio/)
+  assert.equal(Number(attr('ffmpeg','data-speed-ratio','other-clip')),2,'each clip has its own baseline')
+  const record=adapter=>html.split(`<details id="bench-${results.findIndex(r=>r.adapter===adapter)}" class="bench-result">`)[1].split('</details>')[0]
+  assert.match(record('near'),/Less than 1% longer/,'near ties cannot round to an apparent exact tie')
+  assert.match(record('ffmpeg'),/Takes 2× as long as the fastest result \(audio\)/)
+  assert.match(record('ffmpeg'),/Includes starting FFmpeg and reading\/writing audio files/)
+  assert.match(record('ffmpeg'),/<details class="technical-details"><summary>Technical details<\/summary>/)
+  const visible=record('ffmpeg').split('<details class="technical-details">')[0]
+  assert.match(visible,/Typically <strong>2\.00 ms<\/strong>/)
+  assert.match(visible,/95% of measured calls finished within <strong>2\.40 ms<\/strong>/)
+  assert.doesNotMatch(visible,/subprocess|samplesMs|medianMs|<pre>/,'raw data and execution mode stay folded')
+  assert.match(record('ffmpeg'),/subprocess with float WAV I\/O/)
+  assert.doesNotMatch(record('ffmpeg'),/unneededTree|not repeated/,'dependency trees are retained only in the full download')
+  assert.match(record('failed'),/original input|original audio|input audio/i)
+  assert.match(record('failed'),/&quot;inputUnchanged&quot;: false/)
+  assert.match(record('errored'),/worker &lt;failed&gt;\\nNative error details/,'raw multiline errors remain escaped and intact')
+  assert.match(record('unknown-one'),/Host or run details are missing/)
+ }finally{await rm(dir,{recursive:true,force:true})}
+})
+
 test('speed columns follow correctness order and append benchmark-only tools', async () => {
  const dir = await mkdtemp(join(tmpdir(), 'audio-test-report-order-'))
  try {
@@ -305,7 +376,8 @@ test('case evidence combines ordinary skips while preserving custom reasons and 
   const input = { generatedAt: '2026-09-30T00:00:00.000Z', runs, specSha256: 'test' }
   const out = await generateReport(input, { root: dir })
   const html = await readFile(out.site, 'utf8')
-  const evidence = html.slice(html.indexOf(`<details id="case-${fixture.id}"`)).split('</details>')[0]
+  const start=html.indexOf(`<details id="case-${fixture.id}"`),next=html.indexOf('<details id="case-',start+1)
+  const evidence=html.slice(start,next<0?undefined:next)
   assert.match(evidence, /<p class="not-tested">Not tested: unmapped-a, unmapped-b\.<\/p>/)
   assert.doesNotMatch(evidence, /<strong>unmapped-[ab]:/)
   assert.match(evidence, /custom-skip: not tested/)
@@ -314,8 +386,12 @@ test('case evidence combines ordinary skips while preserving custom reasons and 
   assert.match(evidence, /maxAbsError/)
   assert.match(evidence, /artifacts\/failed\/case\.json/)
   assert.doesNotMatch(evidence, /Input WAV|input\.wav/, 'missing local WAV files never produce broken published links')
-  assert.match(evidence, /Worker failed · Missing &lt;binary&gt;/)
+  assert.match(evidence, /Worker failed/)
+  assert.match(evidence, /Missing &lt;binary&gt;/)
   assert.match(evidence, /passed-tool: pass/)
+  assert.match(evidence, /<p class="case-explanation">[^<]+<\/p>/)
+  assert.match(evidence, /<details class="technical-details"><summary>Technical details<\/summary>/)
+  assert.doesNotMatch(evidence, /class="technical-details" open/)
   assert.deepEqual(JSON.parse(await readFile(join(dir, 'site/results.json'), 'utf8')), input)
  } finally {
   await rm(dir, { recursive: true, force: true })
