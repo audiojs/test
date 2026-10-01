@@ -74,9 +74,9 @@ if(popover&&typeof popover.showPopover==='function'){
   const cases=[...source?.querySelectorAll('.case-result')||[]].map(test=>({test,output:[...test.querySelectorAll('.case-output')].find(out=>out.dataset.tool===cell.dataset.tool)})).filter(item=>item.output)
   const failed=status=>status==='fail'||status==='error'
   cases.sort((a,b)=>Number(failed(b.output.dataset.status))-Number(failed(a.output.dataset.status)))
-  for(const [index,{test,output}] of cases.entries()){
+  for(const {test,output} of cases){
    const status=output.dataset.status,detail=document.createElement('details'),summary=element('summary','')
-   detail.className='popover-case';detail.name='popover-cases';detail.open=index===0&&failed(status)
+   detail.className='popover-case';detail.name='popover-cases'
    summary.append(element('span',test.dataset.title||'Recorded test','case-label'),element('span',({pass:'✓',fail:'!',error:'Error',skip:'Not run'})[status]||status,`case-status ${status}`))
    const evidence=inflate(output.cloneNode(true))
    summary.querySelector('.case-status').setAttribute('aria-label',status)

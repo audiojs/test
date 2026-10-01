@@ -47,6 +47,8 @@ try {
   assert.equal(await page.locator('#basic-rows .feature-row:visible').count(), basicCount)
   assert.equal(await page.locator('.speed-row:visible').count(), benchCases.length)
   assert.equal(await page.locator('input, select, form, .view-tab').count(), 0, 'browsing needs no search or filtering controls')
+  assert.equal(await page.locator('#failures, details#evidence, details#speed-evidence').count(), 0, 'duplicate result archives are absent')
+  assert.equal(await page.locator('.cell-details > details:visible').count(), 0, 'source records stay hidden until linked directly')
   if (runs.length) {
    assert.equal(await page.locator('#feature-panel thead th').count(), runs.length + 1)
    assert.equal(await page.locator('#basic-panel thead th').count(), runs.length + 1)
@@ -70,12 +72,13 @@ try {
   const before = await table.evaluate(table => {
    const wrap = table.parentElement, row = table.querySelector('tbody tr:not(.group-row)'), head = table.querySelector('thead th')
    const style = getComputedStyle(wrap)
-   return { top: table.getBoundingClientRect().top, height: table.offsetHeight, headHeight: head.offsetHeight, left: row.querySelector('td').getBoundingClientRect().left, overflowX: style.overflowX, overflowY: style.overflowY, maxHeight: style.maxHeight, wrapWidth: wrap.clientWidth, tableWidth: table.offsetWidth }
+   return { top: table.getBoundingClientRect().top, wrapLeft: wrap.getBoundingClientRect().left, viewportWidth: innerWidth, height: table.offsetHeight, headHeight: head.offsetHeight, left: row.querySelector('td').getBoundingClientRect().left, overflowX: style.overflowX, overflowY: style.overflowY, maxHeight: style.maxHeight, wrapWidth: wrap.clientWidth, tableWidth: table.offsetWidth }
   })
   assert.equal(before.overflowX, 'visible', `${panel}: no nested horizontal scrolling`)
   assert.equal(before.overflowY, 'visible', `${panel}: no nested vertical scrolling`)
   assert.equal(before.maxHeight, 'none')
   assert(before.wrapWidth >= before.tableWidth)
+  if (before.viewportWidth >= 1440) assert(Math.abs(before.wrapLeft - 28) < 1, `${panel}: the table border starts 28px from the left at ${before.viewportWidth}px`)
   await page.evaluate(({ top, height, headHeight }) => scrollTo(document.documentElement.scrollWidth, top + Math.min(120, Math.max(0, height - headHeight - 20))), before)
   const after = await table.evaluate(table => {
    const row = table.querySelector('tbody tr:not(.group-row)'), first = row.querySelector('th'), cell = row.querySelector('td'), head = table.querySelector('thead th'), label = table.querySelector('.group-label')
@@ -258,12 +261,11 @@ try {
   let collapsedBounds
   const firstCase = panel.locator('.popover-case').first()
   const hasCases = await firstCase.count()
-  const initiallyOpen = await panel.locator('.popover-case[open]').count()
+  assert.equal(await panel.locator('.popover-case[open]').count(), 0, 'every test case starts closed, including failures and errors')
   if (hasCases) {
    const failed = runs.find(run => run.adapter === adapter)?.cases.some(c => c.feature === feature && ['fail', 'error'].includes(c.status)) || false
-   assert.equal(initiallyOpen, failed ? 1 : 0, 'only a failing feature opens a case initially')
-   assert.equal(await firstCase.evaluate(el => el.open), failed, 'passing and skipped cases start closed')
-   if (failed) assert(['fail', 'error'].includes(await firstCase.locator('.case-output').getAttribute('data-status')), 'the initial case prioritizes a failure')
+   assert.equal(await panel.locator('.metric-value:visible').count(), 0, 'case measurements stay hidden until a case is selected')
+   if (failed) assert(['fail', 'error'].includes(await firstCase.locator('.case-output').getAttribute('data-status')), 'failures are listed first without opening automatically')
   }
   if (screenshot && !expandCase) await page.screenshot({ path: join(shots, screenshot) })
   if (expandCase) {
@@ -275,7 +277,7 @@ try {
    const values = await firstCase.locator('.metric-value').allTextContents()
    if (!await firstCase.evaluate(el => el.open)) await firstCase.locator(':scope > summary').click()
    await opened(); await visual()
-   assert.deepEqual(await firstCase.locator('.metric-value:visible').allTextContents(), values, 'opening a passing case reveals its unchanged measured values')
+   assert.deepEqual(await firstCase.locator('.metric-value:visible').allTextContents(), values, 'opening a case reveals its unchanged measured values')
    if (await firstCase.locator('.case-context').count()) assert(await firstCase.locator('.case-context').first().isVisible(), 'fixture context remains readable without chips')
    if (await firstCase.locator('.metric-grid').count()) {
     assert(await firstCase.locator('.metric-grid').isVisible(), 'the open case shows its measured result')
@@ -340,7 +342,7 @@ try {
   for (const key of ['Enter', 'Space']) {
    await trigger.evaluate(el => el.focus({ preventScroll: true }))
    await page.keyboard.press(key); await opened(); await folded()
-   assert.equal(await panel.locator('.popover-case[open]').count(), initiallyOpen, 'reopening restores the initial case disclosures')
+   assert.equal(await panel.locator('.popover-case[open]').count(), 0, 'reopening resets every case to closed')
    await page.keyboard.press('Escape'); await closed()
   }
   await trigger.click(); await opened(); await folded()
@@ -352,13 +354,13 @@ try {
   assert.deepEqual(await archive.locator('script.visual-template').allTextContents(), templates, 'cell popovers preserve inert archive graphics for later visits')
  }
  await mkdir(shots, { recursive: true })
- for (const width of [1440, 768, 414, 375, 320]) {
+ for (const width of [2560, 1920, 1440, 768, 414, 375, 320]) {
   await freshPage({ width, height: width > 700 ? 1000 : 844 }); await page.goto(url)
   await allSections(page); await readableText()
   assert.equal(await page.locator('#evidence .metric').count(), 0, 'archived metric rows do not populate the initial DOM')
   assert.equal(await page.locator('#speed-evidence svg').count(), 0, 'speed evidence has no decorative charts')
   if (width === 1440) await checkSpeedColors()
-  if (width === 1440 || width === 375) await page.screenshot({ path: join(shots, `report-${width}.png`) })
+  if (width >= 1440 || width === 375) await page.screenshot({ path: join(shots, `report-${width}.png`) })
   for (const panel of ['#feature-panel', '#speed-panel', '#basic-panel']) await checkMatrix(panel)
   if (width === 1440 || width === 375) {
    await page.evaluate(() => { const section = document.getElementById('speed'); scrollTo(0, section.offsetTop - 16) })
@@ -419,20 +421,28 @@ try {
   }
   assert.equal(await page.locator('.matrix .bench-detail').count(), 0, 'speed details never expand the table')
   assert(await page.locator('td[data-ms] .result').evaluateAll(cells => cells.every(el => /^(\d+(\.\d+)?|<0\.01)$/.test(el.textContent.trim()))))
-  for (const id of ['planned', 'evidence', 'ecosystem', 'methodology']) {
+  for (const id of ['planned', 'ecosystem', 'methodology']) {
    const disclosure = page.locator(`details#${id}`)
    if (!await disclosure.isVisible()) continue
    await disclosure.locator(':scope > summary').click(); assert(await disclosure.evaluate(el => el.open))
    await readableText()
    await disclosure.locator(':scope > summary').click(); assert.equal(await disclosure.evaluate(el => el.open), false)
   }
-  const failure = page.locator('#failures a[href^="#case-"]').first()
-  if (await failure.count()) {
-   await page.locator('#failures > summary').click()
-   const href = await failure.getAttribute('href')
+  const failure = runs.flatMap(run => run.cases).find(c => c.status === 'fail')
+  if (failure) {
+   const href = `#case-${failure.id}`
    const waitForCase = (focus = true) => page.waitForFunction(({ id, focus }) => { const el = document.getElementById(id); if (!el?.open || el.querySelector('script.visual-template')) return false; for (let p = el; p; p = p.parentElement) if (p.tagName === 'DETAILS' && !p.open) return false; return !focus || document.activeElement === el.querySelector('summary') }, { id: href.slice(1), focus })
-   await failure.click(); await waitForCase(); await readableText()
+   await page.evaluate(href => { location.hash = href }, href); await waitForCase(); await readableText()
+   assert.equal(await page.locator('.cell-details > details:visible').count(), 1, 'a case fragment reveals only its own feature record')
    assert(await page.locator(`[id=${JSON.stringify(href.slice(1))}] .metric`).count() > 0, 'archive hash navigation creates measurement rows for the selected case')
+   const previous = page.locator(`[id=${JSON.stringify(failure.feature)}]`)
+   const other = await page.locator('.feature-row').evaluateAll((rows, feature) => rows.find(row => row.dataset.feature !== feature)?.querySelector('th a')?.getAttribute('href'), failure.feature)
+   if (other) {
+    await page.evaluate(href => { location.hash = href }, other)
+    await page.waitForFunction(href => document.getElementById(href.slice(1))?.open, other)
+    assert.equal(await previous.isVisible(), false, 'moving to another feature fragment hides the previous source record')
+    assert.equal(await page.locator('.cell-details > details:visible').count(), 1, 'fragment navigation never opens a second source catalog')
+   }
    await page.goto('about:blank'); await page.goto(url + href); await waitForCase(false)
   }
   for (const fragment of ['#missing-feature', '#%E0%A4%A']) { await page.goto('about:blank'); await page.goto(url + fragment); await allSections(page) }
@@ -447,7 +457,7 @@ try {
   const response = await page.request.get(`${url}/${name}`); assert(response.ok())
   const data = await response.json(); if (name === 'results.json') assert.equal(data.runs.length, input.runs.length)
  }
- for (const selector of ['#failures a[href$="case.json"]', 'a[href$="input.wav"]']) {
+ for (const selector of ['#evidence a[href$="case.json"]', '#evidence a[href$="input.wav"]']) {
   const artifact = page.locator(selector).first()
   if (await artifact.count()) assert((await page.request.get(new URL(await artifact.getAttribute('href'), url).href)).ok())
  }
@@ -455,8 +465,7 @@ try {
  const staticPage = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 375, height: 844 } })
  await staticPage.goto(url); await allSections(staticPage)
  await staticPage.locator('.contents a[href="#speed"]').click(); assert.equal(new URL(staticPage.url()).hash, '#speed')
- await staticPage.locator('#evidence > summary').click(); assert(await staticPage.locator('#evidence').evaluate(el => el.open))
- await staticPage.locator('#evidence > summary').click(); assert.equal(await staticPage.locator('#evidence').evaluate(el => el.open), false)
+ let previousEvidence
  for (const selector of ['#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
   const link = staticPage.locator(selector).first()
   if (!await link.count()) continue
@@ -465,10 +474,13 @@ try {
   await link.click(); assert.equal(new URL(staticPage.url()).hash, href)
   const evidence = staticPage.locator(`[id=${JSON.stringify(href.slice(1))}]`)
   assert(await evidence.isVisible(), 'linked evidence can be read without JavaScript')
+  assert.equal(await staticPage.locator('.cell-details > details:visible').count(), 1, 'native fragment links reveal only the requested record')
+  if (previousEvidence) assert.equal(await previousEvidence.isVisible(), false, 'following another native fragment hides the previous record')
+  previousEvidence = evidence
+  if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
   const recorded = await link.evaluate(el => ({ adapter: el.closest('td').dataset.tool, id: el.closest('tr').dataset.case }))
   const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)
   if (result) {
-   if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
    const timed = result.status === 'pass' && Number.isFinite(result.medianMs) && result.medianMs > 0
    assert(await evidence.locator(timed ? '[data-stat="median"]' : '.speed-state').isVisible(), 'timing and status remain readable without JavaScript')
    assert.equal(await evidence.locator('.technical-details[open]').count(), 0, 'raw timing evidence stays folded without JavaScript')
@@ -479,6 +491,8 @@ try {
  const fallbackPage = await browser.newPage({ viewport: { width: 375, height: 844 } })
  await fallbackPage.addInitScript(() => { delete HTMLElement.prototype.showPopover })
  await fallbackPage.goto(url)
+ assert.equal(await fallbackPage.locator('.cell-details > details:visible').count(), 0, 'source records start hidden without the Popover API')
+ previousEvidence = null
  for (const selector of ['#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
   const fallbackLink = fallbackPage.locator(selector).first()
   if (!await fallbackLink.count()) continue
@@ -486,10 +500,13 @@ try {
   await fallbackLink.click(); assert.equal(new URL(fallbackPage.url()).hash, href)
   const evidence = fallbackPage.locator(`[id=${JSON.stringify(href.slice(1))}]`)
   assert(await evidence.isVisible(), 'browsers without the Popover API retain evidence links')
+  assert.equal(await fallbackPage.locator('.cell-details > details:visible').count(), 1, 'the Popover fallback reveals only the requested record')
+  if (previousEvidence) assert.equal(await previousEvidence.isVisible(), false, 'following another fallback link hides the previous record')
+  previousEvidence = evidence
+  if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
   const recorded = await fallbackLink.evaluate(el => ({ adapter: el.closest('td').dataset.tool, id: el.closest('tr').dataset.case }))
   const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)
   if (result) {
-   if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
    const timed = result.status === 'pass' && Number.isFinite(result.medianMs) && result.medianMs > 0
    assert(await evidence.locator(timed ? '[data-stat="median"]' : '.speed-state').isVisible(), 'timing and status remain readable without the Popover API')
    assert.equal(await evidence.locator('.technical-details[open]').count(), 0, 'raw timing evidence stays folded without the Popover API')
@@ -498,5 +515,5 @@ try {
  }
  await fallbackPage.close()
  assert.deepEqual(errors, [])
- console.log(`Report verified: ${runs.length} contenders, ${behaviorCount} features, ${basicCount} basic checks, ${benchCases.length} speed cases; page scrolling, sticky labels and headers, contextual cell details, downloads, keyboard navigation, JavaScript disabled, Popover API fallback, and five viewport widths`)
+ console.log(`Report verified: ${runs.length} contenders, ${behaviorCount} features, ${basicCount} basic checks, ${benchCases.length} speed cases; page scrolling, sticky labels and headers, collapsed cell details, targeted evidence, downloads, keyboard navigation, JavaScript disabled, Popover API fallback, and seven viewport widths`)
 } finally { await browser?.close(); await new Promise(resolve => server.close(resolve)) }

@@ -22,7 +22,7 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; }
-main { max-width: 1250px; margin: 0 auto; padding: 24px 28px 56px; }
+main { padding: 24px 28px 56px; }
 a { color: var(--link); text-underline-offset: 3px; }
 a:hover { text-decoration-thickness: 2px; }
 summary { cursor: pointer; -webkit-tap-highlight-color: transparent; }
@@ -141,7 +141,8 @@ li { overflow-wrap: anywhere; }
 .overhead p, .overhead ul { margin: 8px 0; }
 
 .archive { margin: 0; border-top: 1px solid var(--line); }
-#failures { margin-top: 28px; }
+.cell-details > details { display: none; }
+.cell-details > details:target, .cell-details > details:has(:target) { display: block; }
 .archive > summary { min-height: 52px; padding: 15px 0; font-size: 15px; font-weight: 550; }
 .archive > summary:hover, .contract > summary:hover, .package-entry summary:hover { color: var(--link); }
 .archive > summary small { margin-left: 7px; font-weight: 400; }
@@ -161,7 +162,7 @@ li { overflow-wrap: anywhere; }
 .case-tools .pass { color: var(--pass-ink); }
 .case-tools .fail, .case-tools .error { color: var(--partial-ink); }
 .case-tools .skip { color: var(--muted); }
-.archive [id] { scroll-margin-top: 16px; }
+.archive [id], .cell-details [id] { scroll-margin-top: 16px; }
 #package-rows { list-style: none; padding: 0; }
 #package-rows > li { margin: 0; border-top: 1px solid var(--line); }
 .package-entry summary { padding: 11px 0; min-height: 44px; font-size: 13px; }

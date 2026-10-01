@@ -76,6 +76,8 @@ test('the matrix preserves partial results and keeps plans in their own details'
   assert.match(row('edit.fade'), /data-popover="feature"[^>]*href="#edit\.fade"/)
   assert.match(html, /id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-tool cell-popover-title"/)
   assert.equal((html.match(/id="cell-popover"/g)||[]).length,1)
+  assert.match(html, /<div id="evidence" class="cell-details">/)
+  assert.doesNotMatch(html, /id="failures"|<summary>Results to investigate|<summary>Test details|<summary>Speed details/)
   assert.match(html, /class="case-output pass" data-tool="audio" data-status="pass"/)
   assert.match(html, /class="case-result" data-title="/)
   const basicMatrix = html.match(/<tbody id="basic-rows">([\s\S]*?)<\/tbody>/)?.[1]
