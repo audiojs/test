@@ -169,3 +169,124 @@ export function caseCopy(test = {}, result = {}) {
  test ||= {}; result ||= {}
  return { title: title(test), summary: summary(test, result) }
 }
+
+// Shared operation meanings cover behavior tests and the same processors' basic checks.
+const purposes = {
+ reverse: 'Play the audio backwards.', 'reverse-range': 'Reverse a selected part of the audio.',
+ trim: 'Keep a selected part of the audio.', remove: 'Delete a selection and join the remaining audio.',
+ pad: 'Add silence before or after the audio.', repeat: 'Repeat the clip end to end.',
+ invert: 'Flip the sign of every sample.', mute: 'Replace the audio with silence.',
+ gain: 'Multiply every sample by a volume factor.', 'gain-db': 'Change the volume by a specified number of decibels.',
+ 'fade-in': 'Raise the volume gradually from silence.', 'fade-out': 'Lower the volume gradually to silence.',
+ fade: 'Change the volume gradually along a chosen curve.', crossfade: 'Blend the end of one clip into the start of another.',
+ mix: 'Add one clip to another at a chosen position.', insert: 'Insert a clip and move the following audio later.',
+ derivative: 'Measure the change between adjacent samples.', integral: 'Replace each sample with the running sum of samples.',
+ swap: 'Exchange the left and right channels.', mono: 'Average the left and right channels into one.',
+ duplicate: 'Copy a mono signal into both stereo channels.', balance: 'Turn down one side of a stereo signal.',
+ min: 'Find the lowest signed sample value.', max: 'Find the highest signed sample value.',
+ peak: 'Find the largest sample magnitude, whether positive or negative.', rms: 'Measure the signal’s average power as an equivalent sample level.',
+ dc: 'Measure the average offset of the waveform from zero.', energy: 'Sum the squared sample values.',
+ zcr: 'Measure how often the waveform changes sign.',
+ lowpass: 'Reduce frequencies above the cutoff.', highpass: 'Reduce frequencies below the cutoff.',
+ bandpass: 'Keep a band of frequencies and reduce those outside it.', notch: 'Reduce a narrow band of frequencies.',
+ allpass: 'Change the timing of frequency components without changing their levels.',
+ lowshelf: 'Raise or lower the bass frequencies.', highshelf: 'Raise or lower the treble frequencies.',
+ eq: 'Raise or lower a selected band of frequencies.',
+ compressor: 'Reduce the difference between loud and quiet sections.', limiter: 'Keep sample peaks below a chosen ceiling.',
+ gate: 'Turn down the audio when it falls below a chosen level.',
+ deesser: 'Reduce harsh “s” sounds in speech.', softclip: 'Shape loud peaks to add distortion.',
+ expander: 'Make quiet parts quieter or loud parts louder.', compand: 'Control loud and quiet parts with a custom volume curve.',
+ ducker: 'Turn one track down when another gets loud.', dewind: 'Reduce bursts of wind noise and low rumble.',
+ declick: 'Remove isolated clicks and pops.', tremolo: 'Vary the volume in a repeating pattern.',
+ defeedback: 'Reduce the ringing or whistling caused by audio feedback.',
+ distortion: 'Reshape the waveform to add distortion.', freeverb: 'Add a fading trail of reflections, like sound lingering in a room.',
+ chorus: 'Layer slightly delayed and detuned copies to thicken the sound.',
+ autopan: 'Move the sound left and right in a repeating pattern.',
+ surround: 'Create a 5.1-channel mix from stereo audio.',
+ tune: 'Move detected notes towards the notes of a chosen musical scale.',
+ variable: 'Change the width of the frequency band allowed through.',
+ dcblocker: 'Remove a constant offset from the waveform.',
+ rhythm: 'Generate a click track at a chosen tempo.',
+ delay: 'Repeat the sound after a delay, with optional fading echoes.',
+ convolution: 'Apply an impulse response, such as the reflections of a room, to the audio.',
+ dither: 'Add a small amount of noise when reducing bit depth to reduce rounding distortion.',
+ denoise: 'Reduce background noise while preserving the wanted sound.',
+ resample: 'Change the sample rate while keeping the same duration and pitch.',
+ stretch: 'Change the duration without changing the pitch.', varispeed: 'Change playback speed and pitch together.',
+ pitch: 'Change the pitch without changing the duration.'
+}
+
+const featureDescriptions = {
+ 'execution.identity': ['Pass audio through without changing it.'],
+ 'execution.channel-independence': ['Process each channel without swapping it or leaking audio into another channel.'],
+ 'execution.composition': ['Apply a sequence of edits in order.', 'Checks combinations of reversal and volume changes.'],
+ 'execution.block-invariance': ['Process a clip in chunks without changing the result.', 'Compares streamed resampling with processing the whole clip, and checks edits across chunk boundaries.'],
+ 'editor.fragment-isolation': ['Edit a copy or selection without changing its source.'],
+ 'editor.undo-redo': ['Undo an edit, then apply it again.', 'Checks that undo restores the original samples and redo restores the edited samples.'],
+ 'editor.seams': ['Find abrupt jumps at the edges of an edit.', 'Checks exact reversal of a selection; smoothing clicks is not tested.'],
+ 'analysis.loudness': ['Measure perceived loudness across a clip.', 'Checks synthetic stereo signals and quiet sections using selected EBU loudness tests.'],
+ 'analysis.true-peak': ['Estimate peaks that can occur between stored samples.', 'Checks selected synthetic EBU signals, including peaks above full scale.'],
+ 'level.loudness-normalize': ['Adjust the volume to a chosen loudness while keeping peaks below a ceiling.', 'Checks a generated stereo tone; complete programmes are not tested.'],
+ 'analysis.level': ['Measure peak level, average signal level and the waveform’s offset from zero.'],
+ 'analysis.spectrum': ['Measure the frequencies in the audio and their levels.', 'Checks the frequency and amplitude of a generated tone.'],
+ 'analysis.pitch': ['Estimate a note’s fundamental frequency.', 'Checks individual generated tones; chords and recorded performances are not tested.'],
+ 'analysis.onset-tempo': ['Detect when sounds begin and estimate beats per minute.', 'Checks timing and tempo on a generated click track.']
+}
+
+const describedChecks = {
+ 'edit.crossfade': 'Checks the overlap length and the linear and equal-power fade curves.',
+ 'edit.mix': 'Checks the combined samples and position; the destination clip keeps its length.',
+ 'edit.fade': 'Checks the sample levels along linear, squared, square-root and cosine curves.',
+ 'level.gain': 'Checks the sample multiplier for each requested decibel change.',
+ 'rate.resample': 'Checks length, pitch, tone level, waveform accuracy and rejection of frequencies too high for the new rate.',
+ 'rate.stretch': 'Checks duration, tone pitch and the timing of a short burst.',
+ 'dynamics.compressor': 'Checks gain reduction and recovery as the input level changes.',
+ 'dynamics.limiter': 'Checks sample peaks and alignment in time; peaks between samples are not measured here.',
+ 'dynamics.gate': 'Checks quiet and loud sections, hold time and recovery.',
+ 'effect.delay': 'Checks the timing and level of each echo.',
+ 'effect.convolution': 'Checks the output samples and keeps the complete response tail.',
+ 'restoration.dither': 'Checks noise level, bias and sample distribution on digital silence.',
+ 'restoration.denoise': 'Checks a tone mixed with steady noise for cleaner output, retained tone level and reduced noise.'
+}
+
+function packagePurpose(feature) {
+ const description = String(feature.description || '').replace(/\s+/g, ' ').trim()
+ // Package descriptions carry the purpose; citations, brands and implementation notes stay in their docs.
+ const text = description.replace(/\s*\([^)]*\)/g, '').split(/\.\s+(?=[A-Z])/)[0].replace(/[.;,\s]+$/, '')
+ return text ? capital(text) + '.' : ''
+}
+
+/** A row explains its purpose and test scope, independently of any contender's results. */
+export function featureCopy(feature = {}) {
+ feature ||= {}
+ const id = String(feature.id || ''), [family, method = ''] = id.split('.'), operation = method.replace(/^(lowpass|highpass)1$/, '$1')
+ const basic = family === 'processor'
+ if (featureDescriptions[id]) {
+  const [description, checks = ''] = featureDescriptions[id]
+  return { description, checks }
+ }
+ let description = purposes[operation] || '', checks = describedChecks[id] || ''
+ if (basic) {
+  const pkg = feature.package || ''
+  if (!description && pkg.startsWith('@audio/reverb-')) description = 'Add a fading trail of reflections, like sound lingering in a room.'
+  if (!description && pkg.startsWith('@audio/stretch-')) description = purposes.stretch
+  if (!description && (pkg.startsWith('@audio/shift-') || pkg === '@audio/shift')) description = purposes.pitch
+  if (!description && ['@audio/denoise-spectral', '@audio/denoise-wiener', '@audio/denoise-omlsa'].includes(pkg)) description = 'Estimate background noise and reduce it in each frequency band.'
+  if (!description && pkg === '@audio/neural-denoise') description = 'Reduce background noise in speech using a trained model.'
+  if (!description && pkg.startsWith('@audio/saturate-')) description = 'Reshape the waveform to add harmonic distortion.'
+  description ||= packagePurpose(feature) || feature.contract || ''
+  return { description, checks: 'Checks valid output and that the original audio stays unchanged. Sound quality is not tested.' }
+ }
+ if (family === 'neutral') return { description: description || packagePurpose(feature) || feature.contract || '', checks: 'Checks that neutral settings leave every sample unchanged.' }
+ if (family === 'filter') {
+  if (method === 'biquad') description = 'A two-pole low-pass filter reduces frequencies above its cutoff.'
+  checks = method === 'biquad' ? 'Checks a tone at the cutoff for a 3.01 dB reduction.' : method === 'allpass' ? 'Checks that tone levels stay unchanged; phase response is not tested.' : 'Checks tone levels below, at and above the cutoff or selected frequency.'
+ }
+ if (family === 'codec') return { description: ({wav:'Save uncompressed audio samples in a WAV file.',flac:'Compress audio without losing any sample data.'})[method] || `Save audio as ${method.toUpperCase()} and read it back.`, checks: 'Checks that 16-bit samples, channels and sample rate survive unchanged, including reading the file in chunks.' }
+ if (family === 'editor' && ['copy-reverse', 'clip-reverse', 'clone-reverse'].includes(method)) return { description: `Reverse ${method === 'clip-reverse' ? 'a selected clip' : method === 'clone-reverse' ? 'a clone' : 'a copy'} without changing the original audio.`, checks: '' }
+ if (id === 'editor.undo') return { description: 'Return the audio to its state before an edit.', checks: '' }
+ if (id === 'editor.stream') return { description: 'Read the audio in successive chunks.', checks: 'Checks that the streamed samples match the complete returned clip.' }
+ if (id === 'level.peak-normalize') return { description: 'Adjust the volume so the highest sample reaches the target.', checks: 'Checks a shared volume change across channels and leaves silence unchanged.' }
+ if (id === 'level.gain') description = purposes['gain-db']
+ return { description: description || feature.contract || packagePurpose(feature), checks }
+}

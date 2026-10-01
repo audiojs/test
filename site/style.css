@@ -79,7 +79,7 @@ li { overflow-wrap: anywhere; }
 .matrix .result { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; min-height: 39px; padding: 9px 7px; color: inherit; text-decoration: none; }
 .matrix td:has(> .result) { cursor: pointer; }
 .matrix td:has(> .result):hover { box-shadow: inset 0 0 0 2px currentColor; }
-.matrix td:has(> .result[aria-expanded="true"]) { box-shadow: inset 0 0 0 2px var(--focus); }
+.matrix :is(td, th):has(> [data-popover][aria-expanded="true"]) { box-shadow: inset 0 0 0 2px var(--focus); }
 .matrix a:focus-visible { outline-offset: -3px; }
 .matrix td.pass { background: var(--pass); color: var(--pass-ink); }
 .matrix td.fail, .matrix td.error, .matrix td.partial { background: var(--partial); color: var(--partial-ink); }
@@ -101,6 +101,7 @@ li { overflow-wrap: anywhere; }
 .popover-body { min-height: 0; padding: 14px 16px 16px; overflow: auto; overscroll-behavior: contain; overflow-wrap: anywhere; }
 .popover-body p { margin: 0 0 12px; }
 .popover-body > :last-child { margin-bottom: 0; }
+.feature-checks { color: var(--muted); font-size: 12px; }
 .result-summary { margin-bottom: 10px; font-size: 15px; font-weight: 550; font-variant-numeric: tabular-nums; }
 .result-summary .fail, .result-summary .error { color: #a43b34; }
 .result-summary .skip { color: var(--muted); }

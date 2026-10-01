@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile, cp, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { loadSpec } from './spec.js'
-import { caseCopy } from './report-copy.js'
+import { caseCopy, featureCopy } from './report-copy.js'
 import { caseVisual } from './report-visual.js'
 import { renderMetrics } from './report-graphics.js'
 
@@ -91,7 +91,7 @@ export async function generateReport(results, options={}) {
        return {...featureResult(cases,cs.length,basic),counts:[pass,fail,error,Math.max(cs.length,cases.length)-pass-fail-error]}
      })
      const statuses=[...new Set([...values.map(v=>v.state),...reported.flat().filter(c=>['fail','error'].includes(c.status)).map(c=>c.status)])]
-     return `<tr class="feature-row" data-feature="${esc(f.id)}" data-scope="${basic?'integrity':'behavior'}" data-status="${statuses.join(' ')}"><th scope="row"><a href="#${esc(f.id)}">${esc(featureName(f))}</a></th>${values.map((v,i)=>`<td class="${v.state}" data-tool="${esc(runs[i].adapter)}"><a class="result" data-popover="feature" data-counts="${v.counts.join(',')}" data-description="${esc(v.description)}" href="#${esc(f.id)}" aria-label="${esc(`${name(runs[i].adapter)}, ${featureName(f)}: ${v.description}`)}">${v.label}</a></td>`).join('')}</tr>`
+     return `<tr class="feature-row" data-feature="${esc(f.id)}" data-scope="${basic?'integrity':'behavior'}" data-status="${statuses.join(' ')}"><th scope="row"><a data-popover="info" href="#info-${esc(f.id)}">${esc(featureName(f))}</a></th>${values.map((v,i)=>`<td class="${v.state}" data-tool="${esc(runs[i].adapter)}"><a class="result" data-popover="feature" data-counts="${v.counts.join(',')}" data-description="${esc(v.description)}" href="#${esc(f.id)}" aria-label="${esc(`${name(runs[i].adapter)}, ${featureName(f)}: ${v.description}`)}">${v.label}</a></td>`).join('')}</tr>`
    }).join('')
  }).join(''):''
  // Inert markup keeps closed results out of the rendered DOM. Values are HTML-escaped before templating.
@@ -111,6 +111,11 @@ export async function generateReport(results, options={}) {
    }
    if(skipped.length)outputs.push(`<p class="not-tested">Not tested: ${skipped.map(esc).join(', ')}.</p>`)
    return outputs.join('')
+ }
+ const featureInfo = f => {
+   const description=spec.ecosystem.packages.find(p=>p.name===f.package)?.description
+   const copy=featureCopy({...f,description})
+   return `<details id="info-${esc(f.id)}" class="feature-info"><summary>${esc(featureName(f))}</summary><p>${esc(copy.description)}</p>${copy.checks&&copy.checks!==copy.description?`<p class="feature-checks">${esc(copy.checks)}</p>`:''}</details>`
  }
  const contract = f => {
    const cs=featureCases(f),method=cs.find(c=>c.steps?.length)?.steps[0]?.op
@@ -231,6 +236,7 @@ export async function generateReport(results, options={}) {
 <section id="features" class="comparison" tabindex="-1" aria-labelledby="features-title"><h2 id="features-title">Features <small>${featureCount}</small></h2><div id="feature-panel"><p class="legend"><span class="pass-key">✓ Passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not compared</span></p><p class="note">— means no comparable result, usually because the adapter has no equivalent mapping. It does not mean a missing feature.</p>${runs.length?`<div class="table-wrap"><table class="matrix" aria-label="Feature comparison" style="--tool-count:${runs.length}">${tableHead()}<tbody id="feature-rows">${featureRows(false)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
 <section id="speed" class="comparison" tabindex="-1" aria-labelledby="speed-title"><h2 id="speed-title">Speed <small>${benchCases.length}</small></h2><div id="speed-panel">${benchHtml}</div></section>
 <section id="basic-checks" class="comparison" tabindex="-1" aria-labelledby="basic-title"><h2 id="basic-title">Basic checks <small>${basicCount}</small></h2><div id="basic-panel"><p id="basic-note" class="note">Checks for valid output and unchanged input. Effect quality is not tested.</p><p class="legend"><span class="basic-key">○ Basic checks passed / tests</span><span class="partial-key">◐ Partly tested</span><span>! Difference</span><span class="skip-key">— Not compared</span></p>${runs.length?`<div class="table-wrap"><table class="matrix basic-matrix" aria-label="Basic checks comparison" style="--tool-count:${runs.length}">${tableHead()}<tbody id="basic-rows">${featureRows(true)}</tbody></table></div>`:'<p>No tool results in this run.</p>'}</div></section>
+<div id="feature-info" class="cell-details">${measured.map(featureInfo).join('')}</div>
 <div id="evidence" class="cell-details">${measured.map(contract).join('')}</div>
 ${benchEvidence?`<div id="speed-evidence" class="cell-details">${benchEvidence}</div>`:''}
 <details id="planned" class="archive"${planned.length?'':' hidden'}><summary>Planned tests <small>${planned.length} features</small></summary>${planned.map(contract).join('')}</details>

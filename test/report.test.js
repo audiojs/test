@@ -74,6 +74,11 @@ test('the matrix preserves partial results and keeps plans in their own details'
   assert(row('edit.fade').includes(`◐ 2/${fade.length}`))
   assert.doesNotMatch(row('edit.fade'), /class="[^"]*\bpass\b/)
   assert.match(row('edit.fade'), /data-popover="feature"[^>]*href="#edit\.fade"/)
+  assert.match(row('edit.fade'), /<th scope="row"><a data-popover="info" href="#info-edit\.fade">/)
+  const info=html.match(/<details id="info-edit\.fade" class="feature-info">([\s\S]*?)<\/details>/)?.[1]
+  assert(info, 'row descriptions have a separate target from recorded results')
+  assert.match(info, /<p>[^<]+<\/p>/)
+  assert.doesNotMatch(info, /case-output|case-result|<pre|<code|data-counts|<details/,'feature descriptions contain no run logs or raw records')
   assert.match(html, /id="cell-popover" popover="auto" role="dialog" aria-labelledby="cell-popover-tool cell-popover-title"/)
   assert.equal((html.match(/id="cell-popover"/g)||[]).length,1)
   assert.match(html, /<div id="evidence" class="cell-details">/)
@@ -83,6 +88,7 @@ test('the matrix preserves partial results and keeps plans in their own details'
   const basicMatrix = html.match(/<tbody id="basic-rows">([\s\S]*?)<\/tbody>/)?.[1]
   assert(basicMatrix.includes(`○ ${basic.length}/${basic.length}`))
   assert(basicMatrix.includes('data-feature="processor.compressor"'))
+  assert.match(basicMatrix, /data-popover="info" href="#info-processor\.compressor"/)
   assert.equal(row('processor.compressor'), undefined, 'basic checks have a separate permanent table')
   assert.doesNotMatch(basicMatrix, /<td class="pass"/)
   const statuses = row('edit.reverse').match(/data-status="([^"]*)"/)[1].split(' ')

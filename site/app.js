@@ -40,14 +40,20 @@ if(popover&&typeof popover.showPopover==='function'){
   if(focus)active?.focus({preventScroll:true})
  }
  function content(trigger){
-  const cell=trigger.closest('td'),row=cell.parentElement,table=cell.closest('table')
-  const column=[...table.tHead.querySelectorAll('[data-tool]')].find(th=>th.dataset.tool===cell.dataset.tool)
+  const cell=trigger.closest('td, th'),row=cell.parentElement,table=cell.closest('table')
   const label=row.querySelector('th').cloneNode(true),clip=label.querySelector('small')
   const clipText=clip?.textContent;clip?.remove()
   heading.textContent=label.textContent.trim()
-  popover.querySelector('.popover-tool').textContent=column.querySelector('a').textContent
+  const tool=popover.querySelector('.popover-tool'),info=trigger.dataset.popover==='info'
+  tool.hidden=info;tool.textContent=''
   body.replaceChildren()
   const source=document.getElementById(trigger.hash.slice(1))
+  if(info){
+   for(const paragraph of source.querySelectorAll(':scope > p'))body.append(paragraph.cloneNode(true))
+   return
+  }
+  const column=[...table.tHead.querySelectorAll('[data-tool]')].find(th=>th.dataset.tool===cell.dataset.tool)
+  tool.textContent=column.querySelector('a').textContent
   if(trigger.dataset.popover==='speed'){
    const context=[clipText,column.querySelector('.environment')?.textContent].filter(Boolean).join(', ')
    if(context)body.append(element('div',context,'speed-clip'))
@@ -99,7 +105,7 @@ if(popover&&typeof popover.showPopover==='function'){
   }
  }
  function position(trigger){
-  const rect=trigger.closest('td').getBoundingClientRect(),gap=8,edge=12
+  const rect=trigger.closest('td, th').getBoundingClientRect(),gap=8,edge=12
   const width=document.documentElement.clientWidth,height=document.documentElement.clientHeight
   const below=height-rect.bottom-gap-edge,above=rect.top-gap-edge,down=below>=Math.min(480,above)
   popover.style.maxHeight=`${Math.min(480,height-2*edge,Math.max(64,down?below:above))}px`
@@ -116,23 +122,23 @@ if(popover&&typeof popover.showPopover==='function'){
   position(trigger);body.scrollTop=0
   closeButton.focus({preventScroll:true})
  }
- for(const trigger of document.querySelectorAll('.result[data-popover]')){
+ for(const trigger of document.querySelectorAll('[data-popover]')){
   trigger.setAttribute('role','button')
   trigger.setAttribute('aria-haspopup','dialog')
   trigger.setAttribute('aria-controls',popover.id)
   trigger.setAttribute('aria-expanded','false')
  }
  // Remember a press on the active cell before native light-dismiss runs.
- document.addEventListener('pointerdown',e=>{pressed=popover.matches(':popover-open')&&e.target.closest('td')===active?.closest('td')?active:null},true)
+ document.addEventListener('pointerdown',e=>{pressed=popover.matches(':popover-open')&&e.target.closest('td, th')===active?.closest('td, th')?active:null},true)
  document.addEventListener('click',e=>{
   if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return
-  const trigger=e.target.closest('td')?.querySelector('.result[data-popover]')
+  const trigger=e.target.closest('td, th')?.querySelector('[data-popover]')
   if(!trigger)return
   e.preventDefault();open(trigger);pressed=null
  })
  document.addEventListener('keydown',e=>{
   if(e.key==='Escape'&&popover.matches(':popover-open')){e.preventDefault();close(true)}
-  if(e.key===' '&&e.target.matches('.result[data-popover]')){e.preventDefault();e.target.click()}
+  if(e.key===' '&&e.target.matches('[data-popover]')){e.preventDefault();e.target.click()}
  })
  popover.addEventListener('beforetoggle',e=>{if(e.newState==='closed')active?.setAttribute('aria-expanded','false')})
  popover.addEventListener('toggle',()=>{if(popover.matches(':popover-open'))position(active)},true)

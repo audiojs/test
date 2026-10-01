@@ -45,6 +45,8 @@ try {
   for (const id of ['features', 'speed', 'basic-checks']) assert(await page.locator(`#${id}`).isVisible(), `${id} remains visible`)
   assert.equal(await page.locator('#feature-rows .feature-row:visible').count(), behaviorCount)
   assert.equal(await page.locator('#basic-rows .feature-row:visible').count(), basicCount)
+  assert.equal(await page.locator('#feature-rows th a[data-popover="info"]').count(), behaviorCount, 'every feature row has a description link')
+  assert.equal(await page.locator('#basic-rows th a[data-popover="info"]').count(), basicCount, 'every basic-check row has a description link')
   assert.equal(await page.locator('.speed-row:visible').count(), benchCases.length)
   assert.equal(await page.locator('input, select, form, .view-tab').count(), 0, 'browsing needs no search or filtering controls')
   assert.equal(await page.locator('#failures, details#evidence, details#speed-evidence').count(), 0, 'duplicate result archives are absent')
@@ -64,6 +66,12 @@ try {
   await page.evaluate(() => scrollTo(0, scrollY))
   const clipped = await page.locator('.masthead, .intro, .contents, .comparison > h2, .note, .legend, main > .archive, footer').evaluateAll(elements => elements.filter(el => el.getClientRects().length).filter(el => { const box = el.getBoundingClientRect(); return box.left < -1 || box.right > innerWidth + 1 }).map(el => el.id || el.className))
   assert.deepEqual(clipped, [], 'text outside tables fits the viewport')
+ }
+ const descriptionOnly = async container => {
+  const paragraphs = await container.locator(':scope > p:visible').allTextContents()
+  assert(paragraphs.length > 0 && paragraphs.length <= 2 && paragraphs.every(text => text.trim()), 'row information contains one description and an optional scope note')
+  assert.equal(await container.locator('details, pre, code, table, a, .result-summary, .case-output, .bench-output, .metric').count(), 0, 'row descriptions contain no results, logs, or evidence controls')
+  return paragraphs
  }
  const checkMatrix = async panel => {
   const table = page.locator(`${panel} table`)
@@ -146,6 +154,7 @@ try {
   const trigger = page.locator(selector).first()
   if (!await trigger.count()) return
   const cell = trigger.locator('..'), panel = page.locator('#cell-popover')
+  const info = await trigger.getAttribute('data-popover') === 'info'
   const href = await trigger.getAttribute('href'), archive = page.locator(`[id=${JSON.stringify(href.slice(1))}]`)
   const templates = await archive.locator('script.visual-template').allTextContents()
   await cell.evaluate((cell, bottom) => {
@@ -180,7 +189,7 @@ try {
   const visual = async () => {
    assert.doesNotMatch(await panel.innerText(), /·/, 'visible cell details use layout rather than middle-dot separators')
    const paragraphs = await panel.locator('p:visible').allTextContents()
-   assert(paragraphs.every(text => text.trim().length <= 120), 'default cell details contain compact labels rather than long paragraphs')
+   if (!info) assert(paragraphs.every(text => text.trim().length <= 120), 'default cell details contain compact labels rather than long paragraphs')
    assert.equal(await panel.locator('svg, .result-bar, .case-chips, .pill, .speed-peers').count(), 0, 'results use text and measured values without decorative charts or chips')
    assert.equal(await panel.locator('.case-output a:visible').count(), 0, 'reproduction links stay inside folded Evidence')
    const metrics = await panel.locator('.metric[data-value]:visible').evaluateAll(metrics => metrics.map(metric => [metric.dataset.value, metric.dataset.min, metric.dataset.max].filter(value => value !== undefined)))
@@ -189,9 +198,16 @@ try {
   const box = await cell.boundingBox()
   await cell.click({ position: { x: box.width - 4, y: box.height - 4 } }); await opened(); await folded(); await visual()
   const adapter = await cell.getAttribute('data-tool'), feature = await cell.evaluate(cell => cell.parentElement.dataset.feature)
-  const toolName = await cell.evaluate(cell => cell.closest('table').querySelector(`thead th[data-tool="${cell.dataset.tool}"] a`).textContent)
-  assert((await panel.textContent()).includes(toolName), 'cell details identify the selected tool')
-  if (feature) {
+  if (info) {
+   assert.equal(await panel.locator('h3').textContent(), await trigger.textContent(), 'row information names the selected feature')
+   assert.equal((await panel.locator('.popover-tool').textContent()).trim(), '', 'row information clears the previous tool label')
+   assert.equal(await panel.locator('.popover-tool').isVisible(), false, 'row information has no visible tool label')
+   assert.deepEqual(await descriptionOnly(panel.locator('.popover-body')), await archive.locator(':scope > p').allTextContents(), 'row information shows only the selected description')
+  } else {
+   const toolName = await cell.evaluate(cell => cell.closest('table').querySelector(`thead th[data-tool="${cell.dataset.tool}"] a`).textContent)
+   assert((await panel.textContent()).includes(toolName), 'cell details identify the selected tool')
+  }
+  if (feature && !info) {
    const rowName = await cell.evaluate(cell => cell.parentElement.querySelector('th a').textContent)
    assert((await panel.textContent()).includes(rowName), 'feature details identify the selected row')
    const failures = runs.find(run => run.adapter === adapter)?.cases.filter(c => c.feature === feature && ['fail', 'error'].includes(c.status)) || []
@@ -376,6 +392,7 @@ try {
    assert.equal(new URL(page.url()).hash, `#${section}`)
    await allSections(page)
   }
+  for (const section of ['feature', 'basic']) await checkPopover(`#${section}-rows th a[data-popover="info"]`, { bottom: true, screenshot: `report-${section}-info-${width}.png` })
   const partial = runs.flatMap(run => [...new Set(active.filter(c => c.level !== 'integrity').map(c => c.feature))].map(feature => ({ adapter: run.adapter, feature, value: featureResult(run.cases.filter(c => c.feature === feature), active.filter(c => c.feature === feature).length) }))).find(item => item.value.state === 'partial')
   if (partial) assert.equal(await page.locator(`.feature-row[data-feature="${partial.feature}"] td[data-tool="${partial.adapter}"]`).textContent(), partial.value.label)
   for (const selector of ['#feature-rows td.fail .result[data-popover]', '#feature-rows td.error .result[data-popover]', '#feature-rows td.pass .result[data-popover]', '#feature-rows td.skip .result[data-popover]', '#basic-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.error .result[data-popover]', '.speed-row td.skip .result[data-popover]']) await checkPopover(selector, { screenshot: selector.includes('td.pass') ? `report-pass-${width}.png` : undefined })
@@ -419,6 +436,32 @@ try {
    assert.equal(await second.getAttribute('aria-expanded'), 'false', 'resizing dismisses the panel')
    await page.setViewportSize({ width: 1440, height: 1000 })
   }
+  if (width === 1440 && runs.length) {
+   const panel = page.locator('#cell-popover'), before = await page.evaluate(() => ({ x: scrollX, y: scrollY, hash: location.hash }))
+   for (const selector of ['#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#basic-rows td .result[data-popover]', '#feature-rows th a[data-popover="info"]']) {
+    const trigger = page.locator(selector).first(), info = await trigger.getAttribute('data-popover') === 'info'
+    await trigger.evaluate(el => el.click())
+    await page.waitForFunction(() => document.getElementById('cell-popover').matches(':popover-open'))
+    assert.equal(await page.locator('[data-popover][aria-expanded="true"]').count(), 1, 'switching between descriptions and results leaves one active trigger')
+    assert.equal(await trigger.getAttribute('aria-expanded'), 'true')
+    const label = await trigger.evaluate(el => el.closest('tr').querySelector('th a').textContent)
+    assert.equal(await panel.locator('h3').textContent(), label, 'switching replaces the feature title')
+    if (info) {
+     const href = await trigger.getAttribute('href')
+     assert.deepEqual(await descriptionOnly(panel.locator('.popover-body')), await page.locator(`[id=${JSON.stringify(href.slice(1))}] > p`).allTextContents(), 'switching to information replaces all previous content')
+     assert.equal((await panel.locator('.popover-tool').textContent()).trim(), '')
+     assert.equal(await panel.locator('.popover-tool').isVisible(), false)
+    } else {
+     const tool = await trigger.evaluate(el => el.closest('table').querySelector(`thead th[data-tool="${el.closest('td').dataset.tool}"] a`).textContent)
+     assert.equal(await panel.locator('.popover-tool').textContent(), tool, 'switching to results restores the selected tool')
+     assert(await panel.locator('.popover-tool').isVisible())
+     assert(await panel.locator('.result-summary').isVisible())
+     assert.equal(await panel.locator('.popover-body > p').count(), 0, 'result content clears the previous description')
+    }
+    assert.deepEqual(await page.evaluate(() => ({ x: scrollX, y: scrollY, hash: location.hash })), before, 'switching popover types does not navigate the page')
+   }
+   await page.keyboard.press('Escape')
+  }
   assert.equal(await page.locator('.matrix .bench-detail').count(), 0, 'speed details never expand the table')
   assert(await page.locator('td[data-ms] .result').evaluateAll(cells => cells.every(el => /^(\d+(\.\d+)?|<0\.01)$/.test(el.textContent.trim()))))
   for (const id of ['planned', 'ecosystem', 'methodology']) {
@@ -436,7 +479,7 @@ try {
    assert.equal(await page.locator('.cell-details > details:visible').count(), 1, 'a case fragment reveals only its own feature record')
    assert(await page.locator(`[id=${JSON.stringify(href.slice(1))}] .metric`).count() > 0, 'archive hash navigation creates measurement rows for the selected case')
    const previous = page.locator(`[id=${JSON.stringify(failure.feature)}]`)
-   const other = await page.locator('.feature-row').evaluateAll((rows, feature) => rows.find(row => row.dataset.feature !== feature)?.querySelector('th a')?.getAttribute('href'), failure.feature)
+   const other = await page.locator('.feature-row').evaluateAll((rows, feature) => rows.find(row => row.dataset.feature !== feature)?.querySelector('td .result')?.getAttribute('href'), failure.feature)
    if (other) {
     await page.evaluate(href => { location.hash = href }, other)
     await page.waitForFunction(href => document.getElementById(href.slice(1))?.open, other)
@@ -466,7 +509,7 @@ try {
  await staticPage.goto(url); await allSections(staticPage)
  await staticPage.locator('.contents a[href="#speed"]').click(); assert.equal(new URL(staticPage.url()).hash, '#speed')
  let previousEvidence
- for (const selector of ['#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
+ for (const selector of ['#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
   const link = staticPage.locator(selector).first()
   if (!await link.count()) continue
   const href = await link.getAttribute('href')
@@ -478,7 +521,11 @@ try {
   if (previousEvidence) assert.equal(await previousEvidence.isVisible(), false, 'following another native fragment hides the previous record')
   previousEvidence = evidence
   if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
-  const recorded = await link.evaluate(el => ({ adapter: el.closest('td').dataset.tool, id: el.closest('tr').dataset.case }))
+  if (await link.getAttribute('data-popover') === 'info') {
+   assert.equal(await evidence.locator(':scope > summary').textContent(), await link.textContent())
+   await descriptionOnly(evidence)
+  }
+  const recorded = await link.evaluate(el => ({ adapter: el.closest('td, th').dataset.tool, id: el.closest('tr').dataset.case }))
   const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)
   if (result) {
    const timed = result.status === 'pass' && Number.isFinite(result.medianMs) && result.medianMs > 0
@@ -493,7 +540,7 @@ try {
  await fallbackPage.goto(url)
  assert.equal(await fallbackPage.locator('.cell-details > details:visible').count(), 0, 'source records start hidden without the Popover API')
  previousEvidence = null
- for (const selector of ['#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
+ for (const selector of ['#feature-rows th a[data-popover="info"]', '#basic-rows th a[data-popover="info"]', '#feature-rows .result[data-popover]', '.speed-row td[data-ms] .result[data-popover]', '.speed-row td.skip .result[data-popover]']) {
   const fallbackLink = fallbackPage.locator(selector).first()
   if (!await fallbackLink.count()) continue
   const href = await fallbackLink.getAttribute('href')
@@ -504,7 +551,11 @@ try {
   if (previousEvidence) assert.equal(await previousEvidence.isVisible(), false, 'following another fallback link hides the previous record')
   previousEvidence = evidence
   if (!await evidence.evaluate(el => el.open)) await evidence.locator(':scope > summary').click()
-  const recorded = await fallbackLink.evaluate(el => ({ adapter: el.closest('td').dataset.tool, id: el.closest('tr').dataset.case }))
+  if (await fallbackLink.getAttribute('data-popover') === 'info') {
+   assert.equal(await evidence.locator(':scope > summary').textContent(), await fallbackLink.textContent())
+   await descriptionOnly(evidence)
+  }
+  const recorded = await fallbackLink.evaluate(el => ({ adapter: el.closest('td, th').dataset.tool, id: el.closest('tr').dataset.case }))
   const result = bench.results.find(b => b.adapter === recorded.adapter && b.case === recorded.id)
   if (result) {
    const timed = result.status === 'pass' && Number.isFinite(result.medianMs) && result.medianMs > 0

@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { caseCopy } from '../src/report-copy.js'
+import { caseCopy, featureCopy } from '../src/report-copy.js'
 import { loadSpec } from '../src/spec.js'
 
 const spec = await loadSpec()
@@ -10,6 +10,61 @@ const fixture = id => {
  return value
 }
 const copy = (id, metrics, status = 'fail') => caseCopy(fixture(id), { status, metrics })
+const feature = id => {
+ const value = spec.features.features.find(feature => feature.id === id)
+ assert(value, `declared feature ${id}`)
+ return { ...value, description: spec.ecosystem.packages.find(pkg => pkg.name === value.package)?.description }
+}
+
+test('row descriptions distinguish measurements from effects and state meaningful coverage limits', () => {
+ assert.match(featureCopy(feature('analysis.pitch')).description, /Estimate.*frequency/)
+ assert.match(featureCopy(feature('analysis.pitch')).checks, /generated tones.*recorded performances are not tested/)
+ assert.match(featureCopy(feature('rate.pitch')).description, /Change the pitch.*without changing the duration/)
+ assert.equal(featureCopy(feature('rate.pitch')).checks, '')
+ assert.match(featureCopy(feature('filter.allpass')).description, /timing.*without changing their levels/)
+ assert.match(featureCopy(feature('filter.allpass')).checks, /levels stay unchanged; phase response is not tested/)
+ assert.match(featureCopy(feature('analysis.true-peak')).description, /between stored samples/)
+ assert.match(featureCopy(feature('analysis.loudness')).checks, /synthetic.*selected EBU/)
+ assert.match(featureCopy(feature('codec.wav')).description, /uncompressed/)
+ assert.match(featureCopy(feature('codec.flac')).description, /without losing/)
+ assert.match(featureCopy(feature('codec.wav')).checks, /16-bit.*reading the file in chunks/)
+ assert.match(featureCopy(feature('execution.block-invariance')).description, /chunks/)
+ assert.doesNotMatch(featureCopy(feature('edit.reverse')).description, /algebra|roundoff|coordinates/)
+ assert.equal(featureCopy(feature('edit.reverse')).checks, '')
+ assert.match(featureCopy(feature('channels.mono')).description, /Average/)
+})
+
+test('basic feature descriptions explain the effect separately from limited validity checks', () => {
+ for (const id of ['processor.chorus', 'processor.limiter', 'processor.deesser', 'processor.ducker', 'processor.dewind', 'processor.declick']) {
+  const {description, checks} = featureCopy(feature(id))
+  assert(description.length > 15)
+  assert.doesNotMatch(description, /whose gain|in proportion\.|over\.|method:|rectangular/)
+  assert.match(checks, /original audio stays unchanged\. Sound quality is not tested\./)
+ }
+ assert.match(featureCopy(feature('processor.limiter')).description, /sample peaks/)
+ assert.match(featureCopy(feature('processor.chorus')).description, /copies.*thicken/)
+ assert.match(featureCopy(feature('processor.deesser')).description, /“s” sounds/)
+ assert.match(featureCopy(feature('processor.stretch-pvoc')).description, /duration.*without changing the pitch/)
+ assert.match(featureCopy(feature('neutral.tremolo')).description, /volume.*repeating pattern/)
+ assert.match(featureCopy(feature('neutral.tremolo')).checks, /neutral settings.*unchanged/)
+ assert.doesNotMatch(featureCopy(feature('neutral.tremolo')).checks, /Sound quality/)
+})
+
+test('every current feature has plain text purpose; unknown features retain their supplied description', () => {
+ for (const value of spec.features.features) {
+  const result = featureCopy(feature(value.id))
+  assert.deepEqual(Object.keys(result), ['description', 'checks'])
+  assert.equal(typeof result.description, 'string')
+  assert.equal(typeof result.checks, 'string')
+  assert(result.description.length > 10, value.id)
+  assert(!result.description.includes(value.id), value.id)
+  assert.doesNotMatch(result.description, /undefined|NaN|rectangular|direct array algebra|independently constructed|metric contract|umbrella|@audio\/|·/)
+  assert(result.description.length < 300, value.id)
+ }
+ const supplied = 'A <custom> effect & its purpose.'
+ assert.deepEqual(featureCopy({id:'future.custom',contract:supplied}), {description:supplied,checks:''}, 'copy stays plain text; the renderer owns HTML escaping')
+ assert.deepEqual(featureCopy(null), {description:'',checks:''})
+})
 
 test('case titles explain clip size, position, settings and authored intent without internal IDs', () => {
  assert.match(copy('edit.reverse.1f.1ch').title, /Reverse, 1 sample, mono/)
